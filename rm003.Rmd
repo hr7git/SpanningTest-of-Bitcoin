@@ -1,5 +1,5 @@
 ---
-title: 'test'
+title: 'test1'
 output:
   html_document: default
   pdf_document: default
@@ -44,7 +44,7 @@ library(lmtest)
 ```{r }
 
 
-csvfile <-'~/SRP001/Srp002/data004.csv'
+csvfile <-'data004.csv'
 # Store the csv file into the data frame of "df"
 df <- read.csv(csvfile)
 # Show the first five rows
