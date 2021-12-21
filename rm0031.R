@@ -1,16 +1,4 @@
-# ---
-#   title: 'test1'
-# output:
-#   html_document: default
-# pdf_document: default
-# word_document: default
-# ---
-#   
-#   ```{r setup, include=FALSE}
-# knitr::opts_chunk$set(echo = TRUE)
-# ```
-# 
-# 
+
 # ### R-program / Spanning Test of Bitcoin 
 # ---
 #   variable | Ticker | explanation 
@@ -42,11 +30,25 @@ library(lmtest)
 
 
 
-csvfile <-'~/SRP001/Srp002/data004.csv'
+csvfile <-'data002.csv'
 # Store the csv file into the data frame of "df"
 df <- read.csv(csvfile)
 # Show the first five rows
+class(df)
 head(df)
+
+df01 <- transmute(df, 
+          BTC = ( BTC - shift(BTC)) / shift(BTC) * 100 - Tbill,
+          DBC = ( DBC - shift(DBC)) / shift(DBC) * 100 - Tbill,
+          GLD = ( GLD - shift(GLD)) / shift(GLD) * 100 - Tbill,
+          QQQ = ( QQQ - shift(QQQ)) / shift(QQQ) * 100 - Tbill,
+          SPY = ( SPY - shift(SPY)) / shift(SPY) * 100 - Tbill,
+          TLT = ( TLT - shift(TLT)) / shift(TLT) * 100 - Tbill)
+
+head(df01)
+summary(df01)
+
+
 # summary(df)
 
 yi0 <- df$BTC
@@ -63,9 +65,11 @@ xi5 <- df$TLT
 
 ############################################################
 # test Bitcoin-usd
-ols0 <- lm(yi0 ~ xi1 + xi2 + xi3 + xi4 + xi5 , data = df)
+
+ols0 <- lm(BTC ~ DBC + GLD + QQQ + SPY + TLT , data = df01)
 summary(ols0)
-bptest(ols0) #BP-Test 
+
+# bptest(ols0) #BP-Test 
 
 lhs <- rbind(c(1,0,0,0,0,0),c(0,1,1,1,1,1))
 head(lhs)

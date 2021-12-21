@@ -38,6 +38,7 @@ library(dplyr)
 library(car)
 library(lmtest)
 library(tidyverse)
+library(data.table)
 ```
 
 
@@ -45,23 +46,24 @@ library(tidyverse)
 ```{r }
 
 
-csvfile <-'data004.csv'
+csvfile <-'data002.csv'
 # Store the csv file into the data frame of "df"
 df <- read.csv(csvfile)
 # Show the first five rows
- head(df)
+head(df)
 # summary(df)
+df01 <- transmute(df, 
+          Date = Date,
+          BTC = ( BTC - shift(BTC)) / shift(BTC) * 100 - Tbill,
+          DBC = ( DBC - shift(DBC)) / shift(DBC) * 100 - Tbill,
+          GLD = ( GLD - shift(GLD)) / shift(GLD) * 100 - Tbill,
+          QQQ = ( QQQ - shift(QQQ)) / shift(QQQ) * 100 - Tbill,
+          SPY = ( SPY - shift(SPY)) / shift(SPY) * 100 - Tbill,
+          TLT = ( TLT - shift(TLT)) / shift(TLT) * 100 - Tbill)
 
-yi0 <- df$BTC
-yi1 <- df$TSLA
-yi2 <- df$SOXX
-yi3 <- df$VOO
+head(df01)
 
-xi1 <- df$DBC
-xi2 <- df$GLD
-xi3 <- df$QQQ
-xi4 <- df$SPY
-xi5 <- df$TLT
+
 
 ```
 
@@ -73,7 +75,7 @@ xi5 <- df$TLT
 # ols01 <- lm(yi0 ~ xi1 + xi2 + xi3 + xi4 + xi5 , data = df)
 # summary(ols01)
 
-ols0 <- lm(BTC ~ DBC + GLD + QQQ + SPY + TLT , data = df)
+ols0 <- lm(BTC ~ DBC + GLD + QQQ + SPY + TLT , data = df01)
 summary(ols0)
 # bptest(ols0) #BP-Test 
 
@@ -82,7 +84,17 @@ lhs <- rbind(c(1,0,0,0,0,0),c(0,1,1,1,1,1))
 lht(ols0,lhs,c(0,1))
 
 ggplot() +
-   geom_point(mapping=aes(x=Date, y=BTC), data=df)
+   geom_point(mapping=aes(x=Date, y=BTC), data=df01)
+
+df01 %>% 
+  ggplot(aes(x=Date, y=BTC)) +
+  geom_point(size = 0.9) +
+  geom_smooth(formula = y ~ x, method = "lm", se = FALSE) + 
+  # method = "lm" : linear regerssion 
+  labs(
+    x = "Date(2014 - 2021)",
+    y = "Excess Return of BTC "
+  )
 
 ############################################################
 # test Tesla
