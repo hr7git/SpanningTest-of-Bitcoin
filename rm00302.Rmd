@@ -1,5 +1,5 @@
 ---
-title: 
+title: "..."
 output:
   html_document: default
   word_document: default
@@ -57,32 +57,28 @@ library(knitr)
 
  *Test asset was selected Bitcoin and Ethereum, which account for the top 60% of market cap (December 22, 2022) among cryptocurrencies. The value of Bitcoin is the final price for a one month period from April 28, 2003 recorded by finance.yahoo.com. The value of Ethereum is the final price for a one month period from August 7, 2015;   The summary of cryptocurrency on December 22, 2021 is as follows.
 
-  Market Rank| Ticker | Name    | Start Date | Market Cap | Market Dominance 
- :----    | :----  | :-------    | :---        | ---:       | ---:              
+  Market Rank|Ticker |Name     |Start Date  |Market Cap |Market Dominance 
+ :---:    | :---   | :---   | :---        | ---:       | ---:              
  #1       |BTC-USD |Bitcoin      | 2013-04-28  | 925.017B   | 40.57% 
  #2       |ETH-USD |Ethereum     | 2015-08-07  |  476.975B  | 20.87% 
  #3       |BNB-USD |Binance Coin | 2017-07-25  | 88.777B    | 3.89%    
  
 
-  The benchmark portfolio selected asset allocations of Yale's Endowment Portfolio, we should replicating it with accessible instruments by another asset. 
+  The benchmark portfolio selected asset allocations of Yale's Endowment Portfolio : comes from David Swensen, who was the CIO at Yale University from 1985 until 2021. we should replicating it with accessible instruments by ETF.
 
-  variable | Ticker | explanation 
- :-------- | :----- | :-------------
- yi0       |BTC     |Bitcoin   
- yi1       |TSLA    |Tesla, Inc   
- yi2       |SOXX    |iShares Trust - iShares Semiconductor ETF   
- yi3       |VOO     |Vanguard S&P 500 ETF   
- xi1       |DBC     |Invesco DB Commodity Index Tracking Fund     
- xi2       |GLD     |SPDR Gold Shares     
- xi3       |QQQ     |Invesco QQQ Trust  
- xi4       |SPY     |SPDR S&P 500 ETF Trust     
- xi5       |TLT     |iShares 20+ Year Treasury Bond ETF     
+  Asset Class |Ratio |Ticker |ETF Explanation
+ :------ | :---  | :---   | :--------
+ Total Stock Market        |30%    | VTI  |Vanguard Total Stock Market ETF 
+ International Stock Market|15%    | VXUS |Vanguard Total International Stock ETF  
+ Emerging Markets          |5%     | VWO  |Vanguard FTSE Emerging Markets ETF 
+ Intermediate Treasury Bonds|15%   | VGIT |Vanguard Intermediate-Term Treasury Index ETF
+ TIPS                      |15%    | SCHP |Schwab U.S. TIPS ETF
+ REITs                     |20%    | VNQ  |Vanguard Real Estate ETF  
+   
  
 This is the price from yahoo.finance. For more details on price see <http://finance.yahoo>.  
-Risk free T-bill : Market Yield on U.S. Treasury Securities at 1-Month Constant Maturity (DGS1MO)
-Start date : mm/dd/yyyy ???  
-
-
+Risk free T-bill : Market Yield on U.S. Treasury Securities at 1-Month Constant Maturity (DGS1MO)<br><br>
+ 
 
 
 
@@ -104,7 +100,7 @@ df <- read.csv(csvfile)
 
 kable(head(df,5),
       caption = "dataframe - df",
-      align = c("c","l","l","l","r"))
+      align = c("r"))
 
 df01 <- transmute(df, 
           Date = Date,
@@ -118,7 +114,7 @@ df01 <- transmute(df,
 # head(df01)
 kable(head(df01),
       caption = "dataframe - df01",
-      align = c("c","l","l","l","r"))
+      align = c("r","r","r","r","r","r","r"))
 
 ```
 
