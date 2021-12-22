@@ -1,5 +1,5 @@
 ---
-title: "Spanning Test of Bitcoin"
+title: ""
 output:
   html_document: default
   pdf_document: default
@@ -7,7 +7,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
 ```
 
 A New Assessment of Bitcoin after COVID-19
@@ -32,7 +32,7 @@ The structure of this paper is as follows. Chapter2 reviews the papers examining
 
 
 
-### R-program / Spanning Test of Bitcoin 
+###### R-program / Spanning Test of Bitcoin 
  ---
   variable | Ticker | explanation 
  :-------- | :----- | :-------------
@@ -57,9 +57,10 @@ Start date : mm/dd/yyyy ???
 
 library(dplyr)
 library(car)
-library(lmtest)
+# library(lmtest)
 library(tidyverse)
 library(data.table)
+library(knitr)
 ```
 
 
@@ -71,7 +72,10 @@ csvfile <-'data002.csv'
 # Store the csv file into the data frame of "df"
 df <- read.csv(csvfile)
 # Show the first five rows
-head(df)
+# head(df)
+kable(head(df,8),
+      caption = "dataframe - df",
+      align = c("c","l","l","l","r"))
 # summary(df)
 df01 <- transmute(df, 
           Date = Date,
@@ -82,7 +86,10 @@ df01 <- transmute(df,
           SPY = ( SPY - shift(SPY)) / shift(SPY) * 100 - Tbill,
           TLT = ( TLT - shift(TLT)) / shift(TLT) * 100 - Tbill)
 
-head(df01)
+# head(df01)
+kable(head(df01),
+      caption = "dataframe - df01",
+      align = c("c","l","l","l","r"))
 
 ```
 
