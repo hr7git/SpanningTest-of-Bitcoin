@@ -1,0 +1,133 @@
+---
+title: "Spanning Test of Bitcoin"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+A New Assessment of Bitcoin after COVID-19
+: The Diversification Benefits of Bitcoin
+
+
+1.	Introduction
+
+Bitcoin is a decentralized digital money based on blockchain technology. It was born out of the need to maintain an objective currency value, independent of government control. Since the global financial crisis (2008), each country has increased money supply called Quantitative Easing (QE), and the rapid increase in fiat money has caused strong distrust of the government's monetary control and concerns about inflation. Therefore, the need for a new currency that is independent from the government's supply and cannot be issued infinitely increased, and Nakamoto (2009) created the cryptocurrency Bitcoin. Unfortunately, since the covid-19 pandemic in 2020, Quantitative Easing (QE) has led to currency depreciation and increased expectation for Bitcoin. Recently, the value of Bitcoin has risen sharply incomparably with the previous period.
+
+These expectations for Bitcoin have made comparisons with gold, a traditional safe-haven asset. Can Bitcoin really hedge against inflation from the government's Quantitative Easing (QE) policy? Can Bitcoin be a safe haven from market turmoil and uncertainties? Many studies have argued that Bitcoin is a short-term or not safe-haven for financial uncertainty and weak inflation-hedge. In addition, High volatility of returns has made it a risky asset. (Choi, S. and Shin, J. ,2021)
+
+Fortunately, since Markowitz (1959) expressed the foundations for the modern portfolio theory, investors have come to recognize that a correlation between assets is more important than volatility of assets, and they realize that volatility can be reduced without compromising returns. Bitcoin can be a very risky investment due to its high volatility, but under Markowitz theory, the risk can be adjusted through the correlation with other assets. So far, stocks and real estate have a high correlation with each other, and stocks and bonds have a low correlation of 0.2 ~ 0.3. However, Bitcoin has very high volatility even in its short history, and has a correlation of 0.2 ~ 0.3 compared to the existing stock portfolio, and that correlation is getting lower now (Buttonwood, 2021). On the other hand, it shows profitability that exceeds that of bonds. Although past data cannot describe future expectations, these characteristics of Bitcoin can make it a very attractive alternative choice for portfolio managers.
+
+Then, could these other characteristics make Bitcoin a completely different asset from traditional assets such as stocks, bonds, commodities, gold, and real estate?  In other words, if Bitcoin is added to an existing portfolio of assets, can it improve portfolio output? How can we verify this? 
+
+We examine whether new risky assets can expand investment opportunities for other sets of risky assets, and examine that when investors choose a portfolio based on mean-variance analysis, they can expand minimum-variance boundaries in a given set of risky assets (Huberman and Kandel, 1987).
+
+The structure of this paper is as follows. Chapter2 reviews the papers examining the characteristics of Bitcoin by comparing cryptocurrency and gold, and papers examining the addition of new assets in investment portfolio theory. Chapter 3 explains the methodology used by Huberman and Kandel (1987) to compare the possibility of investment expansion when Bitcoin is included in the portfolio. Chapter 4 describes the results of empirical analysis. Chapter 5 presents a summary and conclusion
+
+
+
+
+
+### R-program / Spanning Test of Bitcoin 
+ ---
+  variable | Ticker | explanation 
+ :-------- | :----- | :-------------
+ yi0       |BTC     |Bitcoin   
+ yi1       |TSLA    |Tesla, Inc   
+ yi2       |SOXX    |iShares Trust - iShares Semiconductor ETF   
+ yi3       |VOO     |Vanguard S&P 500 ETF   
+ xi1       |DBC     |Invesco DB Commodity Index Tracking Fund     
+ xi2       |GLD     |SPDR Gold Shares     
+ xi3       |QQQ     |Invesco QQQ Trust  
+ xi4       |SPY     |SPDR S&P 500 ETF Trust     
+ xi5       |TLT     |iShares 20+ Year Treasury Bond ETF     
+ 
+This is the price from yahoo.finance. For more details on price see <http://finance.yahoo>.  
+Risk free T-bill : Market Yield on U.S. Treasury Securities at 1-Month Constant Maturity (DGS1MO)
+Start date : mm/dd/yyyy ???
+
+```{r ,echo=FALSE,message=FALSE}
+# install.packages('rmarkdown')
+# install.packages('tinytex')
+# tinytex::install_tinytex() # install TinyTeX
+
+library(dplyr)
+library(car)
+library(lmtest)
+library(tidyverse)
+library(data.table)
+```
+
+
+
+```{r }
+
+
+csvfile <-'data002.csv'
+# Store the csv file into the data frame of "df"
+df <- read.csv(csvfile)
+# Show the first five rows
+head(df)
+# summary(df)
+df01 <- transmute(df, 
+          Date = Date,
+          BTC = ( BTC - shift(BTC)) / shift(BTC) * 100 - Tbill,
+          DBC = ( DBC - shift(DBC)) / shift(DBC) * 100 - Tbill,
+          GLD = ( GLD - shift(GLD)) / shift(GLD) * 100 - Tbill,
+          QQQ = ( QQQ - shift(QQQ)) / shift(QQQ) * 100 - Tbill,
+          SPY = ( SPY - shift(SPY)) / shift(SPY) * 100 - Tbill,
+          TLT = ( TLT - shift(TLT)) / shift(TLT) * 100 - Tbill)
+
+head(df01)
+
+```
+
+
+
+```{r }
+############################################################
+# test Bitcoin-usd
+ols0 <- lm(BTC ~ DBC + GLD + QQQ + SPY + TLT , data = df01)
+summary(ols0)
+# bptest(ols0) #BP-Test 
+
+lhs <- rbind(c(1,0,0,0,0,0),c(0,1,1,1,1,1))
+lht(ols0,lhs,c(0,1))
+
+ggplot() +
+   geom_point(mapping=aes(x=Date, y=BTC), data=df01)
+
+df01 %>% 
+  ggplot(aes(x=Date, y=BTC)) +
+  geom_point(size = 0.9) +
+  geom_smooth(formula = y ~ x, method = "lm", se = FALSE) + 
+  # method = "lm" : linear regerssion 
+  labs(
+    x = "Date(2014 - 2021)",
+    y = "Excess Return of BTC "
+  )
+############################################################
+# test Tesla
+# ols1 <- lm(yi1 ~ xi1 + xi2 + xi3 + xi4 + xi5 , data = df)
+# summary(ols1)
+# lhs <- rbind(c(1,0,0,0,0,0),c(0,1,1,1,1,1))
+# lht(ols1,lhs,c(0,1))
+# ############################################################
+# test semicondutor industry etf
+# ols2 <- lm(yi2 ~ xi1 + xi2 + xi3 + xi4 + xi5 , data = df)
+# summary(ols2)
+# lhs <- rbind(c(1,0,0,0,0,0),c(0,1,1,1,1,1))
+# lht(ols2,lhs,c(0,1))
+############################################################
+# test VOO - bangard S&P 500
+# Hypothesis: (Intercept) = 0 ,xi1  + xi2  + xi3  + xi4  + xi5 = 1
+# ols3 <- lm(yi3 ~ xi1 + xi2 + xi3 + xi4 + xi5 , data = df)
+# summary(ols3)
+# lhs <- rbind(c(1,0,0,0,0,0),c(0,1,1,1,1,1))
+# lht(ols3,lhs,c(0,1))
+```
+
