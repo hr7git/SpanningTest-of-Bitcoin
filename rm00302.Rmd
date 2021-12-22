@@ -1,5 +1,5 @@
 ---
-title: ####"New Assessment of Bitcoin after COVID-19"
+title: 
 output:
   html_document: default
   word_document: default
@@ -13,12 +13,12 @@ knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
 
 
 
-**New Assessment of Bitcoin after COVID-19**  
+<center>**New Assessment of Bitcoin after COVID-19**</center>
 
-**: Diversification Benefits of Portfolio**
+<center>**: Diversification Benefits of Portfolio**</center><br>
 
 
-**1.	Introduction**
+<center>**1.	Introduction**</center><br>
 
   Bitcoin is a decentralized digital money based on blockchain technology. It was born out of the need to maintain an objective currency value, independent of government control. Since the global financial crisis (2008), each country has increased money supply called Quantitative Easing (QE), and the rapid increase in fiat money has caused strong distrust of the government's monetary control and concerns about inflation. Therefore, the need for a new currency that is independent from the government's supply and cannot be issued infinitely increased, and Nakamoto (2009) created the cryptocurrency Bitcoin. Unfortunately, since the covid-19 pandemic in 2020, Quantitative Easing (QE) has led to currency depreciation and increased expectation for Bitcoin. Recently, the value of Bitcoin has risen sharply incomparably with the previous period.
 
@@ -47,13 +47,13 @@ library(data.table)
 library(knitr)
 ```
 
-
-**2.	Literature review**  
+<center>**2.	Literature review**</center><br>
   
   
-**3.  Methodology**  
+<center>**3.  Methodology**</center><br>  
   
-**4.  Data**
+  
+<center>**4.  Data**</center><br>
 
  *Test asset was selected Bitcoin and Ethereum, which account for the top 60% of market cap (December 22, 2022) among cryptocurrencies. The value of Bitcoin is the final price for a one month period from April 28, 2003 recorded by finance.yahoo.com. The value of Ethereum is the final price for a one month period from August 7, 2015;   The summary of cryptocurrency on December 22, 2021 is as follows.
 
@@ -86,11 +86,10 @@ Start date : mm/dd/yyyy ???
 
 
 
-**5.  Results**  
+<center>**5.  Results**</center><br>
   
+<center>**Appendix**</center><br>
 
-
-**Appendix**  
 R-program Code  
 1) data manifulation  
 2) regression R-code  
@@ -169,7 +168,7 @@ lht(ols0,lhs,c(0,1))
 ```
 
   
-**References**  
+<center>**References**</center><br>
   
   Berndt, E. R. and N.E. Savin, 1977, “Conflict among criteria for testing hypotheses in the multivariate	 linear regression model”. Econometrica 45, pp. 1263–1278
   
