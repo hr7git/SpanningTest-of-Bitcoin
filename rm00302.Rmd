@@ -76,7 +76,7 @@ library(knitr)
  REITs                     |20%    | VNQ  |Vanguard Real Estate ETF  
    
  
-This is the price from yahoo.finance. For more details on price see <http://finance.yahoo>.  
+ETF is the price from yahoo.finance. For more details on price see <http://finance.yahoo.com>.  
 Risk free T-bill : Market Yield on U.S. Treasury Securities at 1-Month Constant Maturity (DGS1MO)<br><br>
  
 
