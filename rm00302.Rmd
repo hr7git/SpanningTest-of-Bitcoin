@@ -26,31 +26,13 @@ knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
 
 Fortunately, since Markowitz (1959) expressed the foundations for the modern portfolio theory, investors have come to recognize that a correlation between assets is more important than volatility of assets, and they realize that volatility can be reduced without compromising returns. Bitcoin can be a very risky investment due to its high volatility, but under Markowitz theory, the risk can be adjusted through the correlation with other assets. So far, stocks and real estate have a high correlation with each other, and stocks and bonds have a low correlation of 0.2 ~ 0.3. However, Bitcoin has very high volatility even in its short history, and has a correlation of 0.2 ~ 0.3 compared to the existing stock portfolio, and that correlation is getting lower now (Buttonwood, 2021). On the other hand, it shows profitability that exceeds that of bonds. Although past data cannot describe future expectations, these characteristics of Bitcoin can make it a very attractive alternative choice for portfolio managers.
 
-Then, could these other characteristics make Bitcoin a completely different asset from traditional assets such as stocks, bonds, commodities, gold, and real estate?  In other words, if Bitcoin is added to an existing portfolio of assets, can it improve portfolio output? How can we verify this? 
+Then, could these other characteristics make Bitcoin a completely different asset from traditional assets such as stocks, bonds, commodities, gold, and real estate?  In other words, if Bitcoin is added to an existing portfolio of assets, can it improve portfolio output? How can we verify this?
 
 We examine whether new risky assets can expand investment opportunities for other sets of risky assets, and examine that when investors choose a portfolio based on mean-variance analysis, they can expand minimum-variance boundaries in a given set of risky assets (Huberman and Kandel, 1987).
 
 The structure of this paper is as follows. Chapter2 reviews the papers examining the characteristics of Bitcoin by comparing cryptocurrency and gold, and papers examining the addition of new assets in investment portfolio theory. Chapter 3 explains the methodology used by Huberman and Kandel (1987) to compare the possibility of investment expansion when Bitcoin is included in the portfolio. Chapter 4 describes the results of empirical analysis. Chapter 5 presents a summary and conclusion  
 
 
-
-##### R-program / Spanning Test of Bitcoin 
- ---
-  variable | Ticker | explanation 
- :-------- | :----- | :-------------
- yi0       |BTC     |Bitcoin   
- yi1       |TSLA    |Tesla, Inc   
- yi2       |SOXX    |iShares Trust - iShares Semiconductor ETF   
- yi3       |VOO     |Vanguard S&P 500 ETF   
- xi1       |DBC     |Invesco DB Commodity Index Tracking Fund     
- xi2       |GLD     |SPDR Gold Shares     
- xi3       |QQQ     |Invesco QQQ Trust  
- xi4       |SPY     |SPDR S&P 500 ETF Trust     
- xi5       |TLT     |iShares 20+ Year Treasury Bond ETF     
- 
-This is the price from yahoo.finance. For more details on price see <http://finance.yahoo>.  
-Risk free T-bill : Market Yield on U.S. Treasury Securities at 1-Month Constant Maturity (DGS1MO)
-Start date : mm/dd/yyyy ???
 
 ```{r ,echo=FALSE,message=FALSE}
 # install.packages('rmarkdown')
@@ -73,11 +55,38 @@ library(knitr)
   
 **4.  Data**
 
+Test asset was selected Bitcoin and Ethereum, which account for the top 60% of market cap (December 22, 2022) among cryptocurrencies. The value of Bitcoin is the final price for a one month period from April 28, 2003 recorded by finance.yahoo.com. 
+
+Benchmark portfolio was choosed harvard management company (HMC) and Bridgewater Associations Holdings (Ray Dalio).  
+
+  variable | Ticker | explanation 
+ :-------- | :----- | :-------------
+ yi0       |BTC     |Bitcoin   
+ yi1       |TSLA    |Tesla, Inc   
+ yi2       |SOXX    |iShares Trust - iShares Semiconductor ETF   
+ yi3       |VOO     |Vanguard S&P 500 ETF   
+ xi1       |DBC     |Invesco DB Commodity Index Tracking Fund     
+ xi2       |GLD     |SPDR Gold Shares     
+ xi3       |QQQ     |Invesco QQQ Trust  
+ xi4       |SPY     |SPDR S&P 500 ETF Trust     
+ xi5       |TLT     |iShares 20+ Year Treasury Bond ETF     
+ 
+This is the price from yahoo.finance. For more details on price see <http://finance.yahoo>.  
+Risk free T-bill : Market Yield on U.S. Treasury Securities at 1-Month Constant Maturity (DGS1MO)
+Start date : mm/dd/yyyy ???  
+
+
+
+
+
 **5.  Results**  
   
 
 
-**Appendix**
+**Appendix**  
+R-program Code  
+1) data manifulation  
+2) regression R-code  
 
 ```{r }
 
@@ -161,16 +170,16 @@ Buttonwood, 2021, “Why it is wise to add bitcoin to an investment portfolio”
 
 Choi, S., & Shin, J. (2021). “Bitcoin: An inflation hedge but not a safe haven.” Finance Research		 Letters,102379.
 
-Eugene Fama, “Risk, Return and Equilibrium.” Journal of Political Economy 79 (January 1971)
-Huberman, G. and Kandel, S., 1987, “Mean-variance spanning”, Journal of Finance 42, pp. 873~888.
-Hwang, Y. (2019). “Bitcoin (Gold)’s Hedge․ Safe-Haven․ Equity․ Taxation.” Journal of Society for	 e-Business Studies, 23(3).
-Lee,J S. 2018, “Performance Evaluation of Social Responsibility Investment using MSCI Indexes”, 	Applied Economics Vol.20, No. 2, Jun 2018 edition
-Kan, R. and Zhou, G., 2012, “Test of mean-variance spanning”, Annals of Economics and Finance	  13-1, pp. 145~193.
-Markowitz, Harry M. (1959). “Portfolio Selection: Efficient Diversification of Investments.” John	 Wiley & Sons, New Jersey
-Nakamoto, Satoshi.,2009 "Bitcoin: A peer-to-peer electronic cash system." Decentralized Business	 Review 21260.
-Sharp et al. (1964), “Capital Asset Prices: A Theory of Market Equilibrium”, Journal of Finance,		 September 1964.
-William Sharpe. “Capital Asset Prices: A theory of Market Equilibrium under Conditions of Risk.”	 Journal of Finance 19 (September 1984)
-Fig1: https://en.wikipedia.org/wiki/Efficient_frontier
-Fig2: Boris, F., Marie, L., Nicolas, P (2020) “Risk Optimizations on Basis Portfolios: The Role 		of Sorting”, An EDHEC-Risk Working Paper, June 2020, pp. 19
+Eugene Fama, “Risk, Return and Equilibrium.” Journal of Political Economy 79 (January 1971)  
+Huberman, G. and Kandel, S., 1987, “Mean-variance spanning”, Journal of Finance 42, pp. 873~888.  
+Hwang, Y. (2019). “Bitcoin (Gold)’s Hedge․ Safe-Haven․ Equity․ Taxation.” Journal of Society for	 e-Business Studies, 23(3).  
+Lee,J S. 2018, “Performance Evaluation of Social Responsibility Investment using MSCI Indexes”, 	Applied Economics Vol.20, No. 2, Jun 2018 edition  
+Kan, R. and Zhou, G., 2012, “Test of mean-variance spanning”, Annals of Economics and Finance	  13-1, pp. 145~193.  
+Markowitz, Harry M. (1959). “Portfolio Selection: Efficient Diversification of Investments.” John	 Wiley & Sons, New Jersey  
+Nakamoto, Satoshi.,2009 "Bitcoin: A peer-to-peer electronic cash system." Decentralized Business	 Review 21260.  
+Sharp et al. (1964), “Capital Asset Prices: A Theory of Market Equilibrium”, Journal of Finance,		 September 1964.  
+William Sharpe. “Capital Asset Prices: A theory of Market Equilibrium under Conditions of Risk.”	 Journal of Finance 19 (September 1984)  
+Fig1: https://en.wikipedia.org/wiki/Efficient_frontier  
+Fig2: Boris, F., Marie, L., Nicolas, P (2020) “Risk Optimizations on Basis Portfolios: The Role	of Sorting”, An EDHEC-Risk Working Paper, June 2020, pp. 19  
 
 
