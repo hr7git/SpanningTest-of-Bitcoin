@@ -64,7 +64,7 @@ library(knitr)
  #3       |BNB-USD |Binance Coin | 2017-07-25  | 88.777B    | 3.89%    
  
 
-  The benchmark portfolio selected asset allocations of Harvard Management Company(HMC) and Bridgewater Associations Holdings (Ray Dalio).  
+  The benchmark portfolio selected asset allocations of Yale's Endowment Portfolio, we should replicating it with accessible instruments by another asset. 
 
   variable | Ticker | explanation 
  :-------- | :----- | :-------------
@@ -103,7 +103,7 @@ csvfile <-'data002.csv'
 df <- read.csv(csvfile)
 # Show the first five rows
 
-kable(head(df,8),
+kable(head(df,5),
       caption = "dataframe - df",
       align = c("c","l","l","l","r"))
 
