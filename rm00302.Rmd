@@ -1,5 +1,5 @@
 ---
-title: "New Assessment of Bitcoin after COVID-19"
+title: ####"New Assessment of Bitcoin after COVID-19"
 output:
   html_document: default
   word_document: default
@@ -55,9 +55,16 @@ library(knitr)
   
 **4.  Data**
 
-Test asset was selected Bitcoin and Ethereum, which account for the top 60% of market cap (December 22, 2022) among cryptocurrencies. The value of Bitcoin is the final price for a one month period from April 28, 2003 recorded by finance.yahoo.com. 
+ *Test asset was selected Bitcoin and Ethereum, which account for the top 60% of market cap (December 22, 2022) among cryptocurrencies. The value of Bitcoin is the final price for a one month period from April 28, 2003 recorded by finance.yahoo.com. The value of Ethereum is the final price for a one month period from August 7, 2015;   The summary of cryptocurrency on December 22, 2021 is as follows.
 
-Benchmark portfolio was choosed harvard management company (HMC) and Bridgewater Associations Holdings (Ray Dalio).  
+  Market Rank| Ticker | Name    | Start Date | Market Cap | Market Dominance 
+ :----    | :----  | :-------    | :---        | ---:       | ---:              
+ #1       |BTC-USD |Bitcoin      | 2013-04-28  | 925.017B   | 40.57% 
+ #2       |ETH-USD |Ethereum     | 2015-08-07  |  476.975B  | 20.87% 
+ #3       |BNB-USD |Binance Coin | 2017-07-25  | 88.777B    | 3.89%    
+ 
+
+  The benchmark portfolio selected asset allocations of Harvard Management Company(HMC) and Bridgewater Associations Holdings (Ray Dalio).  
 
   variable | Ticker | explanation 
  :-------- | :----- | :-------------
@@ -128,18 +135,18 @@ summary(ols0)
 lhs <- rbind(c(1,0,0,0,0,0),c(0,1,1,1,1,1))
 lht(ols0,lhs,c(0,1))
 
-ggplot() +
-   geom_point(mapping=aes(x=Date, y=BTC), data=df01)
-
-df01 %>% 
-  ggplot(aes(x=Date, y=BTC)) +
-  geom_point(size = 0.9) +
-  geom_smooth(formula = y ~ x, method = "lm", se = FALSE) + 
-  # method = "lm" : linear regerssion 
-  labs(
-    x = "Date(2014 - 2021)",
-    y = "Excess Return of BTC "
-  )
+# ggplot() +
+#    geom_point(mapping=aes(x=Date, y=BTC), data=df01)
+# 
+# df01 %>% 
+#   ggplot(aes(x=Date, y=BTC)) +
+#   geom_point(size = 0.9) +
+#   geom_smooth(formula = y ~ x, method = "lm", se = FALSE) + 
+#   # method = "lm" : linear regerssion 
+#   labs(
+#     x = "Date(2014 - 2021)",
+#     y = "Excess Return of BTC "
+#   )
 ############################################################
 # test Tesla
 # ols1 <- lm(yi1 ~ xi1 + xi2 + xi3 + xi4 + xi5 , data = df)
