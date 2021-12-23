@@ -55,7 +55,11 @@ library(knitr)
   
 <center>**4.  Data**</center><br>
 
- *Test asset was selected Bitcoin and Ethereum, which account for the top 60% of market cap (December 22, 2022) among cryptocurrencies. The value of Bitcoin is the final price for a one month period from April 28, 2003 recorded by finance.yahoo.com. The value of Ethereum is the final price for a one month period from August 7, 2015;   The summary of cryptocurrency on December 22, 2021 is as follows.
+**4.1 Test Assets**  
+
+  Test asset was selected Bitcoin and Ethereum, which account for the top 60% of market cap (December 22, 2022) among cryptocurrencies. The value of Bitcoin is the final price for a one month period from April 28, 2003 recorded by finance.yahoo.com. The value of Ethereum is the final price for a one month period from August 7, 2015  
+ 
+Table 4.1 Summary of Cyptocurrency (Dec 22,2021)
 
   Market Rank|Ticker |Name     |Start Date  |Market Cap |Market Dominance 
  :---:    | :---   | :---   | :---        | ---:       | ---:              
@@ -64,7 +68,11 @@ library(knitr)
  #3       |BNB-USD |Binance Coin | 2017-07-25  | 88.777B    | 3.89%    
  
 
+**4.2 Benchmark Portfolio**  
+
   The benchmark portfolio selected asset allocations of Yale's Endowment Portfolio : comes from David Swensen, who was the CIO at Yale University from 1985 until 2021. we should replicating it with accessible instruments by ETF.
+
+Table 4.2 Asset allocations of Yale's Endowment Portfolio  
 
   Asset Class |Ratio |Ticker |ETF Explanation
  :------ | :---  | :---   | :--------
