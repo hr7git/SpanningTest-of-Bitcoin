@@ -1,5 +1,5 @@
 ---
-title: "..."
+title: "."
 output:
   html_document: default
   word_document: default
@@ -13,9 +13,9 @@ knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
 
 
 
-<center>**New Assessment of Bitcoin after COVID-19**</center>
+<center>**Diversification of Cryptocurrency after COVID-19**</center>
 
-<center>**: Diversification Benefits of Portfolio**</center><br>
+<center>**: Spanning Test of news asset **</center><br>
 
 
 <center>**1.	Introduction**</center><br>
