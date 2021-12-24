@@ -1,0 +1,12 @@
+﻿1,Domestic-Equity,80% S&P 500; 16% S&P Mid Cap; 4% Russell 2000
+2,Foreign-Equity,93% EAFE; 7% Salomon Extended Market Index (excluding US and EAFE overlap)
+3,Emerging-Markets,IFC Global Index and EMBI+
+4,Private-Equity,Cambridge Associates Weighted Composite
+5,Absolute-Return,LIBOR + 5%
+6,High Yield,Salomon High Yield and Bankrupt
+7,Commodities,60% GSCI; 40% NCREIF Timber Index
+8,Real Estate,NCREIF Property Index
+9,Domestic  Bonds,Lehman 5 + Year Treasury Index
+10,Foreign Bonds,J.P. Morgan Non U.S.
+11,Inflation-Indexed,Salomon TIPS
+12,Cash,3-month LIBOR
