@@ -15,12 +15,12 @@ file_list <- list.files(dir)
 
 Date <- c("2021-12-27")
 
-data <- data.frame(Date)
-data02 <- data.frame(Date)
+data01 <- data.frame(Date)
+
 # data <- read.csv("~/R/r_test/DATA/^IRX.csv")[ ,c("Date", "Adj.Close")]
 # colnames(data)[2] <- "IRX"
 # colnames(data)[2] <- col_name
-str(data)
+str(data01)
 
 for(file in file_list)  {
   
@@ -49,21 +49,41 @@ for(file in file_list)  {
       colnames(temp)[3] <- paste0(col_name,"R")
       
   
-  class(data)
+  class(data01)
   class(temp)
-  str(data)
+  str(data01)
   str(temp)
  
-  data <- merge(data, temp, by = "Date" , all=TRUE )
+  data01 <- merge(data01, temp, by = "Date" , all=TRUE )
   
 
   }
 
-str(data)
-write.csv(data, file = "data1225.csv", row.names = F)
+str(data01)
+write.csv(data01, file = "data1225.csv", row.names = F)
+#####################################################
 
 
 
+
+ggplot() +
+   geom_point(mapping=aes(x=Date, y=BTC), data=data01)
+
+data01 %>%
+  ggplot(aes(x=Date, y=TNX)) +
+  geom_point(size = 1.5, alpha=0.5, color='blue') +
+#  geom_smooth(formula = y ~ x, method = "lm", se = FALSE) +
+  # method = "lm" : linear regerssion
+  
+  
+  # scale_x_continuous(labels = NULL) +
+ 
+  labs(
+    x = "Date(2017 - 2021)",
+    y = "Excess Return of TNX"
+  )
+
+#######
 
 
 

@@ -46,6 +46,7 @@ library(car)
 library(tidyverse)
 library(data.table)
 library(knitr)
+library(stringr)
 ```
 
 <br><center>**2.	Literature review**</center><br>
@@ -54,9 +55,12 @@ library(knitr)
 <br><center>**3.  Methodology**</center><br> 
 
 3-1. Hypothesis, Regression model 
-Huberman and Kandel (1987) describes that a set of K assets spans a set of N + K assets if the minimum-variance frontier of the K assets is equal to the minimum-variance frontier of the K assets plus N assets. 
-rt = α +βRt +εt						(1)
-α = 0N and 𝛾 = iN - βiK = 0				(2)
+Huberman and Kandel (1987) describes that a set of K assets spans a set of N + K assets if the minimum-variance frontier of the K assets is equal to the minimum-variance frontier of the K assets plus N assets.  
+
+rt = α +βRt +εt						(1)  
+
+α = 0N and 𝛾 = iN - βiK = 0				(2)  
+
 Regression analysis is performed using the equation (1), As a regression method, the Wald test evaluates constraints on statistical parameters based on weighted distances between unconstrained estimates and hypothesized values. In equation (1), the variable rt is the return vector (N-dimensional vector) of N test assets in period t, and the variable Rt is the return vector (K-dimensional vector) of t K benchmark assets in period t.  If the null hypothesis (2) is rejected, Bitcoin can expand the investment opportunities. 
 
 
@@ -71,7 +75,9 @@ A set of K risky assets makes a benchmark portfolio using stocks, bonds, commodi
 
 The tickers of the benchmark assets are as follows: Bitcoin : Bitcoin USD (BTC-USD) Stocks : SPDR S&P 500 ETF Trust (SPY) Bonds : iShares 1-3 Year Treasury Bond ETF (SHY) Commodities : Invesco DB Commodity Index Tracking Fund (DBC) Gold : SPDR Gold Shares (GLD) 
 
-Risk free T-bill : Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Percent, Weekly, Not Seasonally Adjusted (DGS10) (https://fred.stlouisfed.org/series/DGS10#0,12/24/2021)
+<!-- Risk free T-bill : Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Percent, Weekly, Not Seasonally Adjusted (DGS10) (https://fred.stlouisfed.org/series/DGS10#0,12/24/2021) -->
+
+Risk free T-bill : US Treasury Bonds Rates - Treasury Yield 10 Years (^TNX)
 
 
 **4.1 Test Assets**  
@@ -134,32 +140,38 @@ Risk free T-bill : Market Yield on U.S. Treasury Securities at 1-Month Constant 
 
 
 
-**1) data manifulation**  
+**1) data filtering**  
 
 ```{r, echo=TRUE}
 
-csvfile <-'data002.csv'
+csvfile <-"DATA/^IRX.csv"
+col_name <- str_sub(csvfile, -7, -5)
+write_name <- str_sub(csvfile, -7, -1)
 # Store the csv file into the data frame of "df"
-df <- read.csv(csvfile)
-# Show the first five rows
+df <- read.csv(csvfile)[ ,c("Date", "Adj.Close")]
 
+  
+colnames(df)[2] <- col_name
+
+write.csv(df,write_name,row.names=FALSE)
+
+# Show the first five rows
 kable(head(df,5),
-      caption = "dataframe - df",
+      caption = "data.frame - df",
       align = c("r"))
 
-df01 <- transmute(df, 
-          Date = Date,
-          BTC = ( BTC - shift(BTC)) / shift(BTC) * 100 - Tbill,
-          DBC = ( DBC - shift(DBC)) / shift(DBC) * 100 - Tbill,
-          GLD = ( GLD - shift(GLD)) / shift(GLD) * 100 - Tbill,
-          QQQ = ( QQQ - shift(QQQ)) / shift(QQQ) * 100 - Tbill,
-          SPY = ( SPY - shift(SPY)) / shift(SPY) * 100 - Tbill,
-          TLT = ( TLT - shift(TLT)) / shift(TLT) * 100 - Tbill)
-
-# head(df01)
-kable(head(df01),
-      caption = "dataframe - df01",
-      align = c("r","r","r","r","r","r","r"))
+# df01 <- transmute(df,
+#           Date = Date,
+#           BTC = ( BTC - shift(BTC)) / shift(BTC) * 100 - Tbill,
+#           DBC = ( DBC - shift(DBC)) / shift(DBC) * 100 - Tbill,
+#           GLD = ( GLD - shift(GLD)) / shift(GLD) * 100 - Tbill,
+#           QQQ = ( QQQ - shift(QQQ)) / shift(QQQ) * 100 - Tbill,
+#           SPY = ( SPY - shift(SPY)) / shift(SPY) * 100 - Tbill,
+#           TLT = ( TLT - shift(TLT)) / shift(TLT) * 100 - Tbill)
+# # head(df01)
+# kable(head(df01),
+#       caption = "dataframe - df01",
+#       align = c("r","r","r","r","r","r","r"))
 
 ```
 
