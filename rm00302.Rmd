@@ -98,7 +98,7 @@ Table 4.2 Asset allocations of Harvard Management Company
 # csvfile <-'HMC-portfolio.csv'
 # # Store the csv file into the data frame of "df"
 # df_hmc <- read.csv(csvfile)
-
+# HMC : Harvard Management Company - Harvard portfolio
 HMC_portfolio <- read_csv("HMC-portfolio.csv")
 
 kable(head(HMC_portfolio,12),
@@ -127,15 +127,16 @@ Risk free T-bill : Market Yield on U.S. Treasury Securities at 1-Month Constant 
 
 
 <br><center>**5.  Results**</center><br>
+
+
   
 <br><center>**Appendix**</center><br>
 
-R-program Code  
-1) data manifulation  
-2) regression R-code  
 
-```{r,echo=FALSE}
 
+**1) data manifulation**  
+
+```{r, echo=TRUE}
 
 csvfile <-'data002.csv'
 # Store the csv file into the data frame of "df"
@@ -164,9 +165,33 @@ kable(head(df01),
 
 
 
-```{r ,echo=FALSE,message=FALSE}
 
-############################################################
+
+
+**2) regression R-code** 
+```{r ,echo=TRUE,message=FALSE}
+csvfile <-'data002.csv'
+# Store the csv file into the data frame of "df"
+df <- read.csv(csvfile)
+# Show the first five rows
+
+kable(head(df,5),
+      caption = "dataframe - df",
+      align = c("r"))
+
+df01 <- transmute(df, 
+          Date = Date,
+          BTC = ( BTC - shift(BTC)) / shift(BTC) * 100 - Tbill,
+          DBC = ( DBC - shift(DBC)) / shift(DBC) * 100 - Tbill,
+          GLD = ( GLD - shift(GLD)) / shift(GLD) * 100 - Tbill,
+          QQQ = ( QQQ - shift(QQQ)) / shift(QQQ) * 100 - Tbill,
+          SPY = ( SPY - shift(SPY)) / shift(SPY) * 100 - Tbill,
+          TLT = ( TLT - shift(TLT)) / shift(TLT) * 100 - Tbill)
+
+# head(df01)
+kable(head(df01),
+      caption = "dataframe - df01",
+      align = c("r","r","r","r","r","r","r"))
 # test Bitcoin-usd
 ols0 <- lm(BTC ~ DBC + GLD + QQQ + SPY + TLT , data = df01)
 summary(ols0)
