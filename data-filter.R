@@ -1,0 +1,108 @@
+library(dplyr)
+library(readr)
+library(car)
+# library(lmtest)
+library(tidyverse)
+library(data.table)
+library(knitr)
+library(stringr)
+
+
+
+
+dir <- ("~/R/r_test/DATA")
+file_list <- list.files(dir)
+
+Date <- c("2021-12-27")
+
+data <- data.frame(Date)
+data02 <- data.frame(Date)
+# data <- read.csv("~/R/r_test/DATA/^IRX.csv")[ ,c("Date", "Adj.Close")]
+# colnames(data)[2] <- "IRX"
+# colnames(data)[2] <- col_name
+str(data)
+
+for(file in file_list)  {
+  
+  col_name <- str_sub(file, -7, -5)
+  # write_name <- str_sub(csvfile, -7, -1)
+  # Store the csv file into the data frame of "df"
+
+  print(file)
+  file_name <- paste(dir, file, sep = "/")
+  print(file_name)
+  
+  temp <- read.csv(file_name,
+                  header = TRUE, 
+                  sep=",", 
+                  stringsAsFactors = FALSE )[ ,c("Date", "Adj.Close")]
+  
+  print("3")
+  
+  temp <- temp %>% 
+      mutate( ratio = ( Adj.Close - shift(Adj.Close)) / shift(Adj.Close) * 100 )
+      str(temp)    
+  print("4")
+ 
+      colnames(temp)[2] <- col_name
+  print("5")
+      colnames(temp)[3] <- paste0(col_name,"R")
+      
+  
+  class(data)
+  class(temp)
+  str(data)
+  str(temp)
+ 
+  data <- merge(data, temp, by = "Date" , all=TRUE )
+  
+
+  }
+
+str(data)
+write.csv(data, file = "data1225.csv", row.names = F)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+######################################################
+csvfile <-"DATA/^IRX.csv"
+col_name <- str_sub(csvfile, -7, -5)
+write_name <- str_sub(csvfile, -7, -1)
+# Store the csv file into the data frame of "df"
+df <- read.csv(csvfile)[ ,c("Date", "Adj.Close")]
+
+
+colnames(df)[2] <- col_name
+
+write.csv(df,write_name,row.names=FALSE)
+
+# Show the first five rows
+kable(head(df,5),
+      caption = "data.frame - df",
+      align = c("r"))
+
+# df01 <- transmute(df,
+#           Date = Date,
+#           BTC = ( BTC - shift(BTC)) / shift(BTC) * 100 - Tbill,
+#           DBC = ( DBC - shift(DBC)) / shift(DBC) * 100 - Tbill,
+#           GLD = ( GLD - shift(GLD)) / shift(GLD) * 100 - Tbill,
+#           QQQ = ( QQQ - shift(QQQ)) / shift(QQQ) * 100 - Tbill,
+#           SPY = ( SPY - shift(SPY)) / shift(SPY) * 100 - Tbill,
+#           TLT = ( TLT - shift(TLT)) / shift(TLT) * 100 - Tbill)
+# # head(df01)
+# kable(head(df01),
+#       caption = "dataframe - df01",
+#       align = c("r","r","r","r","r","r","r"))
+
