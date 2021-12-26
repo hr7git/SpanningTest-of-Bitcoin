@@ -47,6 +47,7 @@ library(tidyverse)
 library(data.table)
 library(knitr)
 library(stringr)
+library(readxl)
 ```
 
 <br><center>**2.	Literature review**</center><br>
@@ -54,7 +55,7 @@ library(stringr)
   
 <br><center>**3.  Methodology**</center><br> 
 
-3-1. Hypothesis, Regression model 
+**3-1. Hypothesis, Regression model **
 Huberman and Kandel (1987) describes that a set of K assets spans a set of N + K assets if the minimum-variance frontier of the K assets is equal to the minimum-variance frontier of the K assets plus N assets.  
 
 $$rt = α +βRt +εt$$						(1)  
@@ -62,6 +63,20 @@ $$rt = α +βRt +εt$$						(1)
 $α = 0N$   and  $𝛾 = iN - βiK = 0$				(2)  
 
 Regression analysis is performed using the equation (1), As a regression method, the Wald test evaluates constraints on statistical parameters based on weighted distances between unconstrained estimates and hypothesized values. In equation (1), the variable rt is the return vector (N-dimensional vector) of N test assets in period t, and the variable Rt is the return vector (K-dimensional vector) of t K benchmark assets in period t.  If the null hypothesis (2) is rejected, Bitcoin can expand the investment opportunities. 
+
+1) eq(2) - join :
+
+2) eq(2) - step down / 
+
+
+
+**3-2. impact of covid19 **
+
+1) total 5 years : 2017.01 ~ 2021.12
+
+2) before covid19 : 2017.01 ~ 2019.12
+
+3) after covid19 : 2020.01 ~ 2021.12
 
 
 
@@ -97,22 +112,34 @@ Table 4.1 Summary of Cyptocurrency (Dec 22,2021)
 
   The benchmark portfolio selected asset allocations of Yale's Endowment Portfolio : comes from David Swensen, who was the CIO at Yale University from 1985 until 2021. we should replicating it with accessible instruments by ETF.
 
-Table 4.2 Asset allocations of Harvard Management Company  
+</br>Table 4.2 Asset allocations of Harvard Management Company  
 
+<!-- ```{r,echo=FALSE,message=FALSE } -->
+
+<!-- # csvfile <-'HMC-portfolio.csv' -->
+<!-- # # Store the csv file into the data frame of "df" -->
+<!-- # df_hmc <- read.csv(csvfile) -->
+<!-- # HMC : Harvard Management Company - Harvard portfolio -->
+<!-- HMC_portfolio <- read_csv("HMC-portfolio.csv") -->
+
+<!-- kable(head(HMC_portfolio,12), -->
+<!--       caption = "Harvard Management Company", -->
+<!--       align = c("c","l","l")) -->
+
+
+<!-- ``` -->
+ 
 ```{r,echo=FALSE,message=FALSE }
 
-# csvfile <-'HMC-portfolio.csv'
-# # Store the csv file into the data frame of "df"
-# df_hmc <- read.csv(csvfile)
-# HMC : Harvard Management Company - Harvard portfolio
-HMC_portfolio <- read_csv("HMC-portfolio.csv")
+df_table <- read_excel("Ivy Asset Allocation.xlsx",
+                                    sheet = "harvard")
 
-kable(head(HMC_portfolio,12),
-      caption = "Harvard Management Company",
-      align = c("c","l","l"))
+kable(head(df_table,12),
+      caption = "Ivy Asset Allocation.xlsx",
+      align = c("l","l","l"))
 
 
-```
+``` 
 
 Table 4.3 Asset allocations of Yale's Endowment Funds  
 
@@ -125,6 +152,19 @@ Table 4.3 Asset allocations of Yale's Endowment Funds
  TIPS                      |15%    | SCHP |Schwab U.S. TIPS ETF
  REITs                     |20%    | VNQ  |Vanguard Real Estate ETF  
    
+ 
+</br>Table 4.3 The Ivy 10’s Asset Allocation  
+```{r,echo=FALSE,message=FALSE }
+
+df_table <- read_excel("Ivy Asset Allocation.xlsx",
+                                    sheet = "ivy10")
+
+kable(head(df_table,12),
+      caption = "Ivy Asset Allocation.xlsx",
+      align = c("l","l","l"))
+
+
+```   
  
 ETF is the price from yahoo.finance. For more details on price see <http://finance.yahoo.com>.  
 Risk free T-bill : Market Yield on U.S. Treasury Securities at 1-Month Constant Maturity (DGS1MO)<br><br>
@@ -144,20 +184,19 @@ Risk free T-bill : Market Yield on U.S. Treasury Securities at 1-Month Constant 
 
 ```{r, echo=TRUE}
 
-csvfile <-"DATA/^IRX.csv"
-col_name <- str_sub(csvfile, -7, -5)
-write_name <- str_sub(csvfile, -7, -1)
+csvfile <-"Data1225.csv"
+
 # Store the csv file into the data frame of "df"
-df <- read.csv(csvfile)[ ,c("Date", "Adj.Close")]
+df <- read.csv(csvfile)
 
   
-colnames(df)[2] <- col_name
+# colnames(df)[2] <- col_name
 
-write.csv(df,write_name,row.names=FALSE)
+# write.csv(df,write_name,row.names=FALSE)
 
 # Show the first five rows
 kable(head(df,5),
-      caption = "data.frame - df",
+      caption = "data.frame - Data1225.csv",
       align = c("r"))
 
 # df01 <- transmute(df,
@@ -264,6 +303,7 @@ Markowitz, Harry M. (1959). “Portfolio Selection: Efficient Diversification of
 Nakamoto, Satoshi.,2009 "Bitcoin: A peer-to-peer electronic cash system." Decentralized Business	 Review 21260.  
 Sharp et al. (1964), “Capital Asset Prices: A Theory of Market Equilibrium”, Journal of Finance,		 September 1964.  
 William Sharpe. “Capital Asset Prices: A theory of Market Equilibrium under Conditions of Risk.”	 Journal of Finance 19 (September 1984)  
+
 Fig1: https://en.wikipedia.org/wiki/Efficient_frontier  
 Fig2: Boris, F., Marie, L., Nicolas, P (2020) “Risk Optimizations on Basis Portfolios: The Role	of Sorting”, An EDHEC-Risk Working Paper, June 2020, pp. 19  
 

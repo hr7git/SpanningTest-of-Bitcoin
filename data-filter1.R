@@ -8,6 +8,9 @@ library(data.table)
 library(stringr)
 
 
+#######################################################
+#  Data filter
+#######################################################
 
 
 dir <- ("./DATA")
@@ -25,6 +28,10 @@ str(data01)
 for(i in file_list)  {
   
   col_name <- str_sub(i, -11, -5)
+  str_replace_all(col_name, '-','')
+  str_replace_all(col_name, '^','')
+  print(col_name)
+  
   # write_name <- str_sub(csvfile, -7, -1)
   # Store the csv file into the data frame of "df"
 
@@ -61,8 +68,9 @@ for(i in file_list)  {
 
 str(data01)
 write.csv(data01, file = "data1225.csv", row.names = F)
-#####################################################
-
+#######################################################
+#  Plot
+#######################################################
 
 
 data01 <- read.csv(file = "./DATA/DGS10.csv")
@@ -85,7 +93,18 @@ data01 %>%
     y = "Excess Return of TNX"
   )
 
-#######
+
+#######################################################
+#  Regression
+#######################################################
+
+# test Bitcoin-usd
+ols0 <- lm(data01$BTC-USDR ~ GDGR + IDHQR + SPYR + TIPR + VBR + VNQR , data = data01)
+summary(ols0)
+# bptest(ols0) #BP-Test 
+
+lhs <- rbind(c(1,0,0,0,0,0,0),c(0,1,1,1,1,1,1))
+lht(ols0,lhs,c(0,1))
 
 
 
