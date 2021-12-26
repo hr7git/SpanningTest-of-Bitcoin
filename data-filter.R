@@ -1,17 +1,18 @@
 library(dplyr)
 library(readr)
-library(car)
+# library(car)
 # library(lmtest)
 library(tidyverse)
 library(data.table)
-library(knitr)
+# library(knitr)
 library(stringr)
 
 
 
 
-dir <- ("~/R/r_test/DATA")
+dir <- ("~/DATA")
 file_list <- list.files(dir)
+str(file_list)
 
 Date <- c("2021-12-27")
 
@@ -24,7 +25,7 @@ str(data01)
 
 for(file in file_list)  {
   
-  col_name <- str_sub(file, -7, -5)
+  col_name <- str_sub(file, -11, -5)
   # write_name <- str_sub(csvfile, -7, -1)
   # Store the csv file into the data frame of "df"
 
@@ -67,7 +68,7 @@ write.csv(data01, file = "data1225.csv", row.names = F)
 
 
 ggplot() +
-   geom_point(mapping=aes(x=Date, y=BTC), data=data01)
+   geom_point(mapping=aes(x=Date, y=SPY), data=data01)
 
 data01 %>%
   ggplot(aes(x=Date, y=TNX)) +
