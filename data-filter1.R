@@ -1,6 +1,6 @@
 library(dplyr)
 library(readr)
-# library(car)
+library(car)
 # library(lmtest)
 library(tidyverse)
 library(data.table)
@@ -28,8 +28,8 @@ str(data01)
 for(i in file_list)  {
   
   col_name <- str_sub(i, -11, -5)
-  str_replace_all(col_name, '-','')
-  str_replace_all(col_name, '^','')
+  col_name <- str_replace_all(col_name, '-','')
+  col_name <- str_replace_all(col_name, "^","")
   print(col_name)
   
   # write_name <- str_sub(csvfile, -7, -1)
@@ -73,50 +73,81 @@ write.csv(data01, file = "data1225.csv", row.names = F)
 #######################################################
 
 
-data01 <- read.csv(file = "./DATA/DGS10.csv")
-ggplot() +
-   geom_point(mapping=aes(x=Date, y=DGS10), data=data01)
-
-
-
-data01 %>%
-  ggplot(aes(x=Date, y=TNX)) +
-  geom_point(size = 1.5, alpha=0.5, color='blue') +
-#  geom_smooth(formula = y ~ x, method = "lm", se = FALSE) +
-  # method = "lm" : linear regerssion
-  
-  
-  # scale_x_continuous(labels = NULL) +
- 
-  labs(
-    x = "Date(2017 - 2021)",
-    y = "Excess Return of TNX"
-  )
+# data01 <- read.csv(file = "./DATA/DGS10.csv")
+# ggplot() +
+#    geom_point(mapping=aes(x=Date, y=DGS10), data=data01)
+# 
+# 
+# 
+# data01 %>%
+#   ggplot(aes(x=Date, y=TNX)) +
+#   geom_point(size = 1.5, alpha=0.5, color='blue') +
+# #  geom_smooth(formula = y ~ x, method = "lm", se = FALSE) +
+#   # method = "lm" : linear regerssion
+#   
+#   
+#   # scale_x_continuous(labels = NULL) +
+#  
+#   labs(
+#     x = "Date(2017 - 2021)",
+#     y = "Excess Return of TNX"
+#   )
 
 
 #######################################################
-#  Regression
+# 3-2. impact of covid19
+# 
+# total 5 years : 2017.01 ~ 2021.12
+# 
+# before covid19 : 2017.01 ~ 2019.12
+# 
+# after covid19 : 2020.01 ~ 2021.12
 #######################################################
 
 # test Bitcoin-usd
-ols0 <- lm(data01$BTC-USDR ~ GDGR + IDHQR + SPYR + TIPR + VBR + VNQR , data = data01)
+ols0 <- lm(BTCUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
+             GSGR + VNQR + VNQIR
+           , data = data01)
 summary(ols0)
 # bptest(ols0) #BP-Test 
 
-lhs <- rbind(c(1,0,0,0,0,0,0),c(0,1,1,1,1,1,1))
+lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
 lht(ols0,lhs,c(0,1))
 
 
+   #######################################################
+   # before covid19 : 2017.01 ~ 2019.12
+   #######################################################  
+  data_before <- data01 %>% 
+    filter(Date < '2020-01-01') %>% 
+      select(Date , contains("TNX"), ends_with("R"))   # select only ratio-column
+    tail(data_before) 
+    ols0 <- lm(BTCUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
+               GSGR + VNQR + VNQIR
+             , data = data_before)
+    summary(ols0)
+  
+    lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
+    lht(ols0,lhs,c(0,1)) 
+    
+    ##### 2 step- test
+    lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
+    lht(ols0,lhs,c(0)) 
 
-
-
-
-
-
-
-
-
-
+    #######################################################
+    # after covid19 : 2020.01 ~ 2021.12
+    #######################################################  
+    data_before <- data01 %>% 
+      filter(Date >= '2020-01-01') %>% 
+      select(Date , contains("TNX"), ends_with("R"))   # select only ratio-column
+    tail(data_before) 
+    ols0 <- lm(BTCUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
+                 GSGR + VNQR + VNQIR
+               , data = data_before)
+    summary(ols0)
+    
+    lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
+    lht(ols0,lhs,c(0,1))    
 ######################################################
 csvfile <-"DATA/^IRX.csv"
 col_name <- str_sub(csvfile, -7, -5)
