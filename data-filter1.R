@@ -71,8 +71,6 @@ write.csv(data01, file = "data1225.csv", row.names = F)
 #######################################################
 #  Plot
 #######################################################
-
-
 # data01 <- read.csv(file = "./DATA/DGS10.csv")
 # ggplot() +
 #    geom_point(mapping=aes(x=Date, y=DGS10), data=data01)
@@ -92,8 +90,6 @@ write.csv(data01, file = "data1225.csv", row.names = F)
 #     x = "Date(2017 - 2021)",
 #     y = "Excess Return of TNX"
 #   )
-
-
 #######################################################
 # 3-2. impact of covid19
 # 
@@ -104,24 +100,63 @@ write.csv(data01, file = "data1225.csv", row.names = F)
 # after covid19 : 2020.01 ~ 2021.12
 #######################################################
 
+#######################################################
+# total 5 years : 2017.01 ~ 2021.12
+# HK test
+# 2 step test
+#######################################################
 # test Bitcoin-usd
-ols0 <- lm(BTCUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
+data01 <- read.csv("data1225.csv")
+# Bitcoin ###########################################
+olsbtc <- lm(BTCUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
              GSGR + VNQR + VNQIR
            , data = data01)
-summary(ols0)
-# bptest(ols0) #BP-Test 
-
+summary(olsbtc)
+summ(olsbtc,  digit = 3)
+##### HK test
 lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
-lht(ols0,lhs,c(0,1))
+lht(olsbtc,lhs,c(0,1))
+##### 2 step- test
+lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
+lht(olsbtc,lhs,c(0))
 
 
+
+# eterrium ###########################################
+olseth <- lm(ETHUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
+             GSGR + VNQR + VNQIR
+           , data = data01)
+summary(olseth)
+##### HK test
+lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
+lht(olseth,lhs,c(0,1))
+##### 2 step- test
+lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
+lht(olseth,lhs,c(0))
+
+
+# bnb coin ############################################
+olsbnb <- lm(BNBUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
+             GSGR + VNQR + VNQIR
+           , data = data01)
+summary(olsbnb)
+##### HK test
+lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
+lht(olsbnb,lhs,c(0,1))
+##### 2 step- test
+lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
+lht(olsbnb,lhs,c(0)) 
+
+
+kable( fit1 )
+kable( fit2 )
    #######################################################
    # before covid19 : 2017.01 ~ 2019.12
    #######################################################  
   data_before <- data01 %>% 
     filter(Date < '2020-01-01') %>% 
       select(Date , contains("TNX"), ends_with("R"))   # select only ratio-column
-    tail(data_before) 
+    # tail(data_before) 
     ols0 <- lm(BTCUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
                GSGR + VNQR + VNQIR
              , data = data_before)
@@ -140,7 +175,7 @@ lht(ols0,lhs,c(0,1))
     data_before <- data01 %>% 
       filter(Date >= '2020-01-01') %>% 
       select(Date , contains("TNX"), ends_with("R"))   # select only ratio-column
-    tail(data_before) 
+    # tail(data_before) 
     ols0 <- lm(BTCUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
                  GSGR + VNQR + VNQIR
                , data = data_before)
