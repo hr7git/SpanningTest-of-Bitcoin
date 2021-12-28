@@ -148,6 +148,21 @@ lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
 lht(olsbnb,lhs,c(0)) 
 
 
+# cypto joint ############################################
+olscypto <- lm(BTCUSDR + ETHUSDR + BNBUSDR ~ VTIR + VVR + VBR + IDHQR + 
+                 VWOR + BNDR + TIPR + 
+                 GSGR + VNQR + VNQIR
+               , data = data01)
+summary(olscypto)
+##### HK test
+lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
+lht(olscypto,lhs,c(0,1))
+##### 2 step- test
+lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
+lht(olscypto,lhs,c(0)) 
+
+
+
 kable( fit1 )
 kable( fit2 )
    #######################################################

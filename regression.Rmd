@@ -49,10 +49,20 @@ library(jtools)
 # Bitcoin 
 # HK test
 # 2 step test
+
 # ethereum 
 # HK test
 # 2 step test
+
 # Bnb-coin 
+# HK test
+# 2 step test
+
+# Bicoin + ethereum + Bnbcoin 
+# HK test
+# 2 step test
+
+# CMC Crypto 200
 # HK test
 # 2 step test
 #######################################################
@@ -74,8 +84,9 @@ lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
 fit2 <- lht(olsbtc,lhs,c(0))
 fit2
 
-kable( fit1 )
-kable( fit2 )
+summ(olsbtc,  digit = 3)  # unresticted Bitcoin 5years
+kable( fit1 )             # HK test
+kable( fit2 )             # 2-step test
 # eterrium ###########################################
 olseth <- lm(ETHUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
              GSGR + VNQR + VNQIR
@@ -102,6 +113,18 @@ lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
 lht(olsbnb,lhs,c(0)) 
 
 
+# cypto joint ############################################
+olscypto <- lm(BTCUSDR + ETHUSDR + BNBUSDR ~ VTIR + VVR + VBR + IDHQR + 
+                 VWOR + BNDR + TIPR + 
+             GSGR + VNQR + VNQIR
+           , data = data01)
+summary(olscypto)
+##### HK test
+lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
+lht(olscypto,lhs,c(0,1))
+##### 2 step- test
+lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
+lht(olscypto,lhs,c(0)) 
 
    #######################################################
    # before covid19 : 2017.01 ~ 2019.12
