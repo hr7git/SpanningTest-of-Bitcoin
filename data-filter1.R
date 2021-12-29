@@ -6,7 +6,10 @@ library(tidyverse)
 library(data.table)
 library(knitr)
 library(stringr)
-
+library(interactions)
+library(jtools)
+library("ggplot2")
+# library(kableExtra)
 
 #######################################################
 #  Data filter
@@ -136,11 +139,17 @@ btc.step2
 
 summ(btc.ols,  digit = 3)  # unrestricted regression
 summ(btc.ols2,  digit = 3)  # unrestricted regression on condition alpha = 0
-kable(list( coef(btc.ols),coef(btc.ols2) )) 
-coef(btc.ols, complete = TRUE)
+
+kable(list( btc.ols$coefficients,btc.ols2$coefficients )) 
+btc.ols$coefficients
+sum(btc.ols$coefficients)
+
 kable(btc.hk)             # HK test, alpha = 0 and beta = 1
 kable(btc.step1)          # step test 1, alpha = 0
-kable( btc.step2 )        # step test 2, beta = 1 on condition alpha = 0
+kable(btc.step2)        # step test 2, beta = 1 on condition alpha = 0
+
+plot_summs(btc.ols, scale = TRUE, plot.distributions = TRUE, inner_ci_level = .9)
+
 # eterrium ###########################################
 # eterrium ###########################################
 olseth <- lm(ETHUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 

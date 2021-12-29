@@ -27,6 +27,7 @@ library(knitr)
 library(stringr)
 library(interactions)
 library(jtools)
+library("ggplot2")
 # library(kableExtra)
 ```
 
@@ -100,6 +101,14 @@ kable(list( coef(btc.ols),coef(btc.ols2) )) # coefficient
 kable(btc.hk)             # HK test, alpha = 0 and beta = 1
 kable(btc.step1)          # step test 1, alpha = 0
 kable( btc.step2 )        # step test 2, beta = 1 on condition alpha = 0
+
+plot_summs(btc.ols, scale = TRUE, plot.distributions = TRUE, inner_ci_level = .9)
+plot_summs(btc.ols, btc.ols2, scale = TRUE)
+
+export_summs(btc.ols, btc.ols2, scale = TRUE)
+# btc.step2 %>%
+#   kbl() %>%
+#   kable_material_dark()
 # eterrium ###########################################
 olseth <- lm(ETHUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
              GSGR + VNQR + VNQIR
