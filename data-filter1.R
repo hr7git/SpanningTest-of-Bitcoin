@@ -10,12 +10,12 @@ library(interactions)
 library(jtools)
 library("ggplot2")
 # library(kableExtra)
-
 #######################################################
-#  Data filter
 #######################################################
-
-
+#  Data filtering
+#######################################################
+#######################################################
+#######################################################
 dir <- ("./DATA")
 file_list <- list.files(dir)
 
@@ -89,8 +89,7 @@ write.csv(data01, file = "data1225.csv", row.names = F)
 # for loop ###########################################
 
 data01 <- read.csv("data1225.csv")
-data01 <- data01 %>%  
-               select(Date , contains("TNX"), ends_with("R")) 
+data01 <- data01 %>% select(Date , contains("TNX"), ends_with("R")) 
 data02 <- data01 %>% filter(Date < '2020-01-01') %>% 
                select(Date , contains("TNX"), ends_with("R")) 
 data03 <- data01 %>% filter(Date >= '2020-01-01') %>%
@@ -100,35 +99,54 @@ data_j <- list(data01,data02,data03)
 
 
 formula <- list(); formula_con <- list()
-model <- list() ; model_con <- list() # formaula condition on alpha = 0
-HK_test <- list() ; step1_test <- list() ; step2_test <- list()
+
+model      <- list(list(),list(),list())  
+model_con  <- list(list(),list(),list()) 
+HK_test    <- list(list(),list(),list())  
+step1_test <- list(list(),list(),list()) 
+step2_test <- list(list(),list(),list()) 
 
 yi <- list("BTCUSDR","ETHUSDR","BNBUSDR")
 
-for (j in 1:3) {
-    for (i in 1:3) {
-    
+#  list_data <- list(yi, data_j)
+
+# for (i in 1:3)
+# {
+#   print (list_data[[1]][[i]])
+#   # runs uptil the length of inner lists at ith indices
+#   for (j in 1:3)
+#   {
+#     cat ("List", i, "element", j, ": ")
+#    print( class(list_data[[2]][[j]])  )
+#   }
+# }
+
+
+for (i in 1:3)  {
+    for (j in 1:3) {
+      
+
     formula[[i]] = paste0(yi[i] , " ~ ", "VTIR + VVR + VBR + IDHQR + VWOR + BNDR",
                  "+ TIPR + GSGR + VNQR + VNQIR")
                 
-    model[[i]] <- lm(formula[[i]], data = data_j[[j]])
+    model[[i]][[j]] <- lm(formula[[i]], data = data_j[[j]])  ###
     
     ##### HK test
     lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
-    HK_test[[i]] <- lht(model[[i]],lhs,c(0,1))
+    HK_test[[i]][[j]] <- lht(model[[i]][[j]],lhs,c(0,1))
    
     ##### step-1 test  : alpha = 0
     lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
-    step1_test[[i]] <- lht(model[[i]],lhs,c(0))
+    step1_test[[i]][[j]] <- lht(model[[i]][[j]],lhs,c(0))
     
     ##### step- test 2 : 
     ##### unresrticted model condition on alpha =0  
     formula_con[[i]] = paste0(yi[i] , " ~ ","0 + ", "VTIR + VVR + VBR + IDHQR ",
                           "+ VWOR + BNDR + TIPR + GSGR + VNQR + VNQIR")
-        model_con[[i]] <- lm(formula_con[[i]], data = data01)
+        model_con[[i]][[j]] <- lm(formula_con[[i]], data = data01)
         ##### step- test 2 : beta=1 condition alpha = 0
         lhs <- rbind(c(1,1,1,1,1,1,1,1,1,1))
-        step2_test[[i]] <- lht(model_con[[i]],lhs,c(1))
+        step2_test[[i]][[j]] <- lht(model_con[[i]][[j]],lhs,c(1))
     }
 }
 
@@ -142,16 +160,52 @@ names(HK_test) <- c1
 names(step1_test) <- c1
 names(step2_test) <- c1
 
-model
+
+formula
+
+model[[1]][[1]]$terms
+model[[1]][[2]]$terms
+model[[1]][[3]]$terms
+model[[2]][[1]]$terms
+model[[2]][[2]]$terms
+model[[2]][[3]]$terms
+model[[3]][[1]]$terms
+model[[3]][[2]]$terms 
+model[[3]][[3]]$terms
+
 summary(model$BTCUSDR)
 summary(model$ETHUSDR)
 summary(model$BNBUSDR)
 
-HK_test
-step1_test
-step2_test
+step1_test[[1]][[1]]
+step1_test[[1]][[2]]
+step1_test[[1]][[3]]
+step1_test[[2]][[1]]
+step1_test[[2]][[2]]
+step1_test[[2]][[3]]
+step1_test[[3]][[1]]
+step1_test[[3]][[2]]
+step1_test[[3]][[3]]
 
-kable(HK_test)
+step1_test[[1]][[1]]
+step1_test[[1]][[2]]
+step1_test[[1]][[3]]
+step1_test[[2]][[1]]
+step1_test[[2]][[2]]
+step1_test[[2]][[3]]
+step1_test[[3]][[1]]
+step1_test[[3]][[2]]
+step1_test[[3]][[3]]
+step1_test
+step1_test
+step1_test
+step1_test
+step1_test
+step1_test
+step1_test
+step1_test
+
+kable(step1_test)
 kable(step1_test)
 kable(step2_test)
 
@@ -180,8 +234,8 @@ kable(step2_test)
 
 
 
-HK_test$BTCUSDR
-#  summary(HK_test$BTCUSDR)
+step1_test$BTCUSDR
+#  summary(step1_test$BTCUSDR)
 
 summary(model[[3]])
 summary(model[3])
