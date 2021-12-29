@@ -72,27 +72,7 @@ for(i in file_list)  {
 str(data01)
 write.csv(data01, file = "data1225.csv", row.names = F)
 #######################################################
-#  Plot
 #######################################################
-# data01 <- read.csv(file = "./DATA/DGS10.csv")
-# ggplot() +
-#    geom_point(mapping=aes(x=Date, y=DGS10), data=data01)
-# 
-# 
-# 
-# data01 %>%
-#   ggplot(aes(x=Date, y=TNX)) +
-#   geom_point(size = 1.5, alpha=0.5, color='blue') +
-# #  geom_smooth(formula = y ~ x, method = "lm", se = FALSE) +
-#   # method = "lm" : linear regerssion
-#   
-#   
-#   # scale_x_continuous(labels = NULL) +
-#  
-#   labs(
-#     x = "Date(2017 - 2021)",
-#     y = "Excess Return of TNX"
-#   )
 #######################################################
 # 3-2. impact of covid19
 # 
@@ -102,62 +82,11 @@ write.csv(data01, file = "data1225.csv", row.names = F)
 # 
 # after covid19 : 2020.01 ~ 2021.12
 #######################################################
-
 #######################################################
-# total 5 years : 2017.01 ~ 2021.12
-# HK test
-# 2 step test
 #######################################################
-# test Bitcoin-usd
-
-# test Bitcoin-usd
-data01 <- read.csv("data1225.csv")
-# Bitcoin ###########################################
-
-btc.ols <- lm(BTCUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
-                GSGR + VNQR + VNQIR
-              , data = data01)
-summary(btc.ols)
-
-##### HK test
-lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
-btc.hk <- lht(btc.ols,lhs,c(0,1))
-btc.hk
-
-##### step- test 1 : alpha = 0
-lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
-btc.step1 <- lht(btc.ols,lhs,c(0))
-btc.step1
-##### step- test 2 : 
-##### unresticted : regression with alpha = 0 
-btc.ols2 <- lm(BTCUSDR ~ 0 +VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
-                 GSGR + VNQR + VNQIR
-               , data = data01)
-summary(btc.ols2)
-
-lhs <- rbind(c(1,1,1,1,1,1,1,1,1,1))
-btc.step2 <- lht(btc.ols2,lhs,c(1))
-btc.step2           
-
-summ(btc.ols,  digit = 3)  # unrestricted regression
-summ(btc.ols2,  digit = 3)  # unrestricted regression on condition alpha = 0
-kable(list( coef(btc.ols),coef(btc.ols2) )) # coefficient 
-
-kable(btc.hk)             # HK test, alpha = 0 and beta = 1
-kable(btc.step1)          # step test 1, alpha = 0
-kable( btc.step2 )        # step test 2, beta = 1 on condition alpha = 0
-
-plot_summs(btc.ols, scale = TRUE, plot.distributions = TRUE, inner_ci_level = .9)
-plot_summs(btc.ols, btc.ols2, scale = TRUE)
-
-export_summs(btc.ols, btc.ols2, scale = TRUE)
-#########################################################
-#########################################################
-#########################################################
-
 ########################################################
 ########################################################
-# Bitcoin ###########################################
+# for loop ###########################################
 
 data01 <- read.csv("data1225.csv")
 data01 <- data01 %>%  
@@ -168,11 +97,13 @@ data03 <- data01 %>% filter(Date >= '2020-01-01') %>%
                select(Date , contains("TNX"), ends_with("R"))
 data_j <- list(data01,data02,data03)
 
-formula <- list(); model <- list() ; HK_test <- list()
-step1_test <- list() ; step2_test <- list()
-formula_con <- list() ; model_con <- list() # formaula condition on alpha = 0
-yi <- list("BTCUSDR","ETHUSDR","BNBUSDR")
 
+
+formula <- list(); formula_con <- list()
+model <- list() ; model_con <- list() # formaula condition on alpha = 0
+HK_test <- list() ; step1_test <- list() ; step2_test <- list()
+
+yi <- list("BTCUSDR","ETHUSDR","BNBUSDR")
 
 for (j in 1:3) {
     for (i in 1:3) {
@@ -348,6 +279,56 @@ plot_summs(btc.ols, scale = TRUE, plot.distributions = TRUE, inner_ci_level = .9
 plot_summs(btc.ols, btc.ols2, scale = TRUE)
 
 export_summs(btc.ols, btc.ols2, scale = TRUE)
+#########################################################
+#########################################################
+#########################################################
+#########################################################
+#########################################################
+#########################################################
+
+
+# test Bitcoin-usd
+data01 <- read.csv("data1225.csv")
+# Bitcoin ###########################################
+
+btc.ols <- lm(BTCUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
+                GSGR + VNQR + VNQIR
+              , data = data01)
+summary(btc.ols)
+
+##### HK test
+lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
+btc.hk <- lht(btc.ols,lhs,c(0,1))
+btc.hk
+
+##### step- test 1 : alpha = 0
+lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
+btc.step1 <- lht(btc.ols,lhs,c(0))
+btc.step1
+##### step- test 2 : 
+##### unresticted : regression with alpha = 0 
+btc.ols2 <- lm(BTCUSDR ~ 0 +VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
+                 GSGR + VNQR + VNQIR
+               , data = data01)
+summary(btc.ols2)
+
+lhs <- rbind(c(1,1,1,1,1,1,1,1,1,1))
+btc.step2 <- lht(btc.ols2,lhs,c(1))
+btc.step2           
+
+summ(btc.ols,  digit = 3)  # unrestricted regression
+summ(btc.ols2,  digit = 3)  # unrestricted regression on condition alpha = 0
+kable(list( coef(btc.ols),coef(btc.ols2) )) # coefficient 
+
+kable(btc.hk)             # HK test, alpha = 0 and beta = 1
+kable(btc.step1)          # step test 1, alpha = 0
+kable( btc.step2 )        # step test 2, beta = 1 on condition alpha = 0
+
+plot_summs(btc.ols, scale = TRUE, plot.distributions = TRUE, inner_ci_level = .9)
+plot_summs(btc.ols, btc.ols2, scale = TRUE)
+
+export_summs(btc.ols, btc.ols2, scale = TRUE)
+#########################################################
 # eterrium ###########################################
 # eterrium ###########################################
 olseth <- lm(ETHUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
