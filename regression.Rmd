@@ -109,6 +109,57 @@ export_summs(btc.ols, btc.ols2, scale = TRUE)
 # btc.step2 %>%
 #   kbl() %>%
 #   kable_material_dark()
+
+######################################################
+#
+#   wald_regress(y) <- function(y) { }
+#
+######################################################
+
+
+btc.ols <- lm(BTCUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
+             GSGR + VNQR + VNQIR
+           , data = data01)
+summary(btc.ols)
+
+##### HK test
+lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
+btc.hk <- lht(btc.ols,lhs,c(0,1))
+btc.hk
+
+##### step- test 1 : alpha = 0
+lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
+btc.step1 <- lht(btc.ols,lhs,c(0))
+btc.step1
+##### step- test 2 : 
+##### unresticted : regression with alpha = 0 
+ # BTCUSDR  <- yi 
+btc.ols2 <- lm(BTCUSDR ~ 0 +VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
+             GSGR + VNQR + VNQIR
+           , data = data01)
+summary(btc.ols2)
+
+lhs <- rbind(c(1,1,1,1,1,1,1,1,1,1))
+btc.step2 <- lht(btc.ols2,lhs,c(1))
+btc.step2           
+
+summ(btc.ols,  digit = 3)  # unrestricted regression
+summ(btc.ols2,  digit = 3)  # unrestricted regression on condition alpha = 0
+kable(list( coef(btc.ols),coef(btc.ols2) )) # coefficient 
+
+kable(btc.hk)             # HK test, alpha = 0 and beta = 1
+kable(btc.step1)          # step test 1, alpha = 0
+kable( btc.step2 )        # step test 2, beta = 1 on condition alpha = 0
+
+plot_summs(btc.ols, scale = TRUE, plot.distributions = TRUE, inner_ci_level = .9)
+plot_summs(btc.ols, btc.ols2, scale = TRUE)
+
+export_summs(btc.ols, btc.ols2, scale = TRUE) 
+
+
+
+
+
 # eterrium ###########################################
 olseth <- lm(ETHUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
              GSGR + VNQR + VNQIR
