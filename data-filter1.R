@@ -143,7 +143,7 @@ for (i in 1:3)  {
     ##### unresrticted model condition on alpha =0  
     formula_con[[i]] = paste0(yi[i] , " ~ ","0 + ", "VTIR + VVR + VBR + IDHQR ",
                           "+ VWOR + BNDR + TIPR + GSGR + VNQR + VNQIR")
-        model_con[[i]][[j]] <- lm(formula_con[[i]], data = data01)
+        model_con[[i]][[j]] <- lm(formula_con[[i]], data = data_j[[j]])
         ##### step- test 2 : beta=1 condition alpha = 0
         lhs <- rbind(c(1,1,1,1,1,1,1,1,1,1))
         step2_test[[i]][[j]] <- lht(model_con[[i]][[j]],lhs,c(1))
@@ -154,38 +154,50 @@ for (i in 1:3)  {
 
 c1 <- c("BTCUSDR","ETHUSDR","BNBUSDR")
 
-names(model) <- c1
-names(model_con) <- c1
-names(HK_test) <- c1
-names(step1_test) <- c1
-names(step2_test) <- c1
+# names(model[[i]]) <- c1
+# names(model_con) <- c1
+# names(HK_test) <- c1
+# names(step1_test) <- c1
+# names(step2_test) <- c1
 
 
 formula
 
-model[[1]][[1]]$terms
-model[[1]][[2]]$terms
-model[[1]][[3]]$terms
-model[[2]][[1]]$terms
-model[[2]][[2]]$terms
-model[[2]][[3]]$terms
-model[[3]][[1]]$terms
-model[[3]][[2]]$terms 
-model[[3]][[3]]$terms
+for (i in 1:3)  {
+  
+  formula[[i]]
+  for (j in 1:3) {
+    
+    print( HK_test[[i]][[j]]  )
+    print( step1_test[[i]][[j]]  )
+    print( step2_test[[i]][[j]]  )
+    }
+  
+}
+
+# model[[1]][[1]]$terms
+# model[[1]][[2]]$terms
+# model[[1]][[3]]$terms
+# model[[2]][[1]]$terms
+# model[[2]][[2]]$terms
+# model[[2]][[3]]$terms
+# model[[3]][[1]]$terms
+# model[[3]][[2]]$terms 
+# model[[3]][[3]]$terms
 
 summary(model$BTCUSDR)
 summary(model$ETHUSDR)
 summary(model$BNBUSDR)
 
-step1_test[[1]][[1]]
-step1_test[[1]][[2]]
-step1_test[[1]][[3]]
-step1_test[[2]][[1]]
-step1_test[[2]][[2]]
-step1_test[[2]][[3]]
-step1_test[[3]][[1]]
-step1_test[[3]][[2]]
-step1_test[[3]][[3]]
+HK_test[[1]][[1]]
+HK_test[[1]][[2]]
+HK_test[[1]][[3]]
+HK_test[[2]][[1]]
+HK_test[[2]][[2]]
+HK_test[[2]][[3]]
+HK_test[[3]][[1]]
+HK_test[[3]][[2]]
+HK_test[[3]][[3]]
 
 step1_test[[1]][[1]]
 step1_test[[1]][[2]]
@@ -196,18 +208,21 @@ step1_test[[2]][[3]]
 step1_test[[3]][[1]]
 step1_test[[3]][[2]]
 step1_test[[3]][[3]]
-step1_test
-step1_test
-step1_test
-step1_test
-step1_test
-step1_test
-step1_test
-step1_test
 
-kable(step1_test)
+step2_test[[1]][[1]]
+step2_test[[1]][[2]]
+step2_test[[1]][[3]]
+step2_test[[2]][[1]]
+step2_test[[2]][[2]]
+step2_test[[2]][[3]]
+step2_test[[3]][[1]]
+step2_test[[3]][[2]]
+step2_test[[3]][[3]]
+
+kable(HK_test)
 kable(step1_test)
 kable(step2_test)
+
 
 
 
