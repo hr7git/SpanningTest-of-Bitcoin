@@ -7,15 +7,13 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## SRP
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
-# summary(cars)
-```
+
 
 ```{r,echo=FALSE,message=FALSE }
 
@@ -70,23 +68,38 @@ library(jtools)
 # test Bitcoin-usd
 data01 <- read.csv("data1225.csv")
 # Bitcoin ###########################################
-olsbtc <- lm(BTCUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
+btc.ols <- lm(BTCUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
              GSGR + VNQR + VNQIR
            , data = data01)
-summary(olsbtc)
-# summ(olsbtc,  digit = 3)
+summary(btc.ols)
+
 ##### HK test
 lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
-fit1 <- lht(olsbtc,lhs,c(0,1))
-fit1
-##### 2 step- test
-lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
-fit2 <- lht(olsbtc,lhs,c(0))
-fit2
+btc.hk <- lht(btc.ols,lhs,c(0,1))
+btc.hk
 
-summ(olsbtc,  digit = 3)  # unresticted Bitcoin 5years
-kable( fit1 )             # HK test
-kable( fit2 )             # 2-step test
+##### step- test 1 : alpha = 0
+lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
+btc.step1 <- lht(btc.ols,lhs,c(0))
+btc.step1
+##### step- test 2 : 
+##### unresticted : regression with alpha = 0 
+btc.ols2 <- lm(BTCUSDR ~ 0 +VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
+             GSGR + VNQR + VNQIR
+           , data = data01)
+summary(btc.ols2)
+
+lhs <- rbind(c(1,1,1,1,1,1,1,1,1,1))
+btc.step2 <- lht(btc.ols2,lhs,c(1))
+btc.step2           
+
+summ(btc.ols,  digit = 3)  # unrestricted regression
+summ(btc.ols2,  digit = 3)  # unrestricted regression on condition alpha = 0
+kable(list( coef(btc.ols),coef(btc.ols2) )) # coefficient 
+
+kable(btc.hk)             # HK test, alpha = 0 and beta = 1
+kable(btc.step1)          # step test 1, alpha = 0
+kable( btc.step2 )        # step test 2, beta = 1 on condition alpha = 0
 # eterrium ###########################################
 olseth <- lm(ETHUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
              GSGR + VNQR + VNQIR

@@ -4,7 +4,7 @@ library(car)
 # library(lmtest)
 library(tidyverse)
 library(data.table)
-# library(knitr)
+library(knitr)
 library(stringr)
 
 
@@ -108,20 +108,40 @@ write.csv(data01, file = "data1225.csv", row.names = F)
 # test Bitcoin-usd
 data01 <- read.csv("data1225.csv")
 # Bitcoin ###########################################
-olsbtc <- lm(BTCUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
-             GSGR + VNQR + VNQIR
-           , data = data01)
-summary(olsbtc)
-summ(olsbtc,  digit = 3)
+# Bitcoin ###########################################
+btc.ols <- lm(BTCUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
+                GSGR + VNQR + VNQIR
+              , data = data01)
+summary(btc.ols)
+
 ##### HK test
 lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
-lht(olsbtc,lhs,c(0,1))
-##### 2 step- test
+btc.hk <- lht(btc.ols,lhs,c(0,1))
+btc.hk
+
+##### step- test 1 : alpha = 0
 lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
-lht(olsbtc,lhs,c(0))
+btc.step1 <- lht(btc.ols,lhs,c(0))
+btc.step1
+##### step- test 2 : 
+##### unresticted : regression with alpho = 0 
+btc.ols2 <- lm(BTCUSDR ~ 0 +VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
+                 GSGR + VNQR + VNQIR
+               , data = data01)
+summary(btc.ols2)
 
+lhs <- rbind(c(1,1,1,1,1,1,1,1,1,1))
+btc.step2 <- lht(btc.ols2,lhs,c(1))
+btc.step2           
 
-
+summ(btc.ols,  digit = 3)  # unrestricted regression
+summ(btc.ols2,  digit = 3)  # unrestricted regression on condition alpha = 0
+kable(list( coef(btc.ols),coef(btc.ols2) )) 
+coef(btc.ols, complete = TRUE)
+kable(btc.hk)             # HK test, alpha = 0 and beta = 1
+kable(btc.step1)          # step test 1, alpha = 0
+kable( btc.step2 )        # step test 2, beta = 1 on condition alpha = 0
+# eterrium ###########################################
 # eterrium ###########################################
 olseth <- lm(ETHUSDR ~ VTIR + VVR + VBR + IDHQR + VWOR + BNDR + TIPR + 
              GSGR + VNQR + VNQIR
@@ -163,8 +183,8 @@ lht(olscypto,lhs,c(0))
 
 
 
-kable( fit1 )
-kable( fit2 )
+# kable( fit1 )
+# kable( fit2 )
    #######################################################
    # before covid19 : 2017.01 ~ 2019.12
    #######################################################  
