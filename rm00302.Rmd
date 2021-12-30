@@ -60,11 +60,9 @@ Huberman and Kandel (1987) describes that a set of K assets spans a set of N + K
 
 $$rt = α +βRt +εt$$						(1)  
 
-$$
-α &= 0N  
-and  
-𝛾 &= iN - βiK = 0
-$$				
+
+<center>$ α &= 0N  $ and  $𝛾 &= iN - βiK = 0 $      (2)</center>
+				
 $\gamma$
 
 Regression analysis is performed using the equation (1), As a regression method, the Wald test evaluates constraints on statistical parameters based on weighted distances between unconstrained estimates and hypothesized values. In equation (1), the variable rt is the return vector (N-dimensional vector) of N test assets in period t, and the variable Rt is the return vector (K-dimensional vector) of t K benchmark assets in period t.  If the null hypothesis (2) is rejected, Bitcoin can expand the investment opportunities. 
@@ -77,7 +75,7 @@ Regression analysis is performed using the equation (1), As a regression method,
 2) step test 1 : $α = 0N$
 
 3) step test 2 : $𝛾 = iN - βiK = 0$  condition on $α = 0N$ 
-
+   When making unrestricted model, intercept = 0 must me added
 
 
 **3-3. Impact of covid19 Analysis period**
@@ -102,7 +100,7 @@ The tickers of the benchmark assets are as follows: Bitcoin : Bitcoin USD (BTC-U
 
 <!-- Risk free T-bill : Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Percent, Weekly, Not Seasonally Adjusted (DGS10) (https://fred.stlouisfed.org/series/DGS10#0,12/24/2021) -->
 
-Risk free T-bill : US Treasury Bonds Rates - Treasury Yield 10 Years (^TNX)
+Risk free T-bill : US Treasury Bonds Rates - 13 Week Treasury Bill (^IRX : ticker of finance.yahoo)
 
 
 **4.1 Test Assets**  

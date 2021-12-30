@@ -1,3 +1,5 @@
+#  install.packages("huxtable")
+
 library(dplyr)
 library(readr)
 library(car)
@@ -9,6 +11,8 @@ library(stringr)
 library(interactions)
 library(jtools)
 library("ggplot2")
+library(huxtable)
+library("broom.mixed")
 # library(kableExtra)
 #######################################################
 #######################################################
@@ -19,14 +23,19 @@ library("ggplot2")
 dir <- ("./DATA")
 file_list <- list.files(dir)
 
-Date <- c("2021-12-27")
-
-data01 <- data.frame(Date)
-
+print(file_list)
+# Date <- c("2021-12-27")
+# 
+#######################################################
+# data01 <- T-bill : IRX : 13weeks t-bill - finance.yahoo
+data01 <- read.csv("IRX.csv")
+data01 <- data01 %>% select(1,6) 
+colnames(data01)[2] <- "Tbill"
 # data <- read.csv("~/R/r_test/DATA/^IRX.csv")[ ,c("Date", "Adj.Close")]
 # colnames(data)[2] <- "IRX"
 # colnames(data)[2] <- col_name
 str(data01)
+
 
 for(i in file_list)  {
   
@@ -45,24 +54,27 @@ for(i in file_list)  {
   temp <- read.csv(file_name,
                   header = TRUE, 
                   sep=",", 
-                  stringsAsFactors = FALSE )[ ,c("Date", "Adj.Close")]
+                  stringsAsFactors = FALSE )
+                  # stringsAsFactors = FALSE )[ ,c("Date", "Adj.Close")]  
+  temp <- temp %>% select(1,6)  
   
-  print("3")
+  temp <- temp %>%
+  mutate( ratio = ( temp[,2] - shift(temp[,2])) / shift(temp[,2]) * 100)
   
-  temp <- temp %>% 
-      mutate( ratio = ( Adj.Close - shift(Adj.Close)) / shift(Adj.Close) * 100 )
-      str(temp)    
-  print("4")
- 
+  # print("3")
+    # temp <- temp %>% 
+  #     mutate( ratio = ( Adj.Close - shift(Adj.Close)) / shift(Adj.Close) * 100 )
+  #     str(temp)    
+  # print("4")
+      
       colnames(temp)[2] <- col_name
-  print("5")
       colnames(temp)[3] <- paste0(col_name,"R")
       
   
-  class(data01)
-  class(temp)
+  # class(data01)
+  # class(temp)
   str(data01)
-  str(temp)
+  # str(temp)
  
   data01 <- merge(data01, temp, by = "Date" , all=TRUE )
   
@@ -89,11 +101,17 @@ write.csv(data01, file = "data1225.csv", row.names = F)
 # for loop ###########################################
 
 data01 <- read.csv("data1225.csv")
-data01 <- data01 %>% select(Date , contains("TNX"), ends_with("R")) 
-data02 <- data01 %>% filter(Date < '2020-01-01') %>% 
-               select(Date , contains("TNX"), ends_with("R")) 
-data03 <- data01 %>% filter(Date >= '2020-01-01') %>%
-               select(Date , contains("TNX"), ends_with("R"))
+data01 <- data01 %>% select(Date , contains("Tbill"), ends_with("R")) 
+write.csv(data01, file = "temp.csv", row.names = F)
+
+# excess return  = ratio - Tbill
+for(i in 3:ncol(data01))  {
+  
+  data01[,i] = data01[,i] - data01$Tbill
+
+}
+data02 <- data01 %>% filter(Date < '2020-01-01') 
+data03 <- data01 %>% filter(Date >= '2020-01-01')
 data_j <- list(data01,data02,data03)
 
 
@@ -107,19 +125,6 @@ step1_test <- list(list(),list(),list())
 step2_test <- list(list(),list(),list()) 
 
 yi <- list("BTCUSDR","ETHUSDR","BNBUSDR")
-
-#  list_data <- list(yi, data_j)
-
-# for (i in 1:3)
-# {
-#   print (list_data[[1]][[i]])
-#   # runs uptil the length of inner lists at ith indices
-#   for (j in 1:3)
-#   {
-#     cat ("List", i, "element", j, ": ")
-#    print( class(list_data[[2]][[j]])  )
-#   }
-# }
 
 
 for (i in 1:3)  {
@@ -151,17 +156,36 @@ for (i in 1:3)  {
 }
 
 
-
+### Column nameing 
 c1 <- c("BTCUSDR","ETHUSDR","BNBUSDR")
 
-# names(model[[i]]) <- c1
-# names(model_con) <- c1
-# names(HK_test) <- c1
-# names(step1_test) <- c1
-# names(step2_test) <- c1
+names(formula) <- c1
+names(formula_con) <- c1
+names(model) <- c1
+names(model_con) <- c1
+names(HK_test) <- c1
+names(step1_test) <- c1
+names(step2_test) <- c1
 
+huxreg(model[[1]][[1]], model[[1]][[2]],model[[1]][[3]])
+
+huxreg(model[[1]][[1]], model[[1]][[2]],model[[1]][[3]],
+             model[[2]][[1]], model[[2]][[2]],model[[2]][[3]],
+             model[[3]][[1]], model[[3]][[2]],model[[3]][[3]])
+             # model.names = c("BTC all","BTC before","BTC after",
+             #                 "ETH all","ETH before","ETH after","BNB all","BNB before","BNB after"),
+             # scale = TRUE)
+################################################################
+################################################################
+################################################################
+################################################################
+################################################################
+################################################################
 
 formula
+formula_con
+model
+HK_test
 
 for (i in 1:3)  {
   
@@ -225,8 +249,6 @@ kable(step2_test)
 
 
 
-
-
 #########################################################
 #########################################################
 #########################################################
@@ -238,14 +260,6 @@ kable(step2_test)
 #########################################################
 #########################################################
 #########################################################
-
-
-
-
-
-
-
-
 
 
 
@@ -269,26 +283,16 @@ summary(model[[1]])
 
 
 
-for ( i in 1:10) {
-     y = 10 + 5*x
-     print(y)
-     summary(model[[i]])
-   }
 
-attach(ggplot2::diamonds)
-strCols = names(ggplot2::diamonds)
 
-formula <- list(); model <- list()
-for (i in 1:1) {
-  formula[[i]] = paste0(strCols[7], " ~ ", strCols[7+i])
-  model[[i]] = glm(formula[[i]]) 
-  
-  #then you can plot or do anything else with the result ...
-  png(filename = sprintf("diamonds_price=glm(%s).png", strCols[7+i]))
-  par(mfrow = c(2, 2))      
-  plot(model[[i]])
-  dev.off()
-}
+
+
+
+
+
+
+
+
 
 
  yi <- list("BTCUSDR","ETHUSDR","BNBUSDR")
