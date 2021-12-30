@@ -60,23 +60,33 @@ Huberman and Kandel (1987) describes that a set of K assets spans a set of N + K
 
 $$rt = α +βRt +εt$$						(1)  
 
-$α = 0N$   and  $𝛾 = iN - βiK = 0$				(2)  
+$$
+α &= 0N  
+and  
+𝛾 &= iN - βiK = 0
+$$				
+$\gamma$
 
 Regression analysis is performed using the equation (1), As a regression method, the Wald test evaluates constraints on statistical parameters based on weighted distances between unconstrained estimates and hypothesized values. In equation (1), the variable rt is the return vector (N-dimensional vector) of N test assets in period t, and the variable Rt is the return vector (K-dimensional vector) of t K benchmark assets in period t.  If the null hypothesis (2) is rejected, Bitcoin can expand the investment opportunities. 
 
-1) eq(2) - join :
+**3-2. Wald test : restriction model  **
+<!-- wald test methos must me wiritten in this part, specially  unresticted model of stpe2 is (intercept)=0  -->
 
-2) eq(2) - step down / 
+1) HK test :     $α = 0N$  and $𝛾 = iN - βiK = 0$
+
+2) step test 1 : $α = 0N$
+
+3) step test 2 : $𝛾 = iN - βiK = 0$  condition on $α = 0N$ 
 
 
 
-**3-2. impact of covid19 **
+**3-3. Impact of covid19 Analysis period**
 
-1) total 5 years : 2017.01 ~ 2021.12
+1) total 5 years  : 2017.01 ~ 2021.12
 
 2) before covid19 : 2017.01 ~ 2019.12
 
-3) after covid19 : 2020.01 ~ 2021.12
+3) after covid19  : 2020.01 ~ 2021.12
 
 
 
