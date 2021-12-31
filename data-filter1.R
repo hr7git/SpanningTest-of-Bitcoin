@@ -106,15 +106,20 @@ data01 <- data01 %>% select(Date , contains("Tbill"), ends_with("R"))
 write.csv(data01, file = "temp.csv", row.names = F)
 
 # excess return  = ratio - Tbill
-for(i in 3:ncol(data01))  {
+  for(i in 3:ncol(data01))  {
   
-  data01[,i] = data01[,i] - data01$Tbill
+      data01[,i] = data01[,i] - data01$Tbill
 
-}
+     }
+
+
 data02 <- data01 %>% filter(Date < '2020-01-01') 
 data03 <- data01 %>% filter(Date >= '2020-01-01')
 data_j <- list(data01,data02,data03)
 
+write.csv(data01, file = "data01.csv", row.names = F)
+write.csv(data02, file = "data02.csv", row.names = F)
+write.csv(data03, file = "data03.csv", row.names = F)
 
 
 formula <- list(); formula_con <- list()
@@ -169,6 +174,10 @@ names(step1_test) <- c1
 names(step2_test) <- c1
 
 save.image(file="data1225.RData")
+################################################################
+# End of data making 
+################################################################
+
 
 
 ################################################################
