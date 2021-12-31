@@ -1,5 +1,5 @@
 ---
-title: "reression"
+title: "regression"
 output: html_document
 ---
 
@@ -119,13 +119,14 @@ load("data1225.RData")
 
 huxreg(model[[1]][[1]], model[[1]][[2]],model[[1]][[3]],
        model[[2]][[1]], model[[2]][[2]],model[[2]][[3]],
-       model[[3]][[1]], model[[3]][[2]],model[[3]][[3]])
+       model[[3]][[1]], model[[3]][[2]],model[[3]][[3]],
+       model[[4]][[1]], model[[4]][[2]],model[[4]][[3]])
+
+huxreg(model[[4]]) # more test ???
 
 kable( HK_test )
 kable( step1_test )
 kable( step2_test )
-
-
 
 ```
 
@@ -159,7 +160,8 @@ export_summs(model[[1]][[1]], model[[1]][[2]],model[[1]][[3]],
 
 huxreg(model[[1]][[1]], model[[1]][[2]],model[[1]][[3]],
        model[[2]][[1]], model[[2]][[2]],model[[2]][[3]],
-       model[[3]][[1]], model[[3]][[2]],model[[3]][[3]])
+       model[[3]][[1]], model[[3]][[2]],model[[3]][[3]],
+       model[[4]][[1]], model[[4]][[2]],model[[4]][[3]])
 
 huxreg(model_con[[1]][[1]], model_con[[1]][[2]],model_con[[1]][[3]],
        model_con[[2]][[1]], model_con[[2]][[2]],model_con[[2]][[3]],

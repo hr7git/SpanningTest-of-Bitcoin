@@ -67,9 +67,9 @@ for(i in file_list)  {
   #     str(temp)    
   # print("4")
       
-      colnames(temp)[2] <- col_name
-      colnames(temp)[3] <- paste0(col_name,"R")
-      
+      colnames(temp)[2] <- paste0(col_name,"close")
+      colnames(temp)[3] <- col_name
+          
   
   # class(data01)
   # class(temp)
@@ -101,9 +101,10 @@ write.csv(data01, file = "data1225.csv", row.names = F)
 ########################################################
 # for loop ###########################################
 
-data01 <- read.csv("data1225.csv")
-data01 <- data01 %>% select(Date , contains("Tbill"), ends_with("R")) 
-write.csv(data01, file = "temp.csv", row.names = F)
+# data01 <- read.csv("data1225.csv")
+
+data01 <- data01 %>% select( -ends_with("close"))
+
 
 # excess return  = ratio - Tbill
   for(i in 3:ncol(data01))  {
@@ -124,21 +125,21 @@ write.csv(data03, file = "data03.csv", row.names = F)
 
 formula <- list(); formula_con <- list()
 
-model      <- list(list(),list(),list())  
-model_con  <- list(list(),list(),list()) 
-HK_test    <- list(list(),list(),list())  
-step1_test <- list(list(),list(),list()) 
-step2_test <- list(list(),list(),list()) 
+model      <- list(list(),list(),list(),list())  
+model_con  <- list(list(),list(),list(),list()) 
+HK_test    <- list(list(),list(),list(),list())  
+step1_test <- list(list(),list(),list(),list()) 
+step2_test <- list(list(),list(),list(),list()) 
 
-yi <- list("BTCUSDR","ETHUSDR","BNBUSDR")
+yi <- list("BTCUSD","ETHUSD","BNBUSD","BTCUSD + ETHUSD + BNBUSD")
 
 
-for (i in 1:3)  {
+for (i in 1:4)  {
     for (j in 1:3) {
       
 
-    formula[[i]] = paste0(yi[i] , " ~ ", "VTIR + VVR + VBR + IDHQR + VWOR + BNDR",
-                 "+ TIPR + GSGR + VNQR + VNQIR")
+    formula[[i]] = paste0(yi[i] , " ~ ", "VTI + VV + VB + IDHQ + VWO + BND",
+                 "+ TIP + GSG + VNQ + VNQI")
                 
     model[[i]][[j]] <- lm(formula[[i]], data = data_j[[j]])  ###
     
@@ -152,8 +153,8 @@ for (i in 1:3)  {
     
     ##### step- test 2 : 
     ##### unresrticted model condition on alpha =0  
-    formula_con[[i]] = paste0(yi[i] , " ~ ","0 + ", "VTIR + VVR + VBR + IDHQR ",
-                          "+ VWOR + BNDR + TIPR + GSGR + VNQR + VNQIR")
+    formula_con[[i]] = paste0(yi[i] , " ~ ","0 + ", "VTI + VV + VB + IDHQ ",
+                          "+ VWO + BND + TIP + GSG + VNQ + VNQI")
         model_con[[i]][[j]] <- lm(formula_con[[i]], data = data_j[[j]])
         ##### step- test 2 : beta=1 condition alpha = 0
         lhs <- rbind(c(1,1,1,1,1,1,1,1,1,1))
@@ -163,7 +164,7 @@ for (i in 1:3)  {
 
 
 ### Column nameing 
-c1 <- c("BTCUSDR","ETHUSDR","BNBUSDR")
+c1 <- c("BTCUSD","ETHUSD","BNBUSD","ALL")
 
 names(formula) <- c1
 names(formula_con) <- c1
@@ -176,14 +177,35 @@ names(step2_test) <- c1
 save.image(file="data1225.RData")
 ################################################################
 # End of data making 
+#
 ################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 ################################################################
 #
-#
-#     print output
+#     --> 
+#     print output TEST
 #
 #
 ################################################################
