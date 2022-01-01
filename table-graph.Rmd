@@ -115,7 +115,8 @@ library("broom.mixed")
 
 
 ```{r,  render = 'normal_print' }
-load("data1225.RData")
+load("data1225.RData")   # Tbill withoud calculation
+# load("data1226.RData")   # Tbill calculation
 
 huxreg(model[[1]][[1]], model[[1]][[2]],model[[1]][[3]],
        model[[2]][[1]], model[[2]][[2]],model[[2]][[3]],

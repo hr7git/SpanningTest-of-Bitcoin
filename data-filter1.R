@@ -12,7 +12,7 @@ library(interactions)
 library(jtools)
 library("ggplot2")
 library(huxtable)
-library("broom.mixed")
+library("broom")
 # library(kableExtra)
 #######################################################
 #######################################################
@@ -82,7 +82,10 @@ for(i in file_list)  {
   }
 
 str(data01)
-write.csv(data01, file = "data1225.csv", row.names = F)
+
+write.csv(data01, file = "data1226.csv", row.names = F)
+
+
 
 #######################################################
 #######################################################
@@ -104,16 +107,16 @@ write.csv(data01, file = "data1225.csv", row.names = F)
 # data01 <- read.csv("data1225.csv")
 
 data01 <- data01 %>% select( -ends_with("close"))
-
-
+########################################################
+########################################################
 # excess return  = ratio - Tbill
   for(i in 3:ncol(data01))  {
   
       data01[,i] = data01[,i] - data01$Tbill
 
      }
-
-
+########################################################
+########################################################
 data02 <- data01 %>% filter(Date < '2020-01-01') 
 data03 <- data01 %>% filter(Date >= '2020-01-01')
 data_j <- list(data01,data02,data03)
@@ -174,10 +177,13 @@ names(HK_test) <- c1
 names(step1_test) <- c1
 names(step2_test) <- c1
 
-save.image(file="data1225.RData")
+# save.image(file="data1225.RData")   # without Tbill 
+save.image(file="data1226.RData")   # with calculation of Tbill
 ################################################################
 # End of data making 
 #
+# data1225.Rdata : without Tbill
+# data1226.Rdata : with calculation of Tbill
 ################################################################
 
 
