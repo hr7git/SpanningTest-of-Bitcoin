@@ -73,11 +73,15 @@ library(car)
 lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
 HK_test_q <- lht(model_q,lhs,c(0,1))
 HK_test_q
+HK_test_q[2,5]  # F test
+HK_test_q[2,6]  # Pr(>F)
 
 ##### step-1 test  : alpha = 0
 lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
 step1_test_q <- lht(model_q,lhs,c(0))
 step1_test_q
+step1_test_q[2,5]  # F test
+step1_test_q[2,6]  # Pr(>F)
 
 ##### step- test 2 : 
 ##### unresrticted model condition on alpha =0  
@@ -87,7 +91,7 @@ summary(model_q2)
 ##### step- test 2 : beta=1 condition alpha = 0
 lhs <- rbind(c(1,1,1,1,1,1,1,1,1,1))
 step2_test_q <- lht(model_q2,lhs,c(1))
-step2_test_q
-
+step2_test_q[2,5]  # F test
+step2_test_q[2,6]  # Pr(>F)
 
 
