@@ -1,0 +1,70 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+# summary(cars)
+```
+
+
+```{r}
+library(quantmod)
+library(PerformanceAnalytics)
+library(magrittr)
+#########################################
+
+
+symbols = c('SPY', # 미국 주식
+            'IEV', # 유럽 주식 
+            'EWJ', # 일본 주식
+            'EEM', # 이머징 주식
+            'TLT', # 미국 장기채
+            'IEF', # 미국 중기채
+            'IYR', # 미국 리츠
+            'RWX', # 글로벌 리츠
+            'GLD', # 금
+            'DBC', # Commodity
+            'BTC-USD'  # Bitcoin USD dollar
+)
+getSymbols(symbols, src = 'yahoo')
+
+###########################################################
+
+prices = do.call(cbind,
+                 lapply(symbols, function(x) Ad(get(x)))) %>%
+  setNames(symbols)
+
+rets = Return.calculate(prices) %>% na.omit()
+
+
+
+##############################################################
+library(tidyr)
+library(dplyr)
+library(corrplot)
+
+cor(rets) %>%
+  corrplot(method = 'color', type = 'lower',
+           addCoef.col = 'black', number.cex = 0.7,
+           tl.cex = 1, tl.srt = 0, tl.col = 'black',
+           col =
+             colorRampPalette(c('blue', 'white', 'red'))(200),
+           mar = c(0,0,0.5,0))
+
+
+#################################################################
+
+covmat = cov(rets)
+###############################################################
+```
