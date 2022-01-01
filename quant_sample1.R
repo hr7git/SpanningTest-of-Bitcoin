@@ -65,6 +65,8 @@ save.image(file="data_quant.RData")
 model_q <- lm(`BTC-USD` ~ SPY + IEV + EWJ + EEM + TLT + IEF + IYR + RWX + GLD + DBC , data = rets)
 summary(model_q)
 
+model_q$coefficients[1]   # alpha 
+sum(model_q$coefficients) - model_q$coefficients[1]  # beta
 
 ##### HK test
 library(car)
@@ -81,7 +83,6 @@ step1_test_q
 ##### unresrticted model condition on alpha =0  
 model_q2 <- lm(`BTC-USD` ~ 0 + SPY + IEV + EWJ + EEM + TLT + IEF + IYR + RWX + GLD + DBC , data = rets)
 summary(model_q2)
-
 
 ##### step- test 2 : beta=1 condition alpha = 0
 lhs <- rbind(c(1,1,1,1,1,1,1,1,1,1))
