@@ -33,7 +33,8 @@ library(tidyr)
 
 ##############################################################
 
-chart_Series(Ad(BTC-USD))
+
+
 library(dplyr)
 library(corrplot)
 
@@ -54,3 +55,38 @@ covmat = cov(rets)
 chart_Series(Ad(GLD))
 ##################### Image ###################################
 save.image(file="data_quant.RData") 
+
+
+#################
+###############################################################
+###############################################################
+# HK test , Step test of Bitcoin
+
+model_q <- lm(`BTC-USD` ~ SPY + IEV + EWJ + EEM + TLT + IEF + IYR + RWX + GLD + DBC , data = rets)
+summary(model_q)
+
+
+##### HK test
+library(car)
+lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
+HK_test_q <- lht(model_q,lhs,c(0,1))
+HK_test_q
+
+##### step-1 test  : alpha = 0
+lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
+step1_test_q <- lht(model_q,lhs,c(0))
+step1_test_q
+
+##### step- test 2 : 
+##### unresrticted model condition on alpha =0  
+model_q2 <- lm(`BTC-USD` ~ 0 + SPY + IEV + EWJ + EEM + TLT + IEF + IYR + RWX + GLD + DBC , data = rets)
+summary(model_q2)
+
+
+##### step- test 2 : beta=1 condition alpha = 0
+lhs <- rbind(c(1,1,1,1,1,1,1,1,1,1))
+step2_test_q <- lht(model_q2,lhs,c(1))
+step2_test_q
+
+
+
