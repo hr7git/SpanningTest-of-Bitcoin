@@ -13,6 +13,7 @@
 library(quantmod)
 library(PerformanceAnalytics)
 library(magrittr)
+library(car)  # lht 
 #########################################
 
 
@@ -67,43 +68,48 @@ chartSeries(`BTC-USD`)
 chartSeries(`ETH-USD`)
 ##################### Image ###################################
 save.image(file="data_quant.RData") 
+load("data_quant.RData")
 
+##########################################################
+################# lm formula #############################
+lm_formula <- list( "`BTC-USD` ~ . -`ETH-USD`",
+                    "`ETH-USD` ~ . -`BTC-USD`",
+                    "`BTC-USD` + `ETH-USD` ~ . ") # i = 1:3
 
-#################
-###############################################################
-yi <- list("`BTC-USD`","'ETH-USD'","'BTC-USD' + 'ETH-USD'")
+lm_formula2 <- list( "`BTC-USD` ~ . -1 -`ETH-USD`",   # intercept = 0
+                       "`ETH-USD` ~ . -1 -`BTC-USD`",
+                       "`BTC-USD` + `ETH-USD` ~ . -1 ") # i = 1:3
+                  
+year <- list( "2017" , "2018" , "2019" , "2020" , "2021") # j=1:5
+
+                 
+
 i = 1
-lm_formula = paste0(yi[i] , " ~ ", "SPY + IEV + EWJ + EEM + TLT",
-                      " + IEF + IYR + RWX + GLD + DBC")
-lm_formula
+j = 4
 
-model_qf <- 0
-lm_data <- rets
-model_qf <- lm(formula = lm_formula, data = lm_data)
-summary(model_qf)
-               
+fmla <- as.formula(lm_formula[[i]])
+fmla2 <- as.formula(lm_formula2[[i]])
+lm_data <- rets[year[[j]]]
 
+model_q <- lm(fmla, data = lm_data)    # regression 
+str(fmla)
+summary(model_q)
+
+model_q2 <- lm(formula = fmla2, data = lm_data)  # regression alpha=0
+str(fmla2)
+summary(model_q2)
 ###############################################################
-# HK test , Step test of Bitcoin
-
-model_q <- lm(`BTC-USD` ~ SPY + IEV + EWJ + EEM + TLT + IEF + IYR + RWX + GLD + DBC , data = rets)
-summary(model_q)
-
-model_q <- lm(`BTC-USD` ~ . -`ETH-USD` , data = rets)
-summary(model_q)
-
-##########   zoo -> data frame  ########################
-# df_rets <- fortify.zoo(rets)
-# model_qf <- lm(`BTC-USD` ~ SPY + IEV + EWJ + EEM + TLT + IEF + IYR + RWX + GLD + DBC , data = df_rets)
-# summary(model_qf)
+#  from original regression alpha, beta  : model_q1
+#  HK test - F, Pr
+#  Step1 test - F, Pr
+#  step2 test - R, Pr    : model_q2
 ###################################################################
 
-
+##### regression model_q
 model_q$coefficients[1]   # alpha 
 sum(model_q$coefficients) - model_q$coefficients[1]  # beta
 
 ##### HK test
-library(car)
 lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
 HK_test_q <- lht(model_q,lhs,c(0,1))
 HK_test_q
@@ -117,14 +123,11 @@ step1_test_q
 step1_test_q[2,5]  # F test  - step-1 test
 step1_test_q[2,6]  # Pr(>F)  : step-1 test
 
-##### step- test 2 : 
-##### unresrticted model condition on alpha =0  
-model_q2 <- lm(`BTC-USD` ~ 0 + SPY + IEV + EWJ + EEM + TLT + IEF + IYR + RWX + GLD + DBC , data = rets)
-summary(model_q2)
-
-##### step- test 2 : beta=1 condition alpha = 0
+##### step- test 2 : beta=1 condition on alpha = 0
+##### unresrticted model condition on alpha =0  : model_q2
 lhs <- rbind(c(1,1,1,1,1,1,1,1,1,1))
 step2_test_q <- lht(model_q2,lhs,c(1))
+step2_test_q
 step2_test_q[2,5]  # F test  : step- test 2
 step2_test_q[2,6]  # Pr(>F)  : step- test 2
 
