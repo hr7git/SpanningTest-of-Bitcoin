@@ -91,6 +91,12 @@ fmla <- as.formula(lm_formula[[i]])
 fmla2 <- as.formula(lm_formula2[[i]])
 lm_data <- rets[year[[j]]]
 
+
+######### Function #################################
+###############################################################
+#  model_q  : regression
+#  model_q2 : regression with intercept = 0
+###################################################################
 model_q <- lm(fmla, data = lm_data)    # regression 
 str(fmla)
 summary(model_q)
