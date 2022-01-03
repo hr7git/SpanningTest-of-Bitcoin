@@ -92,6 +92,13 @@ fmla2 <- as.formula(lm_formula2[[i]])
 lm_data <- rets[year[[j]]]
 
 
+
+list_form  <- list(list(),list(),list(),list())  
+model_1    <- list_form
+model_2   <- list_form
+HK_test    <- list_form 
+step1_test <- list_form
+step2_test <- list_form
 ######### Function #################################
 ###############################################################
 #  model_q  : regression
