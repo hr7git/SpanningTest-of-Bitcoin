@@ -2,7 +2,7 @@
 
 
 # i = 1:3  yi
-# j = 1:5  year of data
+# j = 1:6  year of data : 1 = all
  nn_list <- list(list(),list(),list())
 
 ######### Function ################################################
@@ -21,7 +21,7 @@ fun_regress = function(i,j){
                        "`ETH-USD` ~ . -1 -`BTC-USD`",
                        "`BTC-USD` + `ETH-USD` ~ . -1 ") # i = 1:3
   
-  year <- list( "2017" , "2018" , "2019" , "2020" , "2021") # j=1:5
+  year <- list( "", "2017" , "2018" , "2019" , "2020" , "2021") # j=1:6
   
   ########################
   fmla    <- as.formula(lm_formula[[i]])
@@ -76,7 +76,7 @@ fun_regress = function(i,j){
 
 
 for (i in 1:3)  {
-  for (j in 1:5) {
+  for (j in 1:6) {
     
   nn_list[[i]][[j]] <- fun_regress(i,j)
 
@@ -84,7 +84,7 @@ for (i in 1:3)  {
 }
 ##################### Image ###################################
 save.image(file="nn_list.RData") 
-#  load("data_quant.RData")
+#  load("nn_list.RData")
 
 
 

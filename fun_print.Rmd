@@ -1,0 +1,112 @@
+---
+title: "regression"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+<center>**Diversification of Cryptocurrency after COVID-19**</center>
+
+<center>**: Spanning Test of news asset **</center><br>
+
+
+<br><center>**1.	Introduction**</center><br>
+
+  Bitcoin is a decentralized digital money based on blockchain technology. It was born out of the need to maintain an objective currency value, independent of government control. Since the global financial crisis (2008), each country has increased money supply called Quantitative Easing (QE), and the rapid increase in fiat money has caused strong distrust of the government's monetary control and concerns about inflation. Therefore, the need for a new currency that is independent from the government's supply and cannot be issued infinitely increased, and Nakamoto (2009) created the cryptocurrency Bitcoin. Unfortunately, since the covid-19 pandemic in 2020, Quantitative Easing (QE) has led to currency depreciation and increased expectation for Bitcoin. Recently, the value of Bitcoin has risen sharply incomparably with the previous period.
+
+
+
+
+```{r,echo=FALSE,message=FALSE }
+
+library(dplyr)
+library(readr)
+library(car)
+# library(lmtest)
+library(tidyverse)
+library(data.table)
+library(knitr)
+library(stringr)
+library(interactions)
+library(jtools)
+library("ggplot2")
+library(huxtable)
+library("broom.mixed")
+# library(kableExtra)
+```
+
+
+```{r,  render = 'normal_print' }
+load("data1225.RData")   # Tbill withoud calculation
+# load("data1226.RData")   # Tbill calculation
+
+huxreg(model[[1]][[1]], model[[1]][[2]],model[[1]][[3]],
+       model[[2]][[1]], model[[2]][[2]],model[[2]][[3]],
+       model[[3]][[1]], model[[3]][[2]],model[[3]][[3]],
+       model[[4]][[1]], model[[4]][[2]],model[[4]][[3]])
+
+huxreg(model[[4]]) # more test ???
+
+kable( HK_test )
+kable( step1_test )
+kable( step2_test )
+
+```
+
+
+```{r,  render = 'normal_print' }
+summary(model[[2]][[1]])
+summary(model$ETHUSDR[[1]])
+
+```
+
+
+
+```{r, render = 'normal_print' }
+
+
+summary(model[[1]][[1]])
+summ(model[[1]][[1]],  digit = 3)
+
+# plot_summs(model[[1]][[1]], scale = TRUE, plot.distributions = TRUE, inner_ci_level = .9)
+# plot_summs(model[[1]][[1]], model[[1]][[2]], scale = TRUE)
+
+# export_summs(model$BTCUSDR[[1]], model$BTCUSDR[[2]],model$BTCUSDR[[3]], scale = TRUE)
+# export_summs(model$ETHUSDR[[1]], model$ETHUSDR[[2]],model$ETHUSDR[[3]], scale = TRUE)
+# export_summs(model$BNBUSDR[[1]], model[[3]][[2]],model[[3]][[3]], scale = TRUE)
+
+export_summs(model[[1]][[1]], model[[1]][[2]],model[[1]][[3]],
+             model[[2]][[1]], model[[2]][[2]],model[[2]][[3]],
+             model[[3]][[1]], model[[3]][[2]],model[[3]][[3]],
+             model.names = c("BTC all","BTC before","BTC after",
+                             "ETH all","ETH before","ETH after","BNB all","BNB before","BNB after"))
+
+huxreg(model[[1]][[1]], model[[1]][[2]],model[[1]][[3]],
+       model[[2]][[1]], model[[2]][[2]],model[[2]][[3]],
+       model[[3]][[1]], model[[3]][[2]],model[[3]][[3]],
+       model[[4]][[1]], model[[4]][[2]],model[[4]][[3]])
+
+huxreg(model_con[[1]][[1]], model_con[[1]][[2]],model_con[[1]][[3]],
+       model_con[[2]][[1]], model_con[[2]][[2]],model_con[[2]][[3]],
+       model_con[[3]][[1]], model_con[[3]][[2]],model_con[[3]][[3]])
+
+# huxtable(HK_test[[1]][[1]])
+# 
+# hux(HK_test[[1]][[1]])  
+# hux(HK_test[[1]]) 
+# hux(HK_test)
+# 
+# kable(HK_test[[1]][[1]]) 
+# kable(HK_test[[1]]) 
+# kable(HK_test) 
+
+HK_test[[1]][[1]]
+HK_test[[1]]
+HK_test
+
+```
+
