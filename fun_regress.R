@@ -3,7 +3,7 @@
 
 # i = 1:3  yi
 # j = 1:5  year of data
-
+ nn_list <- list(list(),list(),list())
 
 ######### Function ################################################
 #  model_q  : regression
@@ -74,5 +74,17 @@ fun_regress = function(i,j){
   
 }
 
-nn_list <- fun_regress(1,1)
+
+for (i in 1:3)  {
+  for (j in 1:5) {
+    
+  nn_list[[i]][[j]] <- fun_regress(i,j)
+
+  }
+}
+##################### Image ###################################
+save.image(file="nn_list.RData") 
+#  load("data_quant.RData")
+
+
 
