@@ -68,7 +68,7 @@ chartSeries(`BTC-USD`)
 chartSeries(`ETH-USD`)
 ##################### Image ###################################
 save.image(file="data_quant.RData") 
-load("data_quant.RData")
+# load("data_quant.RData")
 
 ##########################################################
 ################# lm formula #############################
