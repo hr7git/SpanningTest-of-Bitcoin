@@ -1,0 +1,63 @@
+---
+title: "nn_list"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+```{r}
+  load("nn_list.RData")
+
+  
+```
+
+## BTC-USD : Bitcoin
+
+1. regression 
+2. regression subject to intercept = 0
+3. HK test
+4. Step1 test
+5. Step2 test
+
+```{r, `echo = TRUE`}
+
+library(huxtable)
+library(knitr)
+
+#  nn_list
+nn_btc <- list()
+nn_alpha <- list()
+nn_beta <- list()
+nn_HK <- list()
+
+for (j in 1:6)  {
+  nn_btc[[j]] <- nn_list[[1]][[j]][[1]] # regression
+  
+    ##### regression model_q
+  nn_alpha[[j]] <- nn_list[[1]][[j]][[1]]$coefficients[1]   # alpha 
+  nn_beta[[j]] <- sum(nn_list[[1]][[j]][[1]]$coefficients) - nn_alpha[[j]]  # beta
+  
+  nn_HK[[j]] <- nn_list[[1]][[j]][[3]] 
+  
+}
+
+# nn_btc
+huxreg(nn_btc)
+nn_alpha
+kable(nn_alpha)
+nn_beta
+kable(nn_beta)
+nn_HK
+ # huxreg(nn_HK)
+
+```
+
