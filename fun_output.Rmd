@@ -17,8 +17,33 @@ When you click the **Knit** button a document will be generated that includes bo
 
 
 ```{r}
+  load("data_quant.RData")
   load("nn_list.RData")
 ```
+
+```{r}
+library(quantmod)
+chart_Series(Ad(SPY))
+chart_Series(Ad(`GLD`))
+chart_Series(Ad(`BTC-USD`))
+chartSeries(`BTC-USD`)
+chartSeries(`ETH-USD`)
+  
+```
+
+```{r}
+library(dplyr)
+library(corrplot)
+
+cor(rets) %>%
+  corrplot(method = 'color', type = 'lower',
+           addCoef.col = 'black', number.cex = 0.7,
+           tl.cex = 1, tl.srt = 0, tl.col = 'black',
+           col = colorRampPalette(c('blue', 'white', 'red'))(200),
+           mar = c(0,0,0.5,0))
+
+```
+
 
 ### regression i j k
 test : i  
@@ -37,40 +62,73 @@ method : k
   5. Step2 test  
 
 ```{r, `echo = TRUE`}
+
 library(huxtable)
 library(knitr)
-library(flextable)
-
+# library(flextable)
+#  library(tidyr)
 #  nn_list
 nn_model   <- list()
+nn_model2  <- list()
 nn_alpha <- list()
 nn_beta  <- list()
 nn_HK    <- list()
 nn_st1   <- list()
 nn_st2   <- list()
 
+
 ######################################################################
 #    i : 1-BTC / 2-ETH / 3-BTC+ETH
 #    j : 1-all / 2-before / 3-after covid19
 ######################################################################
-j = 3  # year period
-for ( i in 1:3)  {
-  nn_model[[i]] <- nn_list[[i]][[j]][[1]] # regression
+
+# a <- 0
+# j <- 3  # year period
+# for ( i in 1:3)  {
+#   
+#   a <- a + 1
+#   nn_model[[i]] <- nn_list[[i]][[j]][[1]] # regression
+#   nn_model2[[a]] <- c(nn_model2, nn_list[[i]][[j]][[2]])
+#   
+#     ##### regression model_q
+#   nn_alpha[[i]] <- nn_list[[i]][[j]][[1]]$coefficients[1]   # alpha 
+#   nn_beta[[i]]  <- sum(nn_list[[i]][[j]][[1]]$coefficients)
+#                    - nn_list[[i]][[j]][[1]]$coefficients[1]  # beta
+#   
+#   nn_HK[[i]]   <- nn_list[[i]][[j]][[3]] 
+#   nn_st1[[i]]  <- nn_list[[i]][[j]][[4]] 
+#   nn_st2[[i]]  <- nn_list[[i]][[j]][[5]] 
+#   
+# }
+
+a <- 0
+for ( j in 1:3)  {  # year period
+  for ( i in 1:3)  {
   
-    ##### regression model_q
-  nn_alpha[[i]] <- nn_list[[i]][[j]][[1]]$coefficients[1]   # alpha 
-  nn_beta[[i]]  <- sum(nn_list[[i]][[j]][[1]]$coefficients)
-                   - nn_list[[i]][[j]][[1]]$coefficients[1]  # beta
+  a <- a + 1
+  nn_model[[a]] <- nn_list[[i]][[j]][[1]] # regression
+  nn_model2[[a]] <- nn_list[[i]][[j]][[2]]
   
-  nn_HK[[i]]   <- nn_list[[i]][[j]][[3]] 
-  nn_st1[[i]]  <- nn_list[[i]][[j]][[4]] 
-  nn_st2[[i]]  <- nn_list[[i]][[j]][[5]] 
+  ##### regression model_q
+  nn_alpha[[a]] <- nn_list[[i]][[j]][[1]]$coefficients[1]   # alpha 
+  nn_beta[[a]]  <- sum(nn_list[[i]][[j]][[1]]$coefficients)
+  - nn_list[[i]][[j]][[1]]$coefficients[1]  # beta
+  
+  nn_HK[[a]]   <- nn_list[[i]][[j]][[3]] 
+  nn_st1[[a]]  <- nn_list[[i]][[j]][[4]] 
+  nn_st2[[a]]  <- nn_list[[i]][[j]][[5]] 
+  }
 }
+  
 
 # nn_btc
 nn_model
 huxreg(nn_model)
-huxreg(nn_model,nn_list[[1]][[1]])
+huxreg(nn_model2)
+# huxreg(nn_model,nn_list[[1]][[1]])
+# nn_list[[1]][[1]][[1]]
+# class(nn_model2)
+# nn_model2
 # flextable(nn_model[[1]])
 
 
@@ -85,6 +143,7 @@ nn_st2
 kable(nn_HK)
 kable(nn_st1)
 kable(nn_st2)
+
 # flextable(nn_HK)
 
 ```
