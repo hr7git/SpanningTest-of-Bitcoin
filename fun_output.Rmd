@@ -1,6 +1,8 @@
 ---
 title: "nn_list"
-output: html_document
+output:
+  html_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -16,57 +18,74 @@ When you click the **Knit** button a document will be generated that includes bo
 
 ```{r}
   load("nn_list.RData")
-
-  
 ```
 
-## BTC-USD : Bitcoin
-
-1. regression 
-2. regression subject to intercept = 0
-3. HK test
-4. Step1 test
-5. Step2 test
+### regression i j k
+test : i  
+  1. BTC-USD  
+  2. ETH-USD  
+  3. BTC & ETH  
+period : j  
+  1. all  
+  2. before covid19  
+  3. after covid19  
+method : k  
+  1. regression   
+  2. regression subject to intercept = 0  
+  3. HK test  
+  4. Step1 test  
+  5. Step2 test  
 
 ```{r, `echo = TRUE`}
-
 library(huxtable)
 library(knitr)
+library(flextable)
 
 #  nn_list
-nn_btc   <- list()
+nn_model   <- list()
 nn_alpha <- list()
 nn_beta  <- list()
 nn_HK    <- list()
 nn_st1   <- list()
 nn_st2   <- list()
 
-
-i = 3 #  1-BTC / 2-ETH / 3-BTC+ETH
-for (j in 1:3)  {
-  nn_btc[[j]] <- nn_list[[i]][[j]][[1]] # regression
+######################################################################
+#    i : 1-BTC / 2-ETH / 3-BTC+ETH
+#    j : 1-all / 2-before / 3-after covid19
+######################################################################
+j = 3  # year period
+for ( i in 1:3)  {
+  nn_model[[i]] <- nn_list[[i]][[j]][[1]] # regression
   
     ##### regression model_q
-  nn_alpha[[j]] <- nn_list[[i]][[j]][[1]]$coefficients[1]   # alpha 
-  nn_beta[[j]] <- sum(nn_list[[i]][[j]][[1]]$coefficients) - nn_alpha[[j]]  # beta
+  nn_alpha[[i]] <- nn_list[[i]][[j]][[1]]$coefficients[1]   # alpha 
+  nn_beta[[i]]  <- sum(nn_list[[i]][[j]][[1]]$coefficients)
+                   - nn_list[[i]][[j]][[1]]$coefficients[1]  # beta
   
-  nn_HK[[j]] <- nn_list[[i]][[j]][[3]] 
-  nn_st1[[j]] <- nn_list[[i]][[j]][[4]] 
-  nn_st2[[j]] <- nn_list[[i]][[j]][[5]] 
+  nn_HK[[i]]   <- nn_list[[i]][[j]][[3]] 
+  nn_st1[[i]]  <- nn_list[[i]][[j]][[4]] 
+  nn_st2[[i]]  <- nn_list[[i]][[j]][[5]] 
 }
 
-
-
 # nn_btc
-huxreg(nn_btc)
+nn_model
+huxreg(nn_model)
+huxreg(nn_model,nn_list[[1]][[1]])
+# flextable(nn_model[[1]])
+
+
 nn_alpha
 kable(nn_alpha)
 nn_beta
 kable(nn_beta)
+
 nn_HK
 nn_st1
 nn_st2
- # huxreg(nn_HK)
+kable(nn_HK)
+kable(nn_st1)
+kable(nn_st2)
+# flextable(nn_HK)
 
 ```
 

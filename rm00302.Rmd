@@ -186,9 +186,21 @@ Risk free T-bill : Market Yield on U.S. Treasury Securities at 1-Month Constant 
   
 <br><center>**Appendix**</center><br>
 
+</br>Table 4.5 The Result of regression test  
+```{r,echo=FALSE,message=FALSE }
 
+df_table <- read_excel("Ivy Asset Allocation.xlsx",
+                                    sheet = "test")
+
+kable(head(df_table,12),
+      caption = "Ivy Asset Allocation.xlsx",
+      align = c("l","l","l"))
+
+
+```  
 
 **1) data filtering**  
+
 
 ```{r, echo=TRUE}
 
