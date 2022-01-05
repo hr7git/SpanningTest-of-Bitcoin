@@ -61,7 +61,7 @@ method : k
   4. Step1 test  
   5. Step2 test  
 
-```{r, `echo = TRUE`}
+```{r, `echo = FALSE`}
 
 library(huxtable)
 library(knitr)
