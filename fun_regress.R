@@ -1,11 +1,28 @@
 
+library(tidyr)
+library(dplyr)
+library(quantmod)
+library(PerformanceAnalytics)
+library(magrittr)
+library(car) 
 ##########################################################
-# load("data_quant.RData")
+load("data_quant.RData")
 
 # i = 1:3  yi
 # j = 1:6  year of data : 1 = all
  nn_list <- list(list(),list(),list())
-
+ 
+ ################# lm formula #############################
+ lm_formula <- c( "`BTC-USD` ~ . -`ETH-USD`",
+                     "`ETH-USD` ~ . -`BTC-USD`",
+                     "`BTC-USD` + `ETH-USD` ~ . ") # i = 1:3
+ 
+ lm_formula2 <- c( "`BTC-USD` ~ . -1 -`ETH-USD`",   # intercept = 0
+                      "`ETH-USD` ~ . -1 -`BTC-USD`",
+                      "`BTC-USD` + `ETH-USD` ~ . -1 ") # i = 1:3
+ 
+ year <- c( "", "/2019", "2020/") # j=1:3 
+# year <- list( "","2017" , "2018" , "2019" , "2020" , "2021") # j=1:6
 ######### Function ################################################
 #  model_q  : regression
 #  model_q2 : regression with intercept = 0
@@ -13,21 +30,10 @@
 
 fun_regress = function(i,j){
   
-  ################# lm formula #############################
-  lm_formula <- list( "`BTC-USD` ~ . -`ETH-USD`",
-                      "`ETH-USD` ~ . -`BTC-USD`",
-                      "`BTC-USD` + `ETH-USD` ~ . ") # i = 1:3
-  
-  lm_formula2 <- list( "`BTC-USD` ~ . -1 -`ETH-USD`",   # intercept = 0
-                       "`ETH-USD` ~ . -1 -`BTC-USD`",
-                       "`BTC-USD` + `ETH-USD` ~ . -1 ") # i = 1:3
-  
-  year <- list( "", "/2019" , "2020/" ) # j=1:6
-  
   ########################
-  fmla    <- as.formula(lm_formula[[i]])
-  fmla2   <- as.formula(lm_formula2[[i]])
-  lm_data <- rets[year[[j]]]
+  fmla    <- as.formula(lm_formula[i])
+  fmla2   <- as.formula(lm_formula2[i])
+  lm_data <- rets[year[j]]
   
   model_q <- lm(fmla, data = lm_data)    # regression 
   # str(fmla)
@@ -69,18 +75,31 @@ fun_regress = function(i,j){
   # step2_test_q[2,5]  # F test  : step- test 2
   # step2_test_q[2,6]  # Pr(>F)  : step- test 2
   
-  newlist <- list(model_q, model_q2, HK_test_q, step1_test_q, step2_test_q)
+  # newlist <- list( model_q, model_q2, 
+  #                  HK_test_q, step1_test_q, step2_test_q,
+  #                  lm_formula[i],lm_formula2[i], year[j])
+  #                # head(lm_data),tail(lm_data))
   
+  newlist <- list( regressA = model_q, 
+                   regressB = model_q2, 
+                   HK = HK_test_q, 
+                   step1 = step1_test_q, 
+                   step2 = step2_test_q,
+                   fmlaA = lm_formula[i],
+                   fmlaB = lm_formula2[i], 
+                   year = year[j])
+  # head(lm_data),tail(lm_data))
+
   return(newlist)
   
 }
 
 
-for (i in 1:3)  {
-  for (j in 1:3) {
+for (i in 1:length(lm_formula))  {
+  for (j in 1:length(year)) {
     
   nn_list[[i]][[j]] <- fun_regress(i,j)
-
+  
   }
 }
 ##################### Image ###################################

@@ -9,11 +9,210 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+```{r ,echo=FALSE,message=FALSE}
+library(dplyr)
+library(readr)
+library(car)
+# library(lmtest)
+library(tidyverse)
+library(data.table)
+library(knitr)
+library(stringr)
+library(readxl)
+```
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+<center>**Diversification of Cryptocurrency after COVID-19**</center>
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+<center>**: Spanning Test of news asset **</center><br>
+
+
+<br><center>**1.	Introduction**</center><br>
+
+  Bitcoin is a decentralized digital money based on blockchain technology. It was born out of the need to maintain an objective currency value, independent of government control. Since the global financial crisis (2008), each country has increased money supply called Quantitative Easing (QE), and the rapid increase in fiat money has caused strong distrust of the government's monetary control and concerns about inflation. Therefore, the need for a new currency that is independent from the government's supply and cannot be issued infinitely increased, and Nakamoto (2009) created the cryptocurrency Bitcoin. Unfortunately, since the covid-19 pandemic in 2020, Quantitative Easing (QE) has led to currency depreciation and increased expectation for Bitcoin. Recently, the value of Bitcoin has risen sharply incomparably with the previous period.
+
+  These expectations for Bitcoin have made comparisons with gold, a traditional safe-haven asset. Can Bitcoin really hedge against inflation from the government's Quantitative Easing (QE) policy? Can Bitcoin be a safe haven from market turmoil and uncertainties? Many studies have argued that Bitcoin is a short-term or not safe-haven for financial uncertainty and weak inflation-hedge. In addition, High volatility of returns has made it a risky asset. (Choi, S. and Shin, J. ,2021)
+
+Fortunately, since Markowitz (1959) expressed the foundations for the modern portfolio theory, investors have come to recognize that a correlation between assets is more important than volatility of assets, and they realize that volatility can be reduced without compromising returns. Bitcoin can be a very risky investment due to its high volatility, but under Markowitz theory, the risk can be adjusted through the correlation with other assets. So far, stocks and real estate have a high correlation with each other, and stocks and bonds have a low correlation of 0.2 ~ 0.3. However, Bitcoin has very high volatility even in its short history, and has a correlation of 0.2 ~ 0.3 compared to the existing stock portfolio, and that correlation is getting lower now (Buttonwood, 2021). On the other hand, it shows profitability that exceeds that of bonds. Although past data cannot describe future expectations, these characteristics of Bitcoin can make it a very attractive alternative choice for portfolio managers.
+
+Then, could these other characteristics make Bitcoin a completely different asset from traditional assets such as stocks, bonds, commodities, gold, and real estate?  In other words, if Bitcoin is added to an existing portfolio of assets, can it improve portfolio output? How can we verify this?
+
+We examine whether new risky assets can expand investment opportunities for other sets of risky assets, and examine that when investors choose a portfolio based on mean-variance analysis, they can expand minimum-variance boundaries in a given set of risky assets (Huberman and Kandel, 1987).
+
+The structure of this paper is as follows. Chapter2 reviews the papers examining the characteristics of Bitcoin by comparing cryptocurrency and gold, and papers examining the addition of new assets in investment portfolio theory. Chapter 3 explains the methodology used by Huberman and Kandel (1987) to compare the possibility of investment expansion when Bitcoin is included in the portfolio. Chapter 4 describes the results of empirical analysis. Chapter 5 presents a summary and conclusion  
+
+
+<br><center>**2.	Literature review**</center><br>
+  
+  
+<br><center>**3.  Methodology**</center><br> 
+
+**3-1. Hypothesis, Regression model **
+Huberman and Kandel (1987) describes that a set of K assets spans a set of N + K assets if the minimum-variance frontier of the K assets is equal to the minimum-variance frontier of the K assets plus N assets.  
+
+$$rt = α +βRt +εt$$						(1)  
+
+
+<center>$ α &= 0N  $ and  $𝛾 &= iN - βiK = 0 $      (2)</center>
+				
+$\gamma$
+
+Regression analysis is performed using the equation (1), As a regression method, the Wald test evaluates constraints on statistical parameters based on weighted distances between unconstrained estimates and hypothesized values. In equation (1), the variable rt is the return vector (N-dimensional vector) of N test assets in period t, and the variable Rt is the return vector (K-dimensional vector) of t K benchmark assets in period t.  If the null hypothesis (2) is rejected, Bitcoin can expand the investment opportunities. 
+
+**3-2. Wald test : restriction model  **
+<!-- wald test methos must me wiritten in this part, specially  unresticted model of stpe2 is (intercept)=0  -->
+
+1) HK test :     $α = 0N$  and $𝛾 = iN - βiK = 0$
+
+2) step test 1 : $α = 0N$
+
+3) step test 2 : $𝛾 = iN - βiK = 0$  condition on $α = 0N$ 
+   When making unrestricted model, intercept = 0 must me added
+
+
+**3-3. Impact of covid19 Analysis period**
+
+1) total 5 years  : 2017.01 ~ 2021.12
+
+2) before covid19 : 2017.01 ~ 2019.12
+
+3) after covid19  : 2020.01 ~ 2021.12
+
+
+  
+  
+<br><center>**4.  Data**</center><br>
+
+
+A set of K risky assets makes a benchmark portfolio using stocks, bonds, commodities, and gold; a set of K risky assets uses Bitcoin. Data uses the final value of one month cycle from April 28, 2013, when Bitcoin was recorded at finance.yahoo.com.
+
+The tickers of the benchmark assets are as follows: Bitcoin : Bitcoin USD (BTC-USD) Stocks : SPDR S&P 500 ETF Trust (SPY) Bonds : iShares 1-3 Year Treasury Bond ETF (SHY) Commodities : Invesco DB Commodity Index Tracking Fund (DBC) Gold : SPDR Gold Shares (GLD) 
+
+<!-- Risk free T-bill : Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Percent, Weekly, Not Seasonally Adjusted (DGS10) (https://fred.stlouisfed.org/series/DGS10#0,12/24/2021) -->
+
+Risk free T-bill : US Treasury Bonds Rates - 13 Week Treasury Bill (^IRX : ticker of finance.yahoo)
+
+
+**4.1 Test Assets**  
+
+  Test asset was selected Bitcoin and Ethereum, which account for the top 60% of market cap (December 22, 2022) among cryptocurrencies. The value of Bitcoin is the final price for a one month period from April 28, 2003 recorded by finance.yahoo.com. The value of Ethereum is the final price for a one month period from August 7, 2015  
+ 
+Table 4.1 Summary of Cyptocurrency (Dec 22,2021)
+
+  Market Rank|Ticker |Name     |Start Date  |Market Cap |Market Dominance 
+ :---:    | :---   | :---   | :---        | ---:       | ---:              
+ #1       |BTC-USD |Bitcoin      | 2013-04-28  | 925.017B   | 40.57% 
+ #2       |ETH-USD |Ethereum     | 2015-08-07  |  476.975B  | 20.87% 
+ #3       |BNB-USD |Binance Coin | 2017-07-25  | 88.777B    | 3.89%    
+ 
+
+**4.2 Benchmark Portfolio**  
+
+  The benchmark portfolio selected asset allocations of Yale's Endowment Portfolio : comes from David Swensen, who was the CIO at Yale University from 1985 until 2021. we should replicating it with accessible instruments by ETF.
+
+</br>Table 4.2 Asset allocations of Harvard Management Company  
+
+<!-- ```{r,echo=FALSE,message=FALSE } -->
+
+<!-- # csvfile <-'HMC-portfolio.csv' -->
+<!-- # # Store the csv file into the data frame of "df" -->
+<!-- # df_hmc <- read.csv(csvfile) -->
+<!-- # HMC : Harvard Management Company - Harvard portfolio -->
+<!-- HMC_portfolio <- read_csv("HMC-portfolio.csv") -->
+
+<!-- kable(head(HMC_portfolio,12), -->
+<!--       caption = "Harvard Management Company", -->
+<!--       align = c("c","l","l")) -->
+
+
+<!-- ``` -->
+ 
+```{r,echo=FALSE,message=FALSE }
+
+df_table <- read_excel("Ivy Asset Allocation.xlsx",
+                                    sheet = "harvard")
+
+kable(head(df_table,12),
+      caption = "Ivy Asset Allocation.xlsx",
+      align = c("l","l","l"))
+
+
+``` 
+
+Table 4.3 Asset allocations of Yale's Endowment Funds  
+
+  Asset Class |Ratio |Ticker |ETF Explanation
+ :------ | :---  | :---   | :--------
+ Total Stock Market        |30%    | VTI  |Vanguard Total Stock Market ETF 
+ International Stock Market|15%    | VXUS |Vanguard Total International Stock ETF  
+ Emerging Markets          |5%     | VWO  |Vanguard FTSE Emerging Markets ETF 
+ Intermediate Treasury Bonds|15%   | VGIT |Vanguard Intermediate-Term Treasury Index ETF
+ TIPS                      |15%    | SCHP |Schwab U.S. TIPS ETF
+ REITs                     |20%    | VNQ  |Vanguard Real Estate ETF  
+   
+ 
+</br>Table 4.3 The Ivy 10’s Asset Allocation  
+```{r,echo=FALSE,message=FALSE }
+
+df_table <- read_excel("Ivy Asset Allocation.xlsx",
+                                    sheet = "ivy10")
+
+kable(head(df_table,12),
+      caption = "Ivy Asset Allocation.xlsx",
+      align = c("l","l","l"))
+
+
+```   
+ 
+ETF is the price from yahoo.finance. For more details on price see <http://finance.yahoo.com>.  
+Risk free T-bill : Market Yield on U.S. Treasury Securities at 1-Month Constant Maturity (DGS1MO)<br><br>
+ 
+
+
+
+<br><center>**5.  Results**</center><br>
+
+  
+<center>**References**</center><br>
+  
+  Berndt, E. R. and N.E. Savin, 1977, “Conflict among criteria for testing hypotheses in the multivariate	 linear regression model”. Econometrica 45, pp. 1263–1278
+  
+Buttonwood, 2021, “Why it is wise to add bitcoin to an investment portfolio”, The Economist, Sep	 25th 2021 edition
+
+Choi, S., & Shin, J. (2021). “Bitcoin: An inflation hedge but not a safe haven.” Finance Research		 Letters,102379.
+
+Eugene Fama, “Risk, Return and Equilibrium.” Journal of Political Economy 79 (January 1971)  
+Huberman, G. and Kandel, S., 1987, “Mean-variance spanning”, Journal of Finance 42, pp. 873~888.  
+Hwang, Y. (2019). “Bitcoin (Gold)’s Hedge․ Safe-Haven․ Equity․ Taxation.” Journal of Society for	 e-Business Studies, 23(3).  
+Lee,J S. 2018, “Performance Evaluation of Social Responsibility Investment using MSCI Indexes”, 	Applied Economics Vol.20, No. 2, Jun 2018 edition  
+Kan, R. and Zhou, G., 2012, “Test of mean-variance spanning”, Annals of Economics and Finance	  13-1, pp. 145~193.  
+Markowitz, Harry M. (1959). “Portfolio Selection: Efficient Diversification of Investments.” John	 Wiley & Sons, New Jersey  
+Nakamoto, Satoshi.,2009 "Bitcoin: A peer-to-peer electronic cash system." Decentralized Business	 Review 21260.  
+Sharp et al. (1964), “Capital Asset Prices: A Theory of Market Equilibrium”, Journal of Finance,		 September 1964.  
+William Sharpe. “Capital Asset Prices: A theory of Market Equilibrium under Conditions of Risk.”	 Journal of Finance 19 (September 1984)  
+
+Fig1: https://en.wikipedia.org/wiki/Efficient_frontier  
+Fig2: Boris, F., Marie, L., Nicolas, P (2020) “Risk Optimizations on Basis Portfolios: The Role	of Sorting”, An EDHEC-Risk Working Paper, June 2020, pp. 19  
+
+
+  
+<br><center>**Appendix**</center><br>
+
+</br>Table 4.5 The Result of regression test  
+```{r,echo=FALSE,message=FALSE }
+
+df_table <- read_excel("Ivy Asset Allocation.xlsx",
+                                    sheet = "test")
+
+kable(head(df_table,12),
+      caption = "Ivy Asset Allocation.xlsx",
+      align = c("l","l","l"))
+
+
+```  
+
+
+
+
 
 
 ```{r}
@@ -121,7 +320,7 @@ for ( j in 1:3)  {  # year period
 }
   
 
-# nn_btc
+# nn_model
 nn_model
 huxreg(nn_model)
 huxreg(nn_model2)

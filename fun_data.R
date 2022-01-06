@@ -70,7 +70,18 @@ chartSeries(`ETH-USD`)
 save.image(file="data_quant.RData") 
 # load("data_quant.RData")
 
-##########################################################
+
+
+
+
+
+
+
+
+
+
+
+# Not run below
 ################# lm formula #############################
 lm_formula <- list( "`BTC-USD` ~ . -`ETH-USD`",
                     "`ETH-USD` ~ . -`BTC-USD`",
