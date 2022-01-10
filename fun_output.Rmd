@@ -1,5 +1,5 @@
 ---
-title: "nn_list"
+title: "Impact OF Covid-19 to Bitcoin"
 output:
   html_document: default
   word_document: default
@@ -21,9 +21,9 @@ library(stringr)
 library(readxl)
 ```
 
-<center>**Diversification of Cryptocurrency after COVID-19**</center>
+<center>**Impact OF Covid-19 to Bitcoin**</center>
 
-<center>**: Spanning Test of news asset **</center><br>
+<center>**: Spanning Test of cryptocurrency **</center><br>
 
 
 <br><center>**1.	Introduction**</center><br>
@@ -46,34 +46,32 @@ The structure of this paper is as follows. Chapter2 reviews the papers examining
   
 <br><center>**3.  Methodology**</center><br> 
 
-**3-1. Hypothesis, Regression model **
+**3-1. Regression model **
 Huberman and Kandel (1987) describes that a set of K assets spans a set of N + K assets if the minimum-variance frontier of the K assets is equal to the minimum-variance frontier of the K assets plus N assets.  
 
-$$rt = α +βRt +εt$$						(1)  
+$$rt = α +βRt +εt$$(1) <br>
 
 
-<center>$ α &= 0N  $ and  $𝛾 &= iN - βiK = 0 $      (2)</center>
-				
-$\gamma$
 
 Regression analysis is performed using the equation (1), As a regression method, the Wald test evaluates constraints on statistical parameters based on weighted distances between unconstrained estimates and hypothesized values. In equation (1), the variable rt is the return vector (N-dimensional vector) of N test assets in period t, and the variable Rt is the return vector (K-dimensional vector) of t K benchmark assets in period t.  If the null hypothesis (2) is rejected, Bitcoin can expand the investment opportunities. 
 
-**3-2. Wald test : restriction model  **
+**3-2. Wald test : Hypothesis of restricted model  **
 <!-- wald test methos must me wiritten in this part, specially  unresticted model of stpe2 is (intercept)=0  -->
 
-1) HK test :     $α = 0N$  and $𝛾 = iN - βiK = 0$
+1) HK test :     $α = 0N$     and    $\gamma = iN - βiK = 0$
 
 2) step test 1 : $α = 0N$
 
-3) step test 2 : $𝛾 = iN - βiK = 0$  condition on $α = 0N$ 
+3) step test 2 : $𝛾 = iN - βiK = 0$  <br>
+   condition on  $α = 0N$   
    When making unrestricted model, intercept = 0 must me added
 
 
 **3-3. Impact of covid19 Analysis period**
 
-1) total 5 years  : 2017.01 ~ 2021.12
+1) total 5 years  : 2017.11 ~ 2021.12
 
-2) before covid19 : 2017.01 ~ 2019.12
+2) before covid19 : 2017.11 ~ 2019.12
 
 3) after covid19  : 2020.01 ~ 2021.12
 
@@ -107,6 +105,8 @@ Table 4.1 Summary of Cyptocurrency (Dec 22,2021)
 
 **4.2 Benchmark Portfolio**  
 
+  
+
   The benchmark portfolio selected asset allocations of Yale's Endowment Portfolio : comes from David Swensen, who was the CIO at Yale University from 1985 until 2021. we should replicating it with accessible instruments by ETF.
 
 </br>Table 4.2 Asset allocations of Harvard Management Company  
@@ -138,30 +138,25 @@ kable(head(df_table,12),
 
 ``` 
 
-Table 4.3 Asset allocations of Yale's Endowment Funds  
+<!-- Table 4.3 Asset allocations of Yale's Endowment Funds   -->
 
-  Asset Class |Ratio |Ticker |ETF Explanation
- :------ | :---  | :---   | :--------
- Total Stock Market        |30%    | VTI  |Vanguard Total Stock Market ETF 
- International Stock Market|15%    | VXUS |Vanguard Total International Stock ETF  
- Emerging Markets          |5%     | VWO  |Vanguard FTSE Emerging Markets ETF 
- Intermediate Treasury Bonds|15%   | VGIT |Vanguard Intermediate-Term Treasury Index ETF
- TIPS                      |15%    | SCHP |Schwab U.S. TIPS ETF
- REITs                     |20%    | VNQ  |Vanguard Real Estate ETF  
+<!--   Asset Class |Ratio |Ticker |ETF Explanation -->
+<!--  :------ | :---  | :---   | :-------- -->
+<!--  Total Stock Market        |30%    | VTI  |Vanguard Total Stock Market ETF  -->
+<!--  International Stock Market|15%    | VXUS |Vanguard Total International Stock ETF   -->
+<!--  Emerging Markets          |5%     | VWO  |Vanguard FTSE Emerging Markets ETF  -->
+<!--  Intermediate Treasury Bonds|15%   | VGIT |Vanguard Intermediate-Term Treasury Index ETF -->
+<!--  TIPS                      |15%    | SCHP |Schwab U.S. TIPS ETF -->
+<!--  REITs                     |20%    | VNQ  |Vanguard Real Estate ETF   -->
    
  
-</br>Table 4.3 The Ivy 10’s Asset Allocation  
-```{r,echo=FALSE,message=FALSE }
-
-df_table <- read_excel("Ivy Asset Allocation.xlsx",
-                                    sheet = "ivy10")
-
-kable(head(df_table,12),
-      caption = "Ivy Asset Allocation.xlsx",
-      align = c("l","l","l"))
-
-
-```   
+<!-- </br>Table 4.3 The Ivy 10’s Asset Allocation   -->
+<!-- ```{r,echo=FALSE,message=FALSE } -->
+<!-- df_table <- read_excel("Ivy Asset Allocation.xlsx",sheet = "ivy10") -->
+<!-- kable(head(df_table,12), -->
+<!--       caption = "Ivy Asset Allocation.xlsx", -->
+<!--       align = c("l","l","l")) -->
+<!-- ```    -->
  
 ETF is the price from yahoo.finance. For more details on price see <http://finance.yahoo.com>.  
 Risk free T-bill : Market Yield on U.S. Treasury Securities at 1-Month Constant Maturity (DGS1MO)<br><br>
@@ -223,12 +218,14 @@ kable(head(df_table,12),
 ```{r}
 library(quantmod)
 chart_Series(Ad(SPY))
-chart_Series(Ad(`GLD`))
+# chart_Series(Ad(`GLD`))
 chart_Series(Ad(`BTC-USD`))
-chartSeries(`BTC-USD`)
+# chartSeries(`BTC-USD`)
 chartSeries(`ETH-USD`)
   
 ```
+
+correlation between asset : 
 
 ```{r}
 library(dplyr)
@@ -275,30 +272,10 @@ nn_HK    <- list()
 nn_st1   <- list()
 nn_st2   <- list()
 
-
 ######################################################################
 #    i : 1-BTC / 2-ETH / 3-BTC+ETH
 #    j : 1-all / 2-before / 3-after covid19
 ######################################################################
-
-# a <- 0
-# j <- 3  # year period
-# for ( i in 1:3)  {
-#   
-#   a <- a + 1
-#   nn_model[[i]] <- nn_list[[i]][[j]][[1]] # regression
-#   nn_model2[[a]] <- c(nn_model2, nn_list[[i]][[j]][[2]])
-#   
-#     ##### regression model_q
-#   nn_alpha[[i]] <- nn_list[[i]][[j]][[1]]$coefficients[1]   # alpha 
-#   nn_beta[[i]]  <- sum(nn_list[[i]][[j]][[1]]$coefficients)
-#                    - nn_list[[i]][[j]][[1]]$coefficients[1]  # beta
-#   
-#   nn_HK[[i]]   <- nn_list[[i]][[j]][[3]] 
-#   nn_st1[[i]]  <- nn_list[[i]][[j]][[4]] 
-#   nn_st2[[i]]  <- nn_list[[i]][[j]][[5]] 
-#   
-# }
 
 a <- 0
 for ( j in 1:3)  {  # year period
@@ -322,8 +299,8 @@ for ( j in 1:3)  {  # year period
 
 # nn_model
 nn_model
-huxreg(nn_model)
-huxreg(nn_model2)
+huxreg(nn_model)  # unrestricted model 
+huxreg(nn_model2) # alpha = 0
 # huxreg(nn_model,nn_list[[1]][[1]])
 # nn_list[[1]][[1]][[1]]
 # class(nn_model2)
