@@ -208,7 +208,10 @@ kable(head(df_table,12),
 
 
 
-
+### 
+  1. stock chart of BTC ...
+  2. correlations between asset
+  3. The Geometry of mean-variancce spanning test
 
 ```{r}
   load("data_quant.RData")
@@ -239,6 +242,9 @@ cor(rets) %>%
            mar = c(0,0,0.5,0))
 
 ```
+
+
+
 
 
 ### regression i j k
@@ -301,6 +307,7 @@ for ( j in 1:3)  {  # year period
 nn_model
 huxreg(nn_model)  # unrestricted model 
 huxreg(nn_model2) # alpha = 0
+
 # huxreg(nn_model,nn_list[[1]][[1]])
 # nn_list[[1]][[1]][[1]]
 # class(nn_model2)
