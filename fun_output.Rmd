@@ -69,9 +69,9 @@ Regression analysis is performed using the equation (1), As a regression method,
 
 **3-3. Impact of covid19 Analysis period**
 
-1) total 5 years  : 2017.11 ~ 2021.12
+1) total 5 years  : 2017.01 ~ 2021.12
 
-2) before covid19 : 2017.11 ~ 2019.12
+2) before covid19 : 2017.01 ~ 2019.12
 
 3) after covid19  : 2020.01 ~ 2021.12
 
@@ -92,51 +92,50 @@ Risk free T-bill : US Treasury Bonds Rates - 13 Week Treasury Bill (^IRX : ticke
 
 **4.1 Test Assets**  
 
-  Test asset was selected Bitcoin and Ethereum, which account for the top 60% of market cap (December 22, 2022) among cryptocurrencies. The value of Bitcoin is the final price for a one month period from April 28, 2003 recorded by finance.yahoo.com. The value of Ethereum is the final price for a one month period from August 7, 2015  
+  Test asset was selected Bitcoin and Ethereum, which account for the top 60% of market cap (December 22, 2022) among cryptocurrencies. The value of Bitcoin is the adjusted daily price  from April 28, 2013 recorded by finance.yahoo.com. The value of Ethereum is also adjusted daily price from August 7, 2015, but it were sliced from Jan 1, 2017 to analyse recent 5 years.  
  
 Table 4.1 Summary of Cyptocurrency (Dec 22,2021)
 
   Market Rank|Ticker |Name     |Start Date  |Market Cap |Market Dominance 
  :---:    | :---   | :---   | :---        | ---:       | ---:              
- #1       |BTC-USD |Bitcoin      | 2013-04-28  | 925.017B   | 40.57% 
- #2       |ETH-USD |Ethereum     | 2015-08-07  |  476.975B  | 20.87% 
+ #1       |BTC-USD |Bitcoin      | 2009-01-03  | 925.017B   | 40.57% 
+ #2       |ETH-USD |Ethereum     | 2015-07-30  | 476.975B   | 20.87% 
  #3       |BNB-USD |Binance Coin | 2017-07-25  | 88.777B    | 3.89%    
  
 
 **4.2 Benchmark Portfolio**  
 
-  
+  The benchmark portfolio selected asset allocations of HMC Portfolio : we should replicating it with accessible instruments by ETF.
 
-  The benchmark portfolio selected asset allocations of Yale's Endowment Portfolio : comes from David Swensen, who was the CIO at Yale University from 1985 until 2021. we should replicating it with accessible instruments by ETF.
-
-</br>Table 4.2 Asset allocations of Harvard Management Company  
-
-<!-- ```{r,echo=FALSE,message=FALSE } -->
-
-<!-- # csvfile <-'HMC-portfolio.csv' -->
-<!-- # # Store the csv file into the data frame of "df" -->
-<!-- # df_hmc <- read.csv(csvfile) -->
-<!-- # HMC : Harvard Management Company - Harvard portfolio -->
-<!-- HMC_portfolio <- read_csv("HMC-portfolio.csv") -->
-
-<!-- kable(head(HMC_portfolio,12), -->
-<!--       caption = "Harvard Management Company", -->
-<!--       align = c("c","l","l")) -->
-
-
-<!-- ``` -->
- 
+</br>Table 4.2 Asset allocations of HMC Portfolio Set 
 ```{r,echo=FALSE,message=FALSE }
 
 df_table <- read_excel("Ivy Asset Allocation.xlsx",
                                     sheet = "harvard")
 
 kable(head(df_table,12),
-      caption = "Ivy Asset Allocation.xlsx",
+      caption = "Harvard Management Company Portfolio",
       align = c("l","l","l"))
 
-
 ``` 
+
+</br>Table 4.3 Asset allocations of Benchmark Portfolio Set  
+```{r,echo=FALSE,message=FALSE }
+
+# csvfile <-'HMC-portfolio.csv'
+# # Store the csv file into the data frame of "df"
+# df_hmc <- read.csv(csvfile)
+# HMC : Harvard Management Company - Harvard portfolio
+benchmark_set <- read_csv("benchmark_set.csv")
+
+kable(head(benchmark_set,11),
+      caption = "Benchmark Test Asset",
+      align = c("c","l","l","l"))
+
+```
+ETF is the price from yahoo.finance. For more details on price see <http://finance.yahoo.com>.  
+<br><br>
+
 
 <!-- Table 4.3 Asset allocations of Yale's Endowment Funds   -->
 
@@ -158,8 +157,7 @@ kable(head(df_table,12),
 <!--       align = c("l","l","l")) -->
 <!-- ```    -->
  
-ETF is the price from yahoo.finance. For more details on price see <http://finance.yahoo.com>.  
-Risk free T-bill : Market Yield on U.S. Treasury Securities at 1-Month Constant Maturity (DGS1MO)<br><br>
+
  
 
 
@@ -225,7 +223,6 @@ chart_Series(Ad(SPY))
 chart_Series(Ad(`BTC-USD`))
 # chartSeries(`BTC-USD`)
 chartSeries(`ETH-USD`)
-  
 ```
 
 correlation between asset : 
