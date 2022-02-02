@@ -8,14 +8,16 @@
 # new.pkg = pkg[!(pkg %in% installed.packages()[, "Package"])]
 # if (length(new.pkg)) {
 #   install.packages(new.pkg, dependencies = TRUE)}
-#########################################
 
-library(quantmod)
+# https://hyunyulhenry.github.io/quant_cookbook/
+# 
+library(quantmod)  # getsymbols
 library(PerformanceAnalytics)
 library(magrittr)
 library(car)  # lht 
+library(tidyr)
+library(dplyr)
 #########################################
-
 
 symbols = c('SPY', # US stock
             'IEV', # Eu stock
@@ -26,27 +28,35 @@ symbols = c('SPY', # US stock
             'IYR', # Us Rits
             'RWX', # Global Rits
             'GLD', # Gold
-            'DBC', # Commodity
-            'BTC-USD',  # Bitcoin USD 
-            'ETH-USD'   # Etherium USD 
+            'DBC'  # Commodity
 )
-getSymbols(symbols, src = 'yahoo')
 
-getSymbols('BTC-USD', src = 'yahoo')
+symbols_BTC = c( symbols , 'BTC')
+symbols_ETH = c( symbols,  'ETH')
+
+getSymbols(symbols, src = 'yahoo', from = '2014-01-01') 
+
+# Bitcoin USD  & Etherium USD 
+BTC = getSymbols('BTC-USD', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) 
+ETH = getSymbols('ETH-USD', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) 
 
 ###########################################################
-
 prices = do.call(cbind,
                  lapply(symbols, function(x) Ad(get(x)))) %>%
   setNames(symbols)
 
 rets = Return.calculate(prices) %>% na.omit()
 
-##############################################################
-library(tidyr)
+###
+prices_BTC = do.call(cbind,
+                     lapply(symbols_BTC, function(x) Ad(get(x)))) %>%
+  setNames(symbols_BTC)
 
+rets_BTC = Return.calculate(prices_BTC) %>% na.omit()
 ##############################################################
-library(dplyr)
+
+# library(tidyr)
+# library(dplyr)
 library(corrplot)
 
 cor(rets) %>%
