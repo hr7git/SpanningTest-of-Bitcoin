@@ -10,6 +10,10 @@
 #   install.packages(new.pkg, dependencies = TRUE)}
 
 # https://hyunyulhenry.github.io/quant_cookbook/
+
+##########################################################
+#  Data make
+##########################################################
 # 
 library(quantmod)  # getsymbols
 library(PerformanceAnalytics)
@@ -17,7 +21,7 @@ library(magrittr)
 library(car)  # lht 
 library(tidyr)
 library(dplyr)
-#########################################
+##############  get data from yahoo   ##########################################
 
 symbols = c('SPY', # US stock
             'IEV', # Eu stock
@@ -31,8 +35,6 @@ symbols = c('SPY', # US stock
             'DBC'  # Commodity
 )
 
-symbols_BTC = c( symbols , 'BTC')
-symbols_ETH = c( symbols,  'ETH')
 
 getSymbols(symbols, src = 'yahoo', from = '2014-01-01') 
 
@@ -40,23 +42,22 @@ getSymbols(symbols, src = 'yahoo', from = '2014-01-01')
 BTC = getSymbols('BTC-USD', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) 
 ETH = getSymbols('ETH-USD', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) 
 
-###########################################################
+##############   data price ret=returns    #####################################
+
+# symbols_BTC = c( symbols , 'BTC')
+# symbols_ETH = c( symbols,  'ETH')
+
+### variables setting : symbol + BTC
+assets <- c( symbols , 'BTC','ETH')
+
+### Data procedure - main
 prices = do.call(cbind,
-                 lapply(symbols, function(x) Ad(get(x)))) %>%
-  setNames(symbols)
+                 lapply(assets, function(x) Ad(get(x)))) %>%
+  setNames(assets)
 
 rets = Return.calculate(prices) %>% na.omit()
 
-###
-prices_BTC = do.call(cbind,
-                     lapply(symbols_BTC, function(x) Ad(get(x)))) %>%
-  setNames(symbols_BTC)
-
-rets_BTC = Return.calculate(prices_BTC) %>% na.omit()
-##############################################################
-
-# library(tidyr)
-# library(dplyr)
+### correlation graph
 library(corrplot)
 
 cor(rets) %>%
@@ -67,15 +68,15 @@ cor(rets) %>%
              colorRampPalette(c('blue', 'white', 'red'))(200),
            mar = c(0,0,0.5,0))
 
-
 #################################################################
 
 covmat = cov(rets)
 #################### Chart  ###########################
 
 chart_Series(Ad(GLD),Ad(SPY))
-chartSeries(`BTC-USD`)
-chartSeries(`ETH-USD`)
+chart_Series(Ad(BTC))
+chartSeries(`BTC`)
+chartSeries(`SPY`)
 ##################### Image ###################################
 save.image(file="data_quant.RData") 
 # load("data_quant.RData")
@@ -84,25 +85,60 @@ save.image(file="data_quant.RData")
 
 
 
-
-
-
-
-
-
-
 # Not run below
+##########################################################
+#  Regression
+##########################################################
+model_q <- lm(`BTC` ~ . -`ETH`, data=rets)    # regression 
+model_q <- lm(BTC ~ (SPY + IEV + EWJ + EEM + TLT + IEF + IYR + RWX + GLD + DBC), data=rets)
+model_q <- lm(BTC ~ (SPY + EEM + TLT + IEF + IYR + RWX + GLD + DBC), data=rets)
+model_q <- lm(BTC ~ (SPY + EEM + TLT + IYR + RWX + GLD + DBC), data=rets)
+model_q <- lm(BTC ~ (SPY + EEM + TLT + IYR + GLD + DBC), data=rets)
+model_q <- lm(BTC ~ (SPY + EEM + TLT + IYR + GLD + DBC), data=rets["/2019"])
+model_q <- lm(BTC ~ (SPY + EEM + TLT + IYR + GLD + DBC), data=rets["2020/"])
+model_q <- lm(`BTC` ~ . -`ETH`, data=rets)    # regression 
+model_q <- lm(`BTC` ~ . -`ETH`, data=rets["/2019"])    # regression 
+model_q <- lm(`BTC` ~ . -`ETH`, data=rets["2020/"])    # regression 
+model_q2 <- lm(`BTC` ~ . -1 -`ETH`, data=rets)    # regression 
+
+summary(model_q)
+model_q$coefficients[1]   # alpha
+sum(model_q$coefficients) - model_q$coefficients[[1]] # beta
+
+##### HK test
+lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
+HK_test_q <- lht(model_q,lhs,c(0,1))
+HK_test_q
+HK_test_q[2,5]  # F test  - HK test
+HK_test_q[2,6]  # Pr(>F)  - HK test
+
+##### step-1 test  : alpha = 0
+lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
+step1_test_q <- lht(model_q,lhs,c(0))
+step1_test_q
+step1_test_q[2,5]  # F test  - step-1 test
+step1_test_q[2,6]  # Pr(>F)  : step-1 test
+
+##### step- test 2 : beta=1 condition on alpha = 0
+##### unresrticted model condition on alpha =0  : model_q2
+lhs <- rbind(c(1,1,1,1,1,1,1,1,1,1))
+step2_test_q <- lht(model_q2,lhs,c(1))
+step2_test_q
+step2_test_q[2,5]  # F test  : step- test 2
+step2_test_q[2,6]  # Pr(>F)  : step- test 2
+
+
 ################# lm formula #############################
-lm_formula <- list( "`BTC-USD` ~ . -`ETH-USD`",
-                    "`ETH-USD` ~ . -`BTC-USD`",
-                    "`BTC-USD` + `ETH-USD` ~ . ") # i = 1:3
+lm_formula <- list( "`BTC` ~ . -`ETH`",   # yi = BTC
+                    "`ETH` ~ . -`BTC`",   # yi = ETH
+                    "`BTC` + `ETH` ~ . ") # i = 1:3
 
-lm_formula2 <- list( "`BTC-USD` ~ . -1 -`ETH-USD`",   # intercept = 0
-                       "`ETH-USD` ~ . -1 -`BTC-USD`",
-                       "`BTC-USD` + `ETH-USD` ~ . -1 ") # i = 1:3
+lm_formula2 <- list( "`BTC` ~ . -1 -`ETH`",   # intercept = 0
+                     "`ETH` ~ . -1 -`BTC`",
+                     "`BTC` + `ETH` ~ . -1 ") # i = 1:3
                   
-year <- list( "2017" , "2018" , "2019" , "2020" , "2021") # j=1:5
-
+* year <- list( "2017" , "2018" , "2019" , "2020" , "2021") # j=1:5
+year <- c( "", "/2019", "2020/") 
                  
 
 i = 1
