@@ -120,7 +120,9 @@ kable(head(df_table,12),
 
 ``` 
 
+<Table 4.2> shows Harvard University's fund portfolio comprising stocks, bonds, and real estate. To represent these assets, the ETF portfolio in Table 4.3 is used as a benchmark asset set.
 </br>Table 4.3 Asset allocations of Benchmark Portfolio Set  
+
 ```{r,echo=FALSE,message=FALSE }
 
 # csvfile <-'HMC-portfolio.csv'

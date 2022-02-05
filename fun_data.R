@@ -23,7 +23,8 @@ library(tidyr)
 library(dplyr)
 ##############  get data from yahoo   ##########################################
 
-symbols = c('SPY', # US stock
+symbols = c('SPY', # US stock S&P 500
+            'QQQ', # US tech stock
             'IEV', # Eu stock
             'EWJ', # Japan stock
             'EEM', # Emerging
@@ -41,15 +42,15 @@ getSymbols(symbols, src = 'yahoo', from = '2014-01-01')
 # Bitcoin USD  & Etherium USD 
 BTC = getSymbols('BTC-USD', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) 
 ETH = getSymbols('ETH-USD', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) 
-
+# QQQ = getSymbols('QQQ', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) 
 ##############   data price ret=returns    #####################################
 
 # symbols_BTC = c( symbols , 'BTC')
 # symbols_ETH = c( symbols,  'ETH')
 
 ### variables setting : symbol + BTC
-assets <- c( symbols , 'BTC','ETH')
-
+# assets <- c( symbols , 'BTC','ETH')
+assets <- c( symbols , 'BTC')
 ### Data procedure - main
 prices = do.call(cbind,
                  lapply(assets, function(x) Ad(get(x)))) %>%
@@ -100,13 +101,17 @@ model_q <- lm(`BTC` ~ . -`ETH`, data=rets)    # regression
 model_q <- lm(`BTC` ~ . -`ETH`, data=rets["/2019"])    # regression 
 model_q <- lm(`BTC` ~ . -`ETH`, data=rets["2020/"])    # regression 
 model_q2 <- lm(`BTC` ~ . -1 -`ETH`, data=rets)    # regression 
+# bench Aseets : SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC
+model_q <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets)
+
 
 summary(model_q)
 model_q$coefficients[1]   # alpha
 sum(model_q$coefficients) - model_q$coefficients[[1]] # beta
 
 ##### HK test
-lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
+# lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
+lhs <- rbind(c(1,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1))
 HK_test_q <- lht(model_q,lhs,c(0,1))
 HK_test_q
 HK_test_q[2,5]  # F test  - HK test
@@ -121,7 +126,10 @@ step1_test_q[2,6]  # Pr(>F)  : step-1 test
 
 ##### step- test 2 : beta=1 condition on alpha = 0
 ##### unresrticted model condition on alpha =0  : model_q2
-lhs <- rbind(c(1,1,1,1,1,1,1,1,1,1))
+model_q2 <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC) -1, data=rets)
+summary(model_q2)
+sum(model_q2$coefficients) # beta
+lhs <- rbind(c(1,1,1,1,1,1,1,1))
 step2_test_q <- lht(model_q2,lhs,c(1))
 step2_test_q
 step2_test_q[2,5]  # F test  : step- test 2
