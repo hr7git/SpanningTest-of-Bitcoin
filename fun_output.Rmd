@@ -3,6 +3,7 @@ title: "Impact OF Covid-19 to Bitcoin"
 output:
   html_document: default
   word_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
