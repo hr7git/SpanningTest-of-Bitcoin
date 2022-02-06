@@ -43,6 +43,8 @@ getSymbols(symbols, src = 'yahoo', from = '2014-01-01')
 BTC = getSymbols('BTC-USD', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) 
 ETH = getSymbols('ETH-USD', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) 
 # QQQ = getSymbols('QQQ', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) 
+
+save.image(file="data_getsymbols.RData") 
 ##############   data price ret=returns    #####################################
 
 # symbols_BTC = c( symbols , 'BTC')
@@ -79,7 +81,7 @@ chart_Series(Ad(BTC))
 chartSeries(`BTC`)
 chartSeries(`SPY`)
 ##################### Image ###################################
-save.image(file="data_quant.RData") 
+# save.image(file="data_quant.RData") 
 # load("data_quant.RData")
 
 
@@ -103,7 +105,8 @@ model_q <- lm(`BTC` ~ . -`ETH`, data=rets["2020/"])    # regression
 model_q2 <- lm(`BTC` ~ . -1 -`ETH`, data=rets)    # regression 
 # bench Aseets : SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC
 model_q <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets)
-
+model_q <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets["/2019"])
+model_q <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets["2020/"])
 
 summary(model_q)
 model_q$coefficients[1]   # alpha
@@ -111,9 +114,18 @@ sum(model_q$coefficients) - model_q$coefficients[[1]] # beta
 
 ##### HK test
 # lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
-lhs <- rbind(c(1,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1))
-HK_test_q <- lht(model_q,lhs,c(0,1))
+# 
+# The hypothesis matrix : 
+# the rows of which specify linear combinations of the model coefficients
+hypothesis.matrix <- rbind(c(1,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1))
+rhs=c(0,1)   # right-hand-side vector for hypothesis
+
+HK_test_q <- lht(model_q,hypothesis.matrix,rhs)
 HK_test_q
+
+HK_test_qw <- lht(model_q,hypothesis.matrix,rhs,white.adjust='hc3')
+HK_test_qw
+
 HK_test_q[2,5]  # F test  - HK test
 HK_test_q[2,6]  # Pr(>F)  - HK test
 
