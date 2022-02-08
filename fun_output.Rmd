@@ -144,6 +144,14 @@ ETF is the price from yahoo.finance. For more details on price see <http://finan
 
 <br><center>**5.  Results**</center><br>
 
+
+Q - bench asset --> SPY TLT GLD only
+Q - period --> all / before & after covid19
+Q - Heteroskedecity option -- change the probability
+Q - test portfolio make
+Q - SSR / SST --> wald test option 
+
+
 1. BTC result
 
 1) Period 2014 ~ 2022.2
