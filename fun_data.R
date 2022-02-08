@@ -186,9 +186,8 @@ hypothesis.matrix <- rbind(c(1,0,0,0),c(0,1,1,1))
 rhs=c(0,1)   # right-hand-side vector for hypothesis
 
 HK_test <- lht(model,hypothesis.matrix,rhs)
-HK_test
 # HK_test <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
-# HK_test
+HK_test
 
 HK_test[2,5]  # F test  - HK test
 HK_test[2,6]  # Pr(>F)  - HK test
