@@ -62,6 +62,7 @@ rets = Return.calculate(prices) %>% na.omit()
 
 # save rets : xts.zoo
 save(rets,file="rets.Rdata")
+# load("rets.Rdata")
 
 ### correlation graph
 library(corrplot)
@@ -163,9 +164,16 @@ step2_test[2,5]  # F test  : step- test 2
 step2_test[2,6]  # Pr(>F)  : step- test 2
 
 ##############################################################################
+
+# library(dynlm)
+# dynlm(BTC ~ (SPY + TLT + GLD), data=rets)
 #### Regression Model - QQQ GLD exclusive
-model <- lm(BTC ~ (SPY + TLT + GLD), data=rets)
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets)
+# model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets)
+# model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets)
+# model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets["/2019"])
+# model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets["/2019"])
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets["2020/"])
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets["2020/"])
 
 summary(model)
 model$coefficients[1]   # alpha
@@ -204,20 +212,48 @@ step2_test[2,5]  # F test  : step- test 2
 step2_test[2,6]  # Pr(>F)  : step- test 2
 
 #
-model$coefficients[1]   # alpha
-sum(model$coefficients) - model$coefficients[[1]]  # beta
-HK_test[2,5]  # F test  - HK test
-HK_test[2,6]  # Pr(>F)  - HK test
-step1_test[2,5]  # F test  - step-1 test
-step1_test[2,6]  # Pr(>F)  : step-1 test
-step2_test[2,5]  # F test  : step- test 2
-step2_test[2,6]  # Pr(>F)  : step- test 2
+alpha  = model$coefficients[[1]]   # alpha
+beta   = sum(model$coefficients) - model$coefficients[[1]]  # beta
+HK_F   = HK_test[2,5]  # F test  - HK test
+HK_Pr  = HK_test[2,6]  # Pr(>F)  - HK test
+st1_F  = step1_test[2,5]  # F test  - step-1 test
+st1_Pr = step1_test[2,6]  # Pr(>F)  : step-1 test
+st2_F  = step2_test[2,5]  # F test  : step- test 2
+st2_Pr = step2_test[2,6]  # Pr(>F)  : step- test 2
+lm_model = as.character(model$call)[2]
+lm_data  = as.character(model$call)[3]
+# library(tidyverse)
 
+# df<-data.frame("hi","bye")
+# names(df)<-c("hello","goodbye")
+# df %>% add_row(hello = "hola", 
+#                goodbye = "ciao")
 
-
-
-
-
+# df <- data.frame(
+#       alpha,
+#       beta,
+#       HK_F,
+#       HK_Pr,
+#       st1_F,
+#       st1_Pr,
+#       st2_F,
+#       st2_Pr,
+#       lm_model,
+#       lm_data
+# )
+df <- df %>% add_row(
+      alpha,
+      beta,
+      HK_F,
+      HK_Pr,
+      st1_F,
+      st1_Pr,
+      st2_F,
+      st2_Pr,
+      lm_model,
+      lm_data
+)
+df
 
 
 
