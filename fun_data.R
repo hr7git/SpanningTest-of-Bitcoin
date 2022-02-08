@@ -175,6 +175,7 @@ step2_test[2,6]  # Pr(>F)  : step- test 2
 model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets["2020/"])
 model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets["2020/"])
 
+
 summary(model)
 model$coefficients[1]   # alpha
 sum(model$coefficients) - model$coefficients[[1]]  # beta
@@ -186,9 +187,8 @@ rhs=c(0,1)   # right-hand-side vector for hypothesis
 
 HK_test <- lht(model,hypothesis.matrix,rhs)
 HK_test
-
-HK_testw <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
-HK_testw
+# HK_test <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
+# HK_test
 
 HK_test[2,5]  # F test  - HK test
 HK_test[2,6]  # Pr(>F)  - HK test
@@ -196,6 +196,7 @@ HK_test[2,6]  # Pr(>F)  - HK test
 ##### step-1 test  : alpha = 0
 lhs <- c(1,0,0,0)
 step1_test <- lht(model,lhs,c(0))
+# step1_test <- lht(model,lhs,c(0),white.adjust='hc3')
 step1_test
 step1_test[2,5]  # F test  - step-1 test
 step1_test[2,6]  # Pr(>F)  : step-1 test
@@ -207,6 +208,7 @@ summary(model2)
 sum(model2$coefficients) # beta
 lhs <- rbind(c(1,1,1))
 step2_test <- lht(model2,lhs,c(1))
+# step2_test <- lht(model2,lhs,c(1),white.adjust='hc3')
 step2_test
 step2_test[2,5]  # F test  : step- test 2
 step2_test[2,6]  # Pr(>F)  : step- test 2
@@ -214,12 +216,12 @@ step2_test[2,6]  # Pr(>F)  : step- test 2
 #
 alpha  = model$coefficients[[1]]   # alpha
 beta   = sum(model$coefficients) - model$coefficients[[1]]  # beta
-HK_F   = HK_test[2,5]  # F test  - HK test
-HK_Pr  = HK_test[2,6]  # Pr(>F)  - HK test
-st1_F  = step1_test[2,5]  # F test  - step-1 test
-st1_Pr = step1_test[2,6]  # Pr(>F)  : step-1 test
-st2_F  = step2_test[2,5]  # F test  : step- test 2
-st2_Pr = step2_test[2,6]  # Pr(>F)  : step- test 2
+HK_F   = HK_test$F[2]            # F test  - HK test
+HK_Pr  = HK_test$`Pr(>F)`[2]     # Pr(>F)  - HK test HK_test$`Pr(>F)`
+st1_F  = step1_test$F[2]         # F test  - step-1 test
+st1_Pr = step1_test$`Pr(>F)`[2]  # Pr(>F)  : step-1 test
+st2_F  = step2_test$F[2]         # F test  : step- test 2
+st2_Pr = step2_test$`Pr(>F)`[2]  # Pr(>F)  : step- test 2
 lm_model = as.character(model$call)[2]
 lm_data  = as.character(model$call)[3]
 # library(tidyverse)
