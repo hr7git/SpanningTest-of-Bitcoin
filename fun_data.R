@@ -60,6 +60,9 @@ prices = do.call(cbind,
 
 rets = Return.calculate(prices) %>% na.omit()
 
+# save rets : xts.zoo
+save(rets,file="rets.Rdata")
+
 ### correlation graph
 library(corrplot)
 
@@ -77,11 +80,12 @@ covmat = cov(rets)
 #################### Chart  ###########################
 
 chart_Series(Ad(GLD),Ad(SPY))
+chart_Series(Ad(SPY))
 chart_Series(Ad(BTC))
 chartSeries(`BTC`)
 chartSeries(`SPY`)
 ##################### Image ###################################
-# save.image(file="data_quant.RData") 
+save.image(file="data_quant.RData")
 # load("data_quant.RData")
 
 
@@ -90,62 +94,61 @@ chartSeries(`SPY`)
 
 # Not run below
 ##########################################################
-#  Regression
+#  Regression model
 ##########################################################
-model_q <- lm(`BTC` ~ . -`ETH`, data=rets)    # regression 
-model_q <- lm(BTC ~ (SPY + IEV + EWJ + EEM + TLT + IEF + IYR + RWX + GLD + DBC), data=rets)
-model_q <- lm(BTC ~ (SPY + EEM + TLT + IEF + IYR + RWX + GLD + DBC), data=rets)
-model_q <- lm(BTC ~ (SPY + EEM + TLT + IYR + RWX + GLD + DBC), data=rets)
-model_q <- lm(BTC ~ (SPY + EEM + TLT + IYR + GLD + DBC), data=rets)
-model_q <- lm(BTC ~ (SPY + EEM + TLT + IYR + GLD + DBC), data=rets["/2019"])
-model_q <- lm(BTC ~ (SPY + EEM + TLT + IYR + GLD + DBC), data=rets["2020/"])
-model_q <- lm(`BTC` ~ . -`ETH`, data=rets)    # regression 
-model_q <- lm(`BTC` ~ . -`ETH`, data=rets["/2019"])    # regression 
-model_q <- lm(`BTC` ~ . -`ETH`, data=rets["2020/"])    # regression 
-model_q2 <- lm(`BTC` ~ . -1 -`ETH`, data=rets)    # regression 
+model  <- lm(`BTC` ~ . -`ETH`, data=rets)    # regression 
+model  <- lm(BTC ~ (SPY + IEV + EWJ + EEM + TLT + IEF + IYR + RWX + GLD + DBC), data=rets)
+model <- lm(BTC ~ (SPY + EEM + TLT + IEF + IYR + RWX + GLD + DBC), data=rets)
+model <- lm(BTC ~ (SPY + EEM + TLT + IYR + RWX + GLD + DBC), data=rets)
+model <- lm(BTC ~ (SPY + EEM + TLT + IYR + GLD + DBC), data=rets)
+model <- lm(BTC ~ (SPY + EEM + TLT + IYR + GLD + DBC), data=rets["/2019"])
+model <- lm(BTC ~ (SPY + EEM + TLT + IYR + GLD + DBC), data=rets["2020/"])
+model <- lm(`BTC` ~ . -`ETH`, data=rets)    # regression 
+model <- lm(`BTC` ~ . -`ETH`, data=rets["/2019"])    # regression 
+model <- lm(`BTC` ~ . -`ETH`, data=rets["2020/"])    # regression 
+model2 <- lm(`BTC` ~ . -1 -`ETH`, data=rets)    # regression 
 # bench Aseets : SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC
-model_q <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets)
-model_q <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets["/2019"])
-model_q <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets["2020/"])
+model <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets)
+model <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets["/2019"])
+model <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets["2020/"])
 
-summary(model_q)
-model_q$coefficients[1]   # alpha
-sum(model_q$coefficients) - model_q$coefficients[[1]] # beta
+summary(model)
+model$coefficients[1]   # alpha
+sum(model$coefficients) - model$coefficients[[1]] # beta
 
 ##### HK test
 # lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
-# 
 # The hypothesis matrix : 
 # the rows of which specify linear combinations of the model coefficients
 hypothesis.matrix <- rbind(c(1,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1))
 rhs=c(0,1)   # right-hand-side vector for hypothesis
 
-HK_test_q <- lht(model_q,hypothesis.matrix,rhs)
-HK_test_q
+HK_test <- lht(model,hypothesis.matrix,rhs)
+HK_test
 
-HK_test_qw <- lht(model_q,hypothesis.matrix,rhs,white.adjust='hc3')
-HK_test_qw
+HK_testw <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
+HK_testw
 
-HK_test_q[2,5]  # F test  - HK test
-HK_test_q[2,6]  # Pr(>F)  - HK test
+HK_test[2,5]  # F test  - HK test
+HK_test[2,6]  # Pr(>F)  - HK test
 
 ##### step-1 test  : alpha = 0
 lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
-step1_test_q <- lht(model_q,lhs,c(0))
-step1_test_q
-step1_test_q[2,5]  # F test  - step-1 test
-step1_test_q[2,6]  # Pr(>F)  : step-1 test
+step1_test <- lht(model,lhs,c(0))
+step1_test
+step1_test[2,5]  # F test  - step-1 test
+step1_test[2,6]  # Pr(>F)  : step-1 test
 
 ##### step- test 2 : beta=1 condition on alpha = 0
-##### unresrticted model condition on alpha =0  : model_q2
-model_q2 <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC) -1, data=rets)
-summary(model_q2)
-sum(model_q2$coefficients) # beta
+##### unresrticted model condition on alpha =0  : model2
+model2 <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC) -1, data=rets)
+summary(model2)
+sum(model2$coefficients) # beta
 lhs <- rbind(c(1,1,1,1,1,1,1,1))
-step2_test_q <- lht(model_q2,lhs,c(1))
-step2_test_q
-step2_test_q[2,5]  # F test  : step- test 2
-step2_test_q[2,6]  # Pr(>F)  : step- test 2
+step2_test <- lht(model2,lhs,c(1))
+step2_test
+step2_test[2,5]  # F test  : step- test 2
+step2_test[2,6]  # Pr(>F)  : step- test 2
 
 
 ################# lm formula #############################
