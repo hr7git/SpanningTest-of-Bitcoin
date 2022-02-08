@@ -256,12 +256,6 @@ kable(head(df_table,12),
   3. The Geometry of mean-variancce spanning test
   
 
-```{r}
-  # load("rets.Rdata")
-  # load("data_quant.RData")
-  load("C:/Users/hanap/Dropbox/ak2424/KD/1. SRP/r_test/nn_list.RData")
-```
-
 
 ```{r}
  library(quantmod)
@@ -306,6 +300,13 @@ method : k
   3. HK test  
   4. Step1 test  
   5. Step2 test  
+
+```{r}
+  # load("rets.Rdata")
+  # load("data_quant.RData")
+  load("C:/Users/hanap/Dropbox/ak2424/KD/1. SRP/r_test/nn_list.RData")
+```
+
 
 ```{r, `echo = FALSE`}
 
