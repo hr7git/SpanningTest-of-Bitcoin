@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r ,echo=FALSE,message=FALSE}
 
-# library(readr)
+library(readr)
 # library(lmtest)
 library(tidyverse)
 library(data.table)
@@ -116,16 +116,14 @@ Table 4.1 Summary of Cyptocurrency (Dec 22,2021)
 
   The benchmark portfolio selected asset allocations of HMC Portfolio : we should replicating it with accessible instruments by ETF.
 
-</br>Table 4.2 Asset allocations of HMC Portfolio Set 
+</br>Table 4.2 Asset allocations of Harvard Univ Portfolio Set 
 ```{r,echo=FALSE,message=FALSE }
 
-df_table <- read_excel("Ivy Asset Allocation.xlsx",
-                                    sheet = "harvard")
+df_table <- read_excel("C:/Users/hanap/Dropbox/ak2424/KD/1. SRP/r_test/portfolios.xlsx",sheet = "harvard")
 
 kable(head(df_table,12),
       caption = "Harvard Management Company Portfolio",
       align = c("l","l","l"))
-
 ``` 
 
 <Table 4.2> shows Harvard University's fund portfolio comprising stocks, bonds, and real estate. To represent these assets, the ETF portfolio in Table 4.3 is used as a benchmark asset set.
@@ -133,46 +131,15 @@ kable(head(df_table,12),
 
 ```{r,echo=FALSE,message=FALSE }
 
-# csvfile <-'HMC-portfolio.csv'
-# # Store the csv file into the data frame of "df"
-# df_hmc <- read.csv(csvfile)
-# HMC : Harvard Management Company - Harvard portfolio
-# benchmark_set <- read_csv("benchmark_set.csv")
-benchmark_set <- read_csv("https://www.dropbox.com/s/z42btvylghq6lr8/benchmark_set.csv?dl=0")
-# https://www.dropbox.com/s/z42btvylghq6lr8/benchmark_set.csv?dl=0
+df_table <- read_excel("C:/Users/hanap/Dropbox/ak2424/KD/1. SRP/r_test/portfolios.xlsx",sheet = "benchmark_set")
 
-kable(head(benchmark_set,11),
+kable(head(df_table,12),
       caption = "Benchmark Test Asset",
       align = c("c","l","l","l"))
 
 ```
 ETF is the price from yahoo.finance. For more details on price see <http://finance.yahoo.com>.  
 <br><br>
-
-
-<!-- Table 4.3 Asset allocations of Yale's Endowment Funds   -->
-
-<!--   Asset Class |Ratio |Ticker |ETF Explanation -->
-<!--  :------ | :---  | :---   | :-------- -->
-<!--  Total Stock Market        |30%    | VTI  |Vanguard Total Stock Market ETF  -->
-<!--  International Stock Market|15%    | VXUS |Vanguard Total International Stock ETF   -->
-<!--  Emerging Markets          |5%     | VWO  |Vanguard FTSE Emerging Markets ETF  -->
-<!--  Intermediate Treasury Bonds|15%   | VGIT |Vanguard Intermediate-Term Treasury Index ETF -->
-<!--  TIPS                      |15%    | SCHP |Schwab U.S. TIPS ETF -->
-<!--  REITs                     |20%    | VNQ  |Vanguard Real Estate ETF   -->
-   
- 
-<!-- </br>Table 4.3 The Ivy 10’s Asset Allocation   -->
-<!-- ```{r,echo=FALSE,message=FALSE } -->
-<!-- df_table <- read_excel("Ivy Asset Allocation.xlsx",sheet = "ivy10") -->
-<!-- kable(head(df_table,12), -->
-<!--       caption = "Ivy Asset Allocation.xlsx", -->
-<!--       align = c("l","l","l")) -->
-<!-- ```    -->
- 
-
- 
-
 
 
 <br><center>**5.  Results**</center><br>
@@ -182,8 +149,56 @@ ETF is the price from yahoo.finance. For more details on price see <http://finan
 1) Period 2014 ~ 2022.2
 ```{r}
   load("rets.Rdata")
-model <- lm(BTC ~ (SPY+QQQ+EEM+TLT+IEF+IYR+GLD+DBC), data=rets)
+  ####
+model <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets)
+model2 <- lm(BTC ~ 0 + (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets)
+
 summary(model)
+model$coefficients[1]   # alpha
+sum(model$coefficients) - model$coefficients[[1]] # beta
+
+##### HK test
+# the rows of which specify linear combinations of the model coefficients
+hypothesis.matrix <- rbind(c(1,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1))
+rhs=c(0,1)   # right-hand-side vector for hypothesis
+
+HK_test <- lht(model,hypothesis.matrix,rhs)
+HK_test
+
+HK_testw <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
+HK_testw
+
+HK_test[2,5]  # F test  - HK test
+HK_test[2,6]  # Pr(>F)  - HK test
+
+##### step-1 test  : alpha = 0
+lhs <- c(1,0,0,0,0,0,0,0,0)
+step1_test <- lht(model,lhs,c(0))
+step1_test
+step1_test[2,5]  # F test  - step-1 test
+step1_test[2,6]  # Pr(>F)  : step-1 test
+
+##### step- test 2 : beta=1 condition on alpha = 0
+##### unresrticted model condition on alpha =0  : model2
+# model2 <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC) -1, data=rets)
+summary(model2)
+sum(model2$coefficients) # beta
+lhs <- rbind(c(1,1,1,1,1,1,1,1))
+step2_test <- lht(model2,lhs,c(1))
+step2_test
+step2_test[2,5]  # F test  : step- test 2
+step2_test[2,6]  # Pr(>F)  : step- test 2
+
+#
+model$coefficients[1]   # alpha
+sum(model$coefficients) - model$coefficients[[1]] # beta
+HK_test[2,5]  # F test  - HK test
+HK_test[2,6]  # Pr(>F)  - HK test
+step1_test[2,5]  # F test  : step-1 test
+step1_test[2,6]  # Pr(>F)  : step-1 test
+step2_test[2,5]  # F test  : step- test 2
+step2_test[2,6]  # Pr(>F)  : step- test 2
+
 ```
   coefficient of GLD is 0.412282 p-value is 0.00348 is siginicant 1% level
   
@@ -234,9 +249,6 @@ kable(head(df_table,12),
 
 
 ```  
-
-
-
 
 ### 
   1. stock chart of BTC ...

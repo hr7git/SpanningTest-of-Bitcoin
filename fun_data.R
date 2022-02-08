@@ -112,13 +112,15 @@ model <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets)
 model <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets["/2019"])
 model <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets["2020/"])
 
+####
+model <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets)
+model2 <- lm(BTC ~ 0 + (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets)
+
 summary(model)
 model$coefficients[1]   # alpha
 sum(model$coefficients) - model$coefficients[[1]] # beta
 
 ##### HK test
-# lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
-# The hypothesis matrix : 
 # the rows of which specify linear combinations of the model coefficients
 hypothesis.matrix <- rbind(c(1,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1))
 rhs=c(0,1)   # right-hand-side vector for hypothesis
@@ -133,7 +135,7 @@ HK_test[2,5]  # F test  - HK test
 HK_test[2,6]  # Pr(>F)  - HK test
 
 ##### step-1 test  : alpha = 0
-lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
+lhs <- c(1,0,0,0,0,0,0,0,0)
 step1_test <- lht(model,lhs,c(0))
 step1_test
 step1_test[2,5]  # F test  - step-1 test
@@ -141,7 +143,7 @@ step1_test[2,6]  # Pr(>F)  : step-1 test
 
 ##### step- test 2 : beta=1 condition on alpha = 0
 ##### unresrticted model condition on alpha =0  : model2
-model2 <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC) -1, data=rets)
+# model2 <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC) -1, data=rets)
 summary(model2)
 sum(model2$coefficients) # beta
 lhs <- rbind(c(1,1,1,1,1,1,1,1))
@@ -150,7 +152,14 @@ step2_test
 step2_test[2,5]  # F test  : step- test 2
 step2_test[2,6]  # Pr(>F)  : step- test 2
 
-
+#
+model$coefficients[1]   # alpha
+sum(model$coefficients) - model$coefficients[[1]] # beta
+HK_test[2,5]  # F test  - HK test
+HK_test[2,6]  # Pr(>F)  - HK test
+step2_test[2,5]  # F test  : step- test 2
+step2_test[2,6]  # Pr(>F)  : step- test 2
+step2_test[2,6] * 100
 ################# lm formula #############################
 lm_formula <- list( "`BTC` ~ . -`ETH`",   # yi = BTC
                     "`ETH` ~ . -`BTC`",   # yi = ETH
