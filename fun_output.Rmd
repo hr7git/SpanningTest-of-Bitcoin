@@ -11,16 +11,24 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r ,echo=FALSE,message=FALSE}
-library(dplyr)
-library(readr)
-library(car)
+
+# library(readr)
 # library(lmtest)
 library(tidyverse)
 library(data.table)
 library(knitr)
 library(stringr)
 library(readxl)
+
+
+library(quantmod)  # getsymbols
+library(PerformanceAnalytics)
+library(magrittr)
+library(car)  # lht
+library(tidyr)
+library(dplyr)
 ```
+
 
 <center>**Impact OF Covid-19 to Bitcoin**</center>
 
@@ -129,7 +137,9 @@ kable(head(df_table,12),
 # # Store the csv file into the data frame of "df"
 # df_hmc <- read.csv(csvfile)
 # HMC : Harvard Management Company - Harvard portfolio
-benchmark_set <- read_csv("benchmark_set.csv")
+# benchmark_set <- read_csv("benchmark_set.csv")
+benchmark_set <- read_csv("https://www.dropbox.com/s/z42btvylghq6lr8/benchmark_set.csv?dl=0")
+# https://www.dropbox.com/s/z42btvylghq6lr8/benchmark_set.csv?dl=0
 
 kable(head(benchmark_set,11),
       caption = "Benchmark Test Asset",
@@ -166,6 +176,25 @@ ETF is the price from yahoo.finance. For more details on price see <http://finan
 
 
 <br><center>**5.  Results**</center><br>
+
+1. BTC result
+
+1) Period 2014 ~ 2022.2
+```{r}
+  load("rets.Rdata")
+model <- lm(BTC ~ (SPY+QQQ+EEM+TLT+IEF+IYR+GLD+DBC), data=rets)
+summary(model)
+```
+  coefficient of GLD is 0.412282 p-value is 0.00348 is siginicant 1% level
+  
+2) period 2014 ~ 2019 : Before covid19
+  Coefficients:
+             Estimate Std. Error t value Pr(>|t|)
+GLD          0.329442   0.191074   1.724    0.085 .
+   p values is insigincant 5% level
+3) period 2020 ~ 2022.2 : After covid19
+
+
 
   
 <center>**References**</center><br>
@@ -213,19 +242,22 @@ kable(head(df_table,12),
   1. stock chart of BTC ...
   2. correlations between asset
   3. The Geometry of mean-variancce spanning test
+  
 
 ```{r}
-  load("data_quant.RData")
-  load("nn_list.RData")
+  # load("rets.Rdata")
+  # load("data_quant.RData")
+  load("C:/Users/hanap/Dropbox/ak2424/KD/1. SRP/r_test/nn_list.RData")
 ```
 
+
 ```{r}
-library(quantmod)
-chart_Series(Ad(SPY))
-# chart_Series(Ad(`GLD`))
-chart_Series(Ad(`BTC-USD`))
-# chartSeries(`BTC-USD`)
-chartSeries(`ETH-USD`)
+ library(quantmod)
+ chart_Series(rets$BTC)
+ chart_Series(rets$SPY)
+ chart_Series(rets$GLD)
+ # chartSeries(`BTC`)
+ # chartSeries(`ETH`)
 ```
 
 correlation between asset : 
