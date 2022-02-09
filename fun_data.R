@@ -15,10 +15,10 @@
 #  Data make
 ##########################################################
 # 
-library(quantmod)  # getsymbols
-library(PerformanceAnalytics)
+library(quantmod)    # getsymbols, xts->dataframe in lm
+library(PerformanceAnalytics)   # Return.calculate() 
 library(magrittr)
-library(car)  # lht 
+library(car)        # lht 
 library(tidyr)
 library(dplyr)
 ##############  get data from yahoo   ##########################################
@@ -52,17 +52,29 @@ save.image(file="data_getsymbols.RData")
 
 ### variables setting : symbol + BTC
 # assets <- c( symbols , 'BTC','ETH')
-assets <- c( symbols , 'BTC')
-### Data procedure - main
-prices = do.call(cbind,
+
+### Data procedure - main : BTC
+    assets <- c( symbols, 'BTC')
+    prices = do.call(cbind,
                  lapply(assets, function(x) Ad(get(x)))) %>%
-  setNames(assets)
+              setNames(assets)
+    rets = Return.calculate(prices) %>% na.omit()
+    # save rets : xts.zoo
+    save(rets, file="rets.Rdata")
+    # load("rets.Rdata")
 
-rets = Return.calculate(prices) %>% na.omit()
+### Data procedure - main : BTC ETH
+    assets <- c( symbols, 'BTC', 'ETH')
+    prices2 = do.call(cbind,
+                  lapply(assets, function(x) Ad(get(x)))) %>%
+              setNames(assets)
+    rets2 = Return.calculate(prices2) %>% na.omit()
+    # save rets : xts.zoo
+    save(rets2, file="rets2.Rdata")
+    # load("rets.Rdata")
 
-# save rets : xts.zoo
-save(rets,file="rets.Rdata")
-# load("rets.Rdata")
+
+
 
 ### correlation graph
 library(corrplot)
@@ -223,26 +235,8 @@ st2_F  = step2_test$F[2]         # F test  : step- test 2
 st2_Pr = step2_test$`Pr(>F)`[2]  # Pr(>F)  : step- test 2
 lm_model = as.character(model$call)[2]
 lm_data  = as.character(model$call)[3]
-# library(tidyverse)
 
-# df<-data.frame("hi","bye")
-# names(df)<-c("hello","goodbye")
-# df %>% add_row(hello = "hola", 
-#                goodbye = "ciao")
-
-# df <- data.frame(
-#       alpha,
-#       beta,
-#       HK_F,
-#       HK_Pr,
-#       st1_F,
-#       st1_Pr,
-#       st2_F,
-#       st2_Pr,
-#       lm_model,
-#       lm_data
-# )
-df <- df %>% add_row(
+df <- data.frame(
       alpha,
       beta,
       HK_F,
@@ -252,82 +246,207 @@ df <- df %>% add_row(
       st2_F,
       st2_Pr,
       lm_model,
-      lm_data
-)
-df
+      lm_data )
+
+# df <- df %>% add_row(
+#       alpha,
+#       beta,
+#       HK_F,
+#       HK_Pr,
+#       st1_F,
+#       st1_Pr,
+#       st2_F,
+#       st2_Pr,
+#       lm_model,
+#       lm_data )
 
 
+###################### BASE ####################################
+############################ BTC / Data:2014.1 
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets)
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets)
+df01 <- wald_test1(model, model2)  # initialize
+
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets["/2019"])
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets["/2019"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets["2020/"])
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets["2020/"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+############################ BTC / Data:2017.11
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2)
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2)
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["/2019"])
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["2020/"])
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+############################ ETH / Data:2017.11
+model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2)
+model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
+model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
+model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+############################ BTC + ETH / Data:2017.11
+model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2)
+model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
+model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
+model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+df_base <- df01
+save(df_base, file="df_base.Rdata")
+######
+wald_test1 <- function(model, model2) {
+  ##### HK test
+    # the rows :linear combinations of the model coefficients
+    hypothesis.matrix <- rbind(c(1,0,0,0),c(0,1,1,1))
+    rhs=c(0,1)   # right-hand-side vector for hypothesis
+    HK_test <- lht(model,hypothesis.matrix,rhs)
+    # HK_test <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
+  
+  ##### step-1 test  : alpha = 0
+    lhs <- c(1,0,0,0)
+    step1_test <- lht(model,lhs,c(0))
+    # step1_test <- lht(model,lhs,c(0),white.adjust='hc3')
+  
+  ##### step- test 2 : beta=1 condition on alpha = 0
+    ##### unresrticted model condition on alpha =0  : model2
+    # model2 <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC) -1, data=rets)
+    lhs <- rbind(c(1,1,1))
+    step2_test <- lht(model2,lhs,c(1))
+    # step2_test <- lht(model2,lhs,c(1),white.adjust='hc3')
+    #
+    alpha  = model$coefficients[[1]]   # alpha
+    beta   = sum(model$coefficients) - model$coefficients[[1]]  # beta
+    HK_F   = HK_test$F[2]            # F test  - HK test
+    HK_Pr  = HK_test$`Pr(>F)`[2]     # Pr(>F)  - HK test HK_test$`Pr(>F)`
+    st1_F  = step1_test$F[2]         # F test  - step-1 test
+    st1_Pr = step1_test$`Pr(>F)`[2]  # Pr(>F)  : step-1 test
+    st2_F  = step2_test$F[2]         # F test  : step- test 2
+    st2_Pr = step2_test$`Pr(>F)`[2]  # Pr(>F)  : step- test 2
+    lm_model = as.character(model$call)[2]
+    lm_data  = as.character(model$call)[3]
+  
+    df <- data.frame(alpha, beta,
+                     HK_F, HK_Pr,
+                     st1_F, st1_Pr,
+                     st2_F, st2_Pr,
+                     lm_model, lm_data )
+    
+    return(df)
+}
+
+##################### heteroskedasticity ##############################
+############################ BTC / Data:2014.1 
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets)
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets)
+df01 <- wald_test2(model, model2)  # initialize
+
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets["/2019"])
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets["/2019"])
+df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets["2020/"])
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets["2020/"])
+df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+############################ BTC / Data:2017.11
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2)
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2)
+df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["/2019"])
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["2020/"])
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+############################ ETH / Data:2017.11
+model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2)
+model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
+df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
+model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
+model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+############################ BTC + ETH / Data:2017.11
+model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2)
+model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
+df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
+model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
+model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+df_hetero <- df01
+save(df_hetero, file="df_hetero.Rdata")
+######
+wald_test2 <- function(model, model2) {
+  ##### HK test
+  # the rows :linear combinations of the model coefficients
+  hypothesis.matrix <- rbind(c(1,0,0,0),c(0,1,1,1))
+  rhs=c(0,1)   # right-hand-side vector for hypothesis
+  HK_test <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
+  # HK_test <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
+  
+  ##### step-1 test  : alpha = 0
+  lhs <- c(1,0,0,0)
+  step1_test <- lht(model,lhs,c(0),white.adjust='hc3')
+  # step1_test <- lht(model,lhs,c(0),white.adjust='hc3')
+  
+  ##### step- test 2 : beta=1 condition on alpha = 0
+  ##### unresrticted model condition on alpha =0  : model2
+  # model2 <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC) -1, data=rets)
+  lhs <- rbind(c(1,1,1))
+  step2_test <- lht(model2,lhs,c(1),white.adjust='hc3')
+  # step2_test <- lht(model2,lhs,c(1),white.adjust='hc3')
+  #
+  alpha  = model$coefficients[[1]]   # alpha
+  beta   = sum(model$coefficients) - model$coefficients[[1]]  # beta
+  HK_F   = HK_test$F[2]            # F test  - HK test
+  HK_Pr  = HK_test$`Pr(>F)`[2]     # Pr(>F)  - HK test HK_test$`Pr(>F)`
+  st1_F  = step1_test$F[2]         # F test  - step-1 test
+  st1_Pr = step1_test$`Pr(>F)`[2]  # Pr(>F)  : step-1 test
+  st2_F  = step2_test$F[2]         # F test  : step- test 2
+  st2_Pr = step2_test$`Pr(>F)`[2]  # Pr(>F)  : step- test 2
+  lm_model = as.character(model$call)[2]
+  lm_data  = as.character(model$call)[3]
+  
+  df <- data.frame(alpha, beta,
+                   HK_F, HK_Pr,
+                   st1_F, st1_Pr,
+                   st2_F, st2_Pr,
+                   lm_model, lm_data )
+  
+  return(df)
+}
 
 
-
-
-
-
-
-################# lm formula #############################
-lm_formula <- list( "`BTC` ~ . -`ETH`",   # yi = BTC
-                    "`ETH` ~ . -`BTC`",   # yi = ETH
-                    "`BTC` + `ETH` ~ . ") # i = 1:3
-
-lm_formula2 <- list( "`BTC` ~ . -1 -`ETH`",   # intercept = 0
-                     "`ETH` ~ . -1 -`BTC`",
-                     "`BTC` + `ETH` ~ . -1 ") # i = 1:3
-                  
-* year <- list( "2017" , "2018" , "2019" , "2020" , "2021") # j=1:5
-year <- c( "", "/2019", "2020/") 
-                 
-
-i = 1
-j = 4
-
-fmla <- as.formula(lm_formula[[i]])
-fmla2 <- as.formula(lm_formula2[[i]])
-lm_data <- rets[year[[j]]]
-
-
-######### Function #################################
-###############################################################
-#  model_q  : regression
-#  model_q2 : regression with intercept = 0
-###################################################################
-model_q <- lm(fmla, data = lm_data)    # regression 
-str(fmla)
-summary(model_q)
-
-model_q2 <- lm(formula = fmla2, data = lm_data)  # regression alpha=0
-str(fmla2)
-summary(model_q2)
-###############################################################
-#  from original regression alpha, beta  : model_q1
-#  HK test - F, Pr
-#  Step1 test - F, Pr
-#  step2 test - R, Pr    : model_q2
-###################################################################
-
-##### regression model_q
-model_q$coefficients[1]   # alpha 
-sum(model_q$coefficients) - model_q$coefficients[1]  # beta
-
-##### HK test
-lhs <- rbind(c(1,0,0,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1,1,1))
-HK_test_q <- lht(model_q,lhs,c(0,1))
-HK_test_q
-HK_test_q[2,5]  # F test  - HK test
-HK_test_q[2,6]  # Pr(>F)  - HK test
-
-##### step-1 test  : alpha = 0
-lhs <- c(1,0,0,0,0,0,0,0,0,0,0)
-step1_test_q <- lht(model_q,lhs,c(0))
-step1_test_q
-step1_test_q[2,5]  # F test  - step-1 test
-step1_test_q[2,6]  # Pr(>F)  : step-1 test
-
-##### step- test 2 : beta=1 condition on alpha = 0
-##### unresrticted model condition on alpha =0  : model_q2
-lhs <- rbind(c(1,1,1,1,1,1,1,1,1,1))
-step2_test_q <- lht(model_q2,lhs,c(1))
-step2_test_q
-step2_test_q[2,5]  # F test  : step- test 2
-step2_test_q[2,6]  # Pr(>F)  : step- test 2
 
 

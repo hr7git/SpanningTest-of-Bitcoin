@@ -145,68 +145,28 @@ ETF is the price from yahoo.finance. For more details on price see <http://finan
 <br><center>**5.  Results**</center><br>
 
 
-Q - bench asset --> SPY TLT GLD only
+Q - bench asset --> SPY TLT GLD only ( stock bond + GLD:becuase of psudeo money character)
 Q - period --> all / before & after covid19
-Q - Heteroskedecity option -- change the probability
-Q - test portfolio make
-Q - SSR / SST --> wald test option 
+Q - Heteroskedecity option before/after apply - change the probability
+Q - test portfolio (1.BTC / 2.ETH / 3.BTC+ETH)
+Q - SSR / SST --> wald test option ( equation verify)
 
 
 1. BTC result
 
 1) Period 2014 ~ 2022.2
-```{r}
+```{r,echo=FALSE,message=FALSE}
   load("rets.Rdata")
+  load("df_base.Rdata")
+  load("df_hetero.Rdata")
   ####
-model <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets)
-model2 <- lm(BTC ~ 0 + (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets)
-
-summary(model)
-model$coefficients[1]   # alpha
-sum(model$coefficients) - model$coefficients[[1]] # beta
-
-##### HK test
-# the rows of which specify linear combinations of the model coefficients
-hypothesis.matrix <- rbind(c(1,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1))
-rhs=c(0,1)   # right-hand-side vector for hypothesis
-
-HK_test <- lht(model,hypothesis.matrix,rhs)
-HK_test
-
-HK_testw <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
-HK_testw
-
-HK_test[2,5]  # F test  - HK test
-HK_test[2,6]  # Pr(>F)  - HK test
-
-##### step-1 test  : alpha = 0
-lhs <- c(1,0,0,0,0,0,0,0,0)
-step1_test <- lht(model,lhs,c(0))
-step1_test
-step1_test[2,5]  # F test  - step-1 test
-step1_test[2,6]  # Pr(>F)  : step-1 test
-
-##### step- test 2 : beta=1 condition on alpha = 0
-##### unresrticted model condition on alpha =0  : model2
-# model2 <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC) -1, data=rets)
-summary(model2)
-sum(model2$coefficients) # beta
-lhs <- rbind(c(1,1,1,1,1,1,1,1))
-step2_test <- lht(model2,lhs,c(1))
-step2_test
-step2_test[2,5]  # F test  : step- test 2
-step2_test[2,6]  # Pr(>F)  : step- test 2
-
-#
-model$coefficients[1]   # alpha
-sum(model$coefficients) - model$coefficients[[1]] # beta
-HK_test[2,5]  # F test  - HK test
-HK_test[2,6]  # Pr(>F)  - HK test
-step1_test[2,5]  # F test  : step-1 test
-step1_test[2,6]  # Pr(>F)  : step-1 test
-step2_test[2,5]  # F test  : step- test 2
-step2_test[2,6]  # Pr(>F)  : step- test 2
-
+  kable(head(df_base,12),
+      caption = "wald test - base",
+      align = c("l","l","l"))
+  
+  kable(head(df_hetero,12),
+      caption = "wald test - hetero",
+      align = c("l","l","l"))
 ```
   coefficient of GLD is 0.412282 p-value is 0.00348 is siginicant 1% level
   
@@ -312,18 +272,20 @@ method : k
 ```{r}
   # load("rets.Rdata")
   # load("data_quant.RData")
-  load("C:/Users/hanap/Dropbox/ak2424/KD/1. SRP/r_test/nn_list.RData")
+  # load("C:/Users/hanap/Dropbox/ak2424/KD/1. SRP/r_test/nn_list.RData")
 ```
 
 
-```{r, `echo = FALSE`}
+```{r eval=FALSE, echo=FALSE, include=FALSE}
 
 library(huxtable)
 library(knitr)
 # library(flextable)
 #  library(tidyr)
 #  nn_list
-nn_model   <- list()
+
+  load("C:/Users/hanap/Dropbox/ak2424/KD/1. SRP/r_test/nn_list.RData")
+  nn_model   <- list()
 nn_model2  <- list()
 nn_alpha <- list()
 nn_beta  <- list()
