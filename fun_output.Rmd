@@ -178,7 +178,7 @@ Q - test portfolio (1.BTC / 2.ETH / 3.BTC+ETH)
 Q - SSR / SST --> wald test option ( equation verify)
 
 Q2 - test:BTC+ETH / bench: as add assets / data: after covid19
-
+    -  after add IEF : significantly different
 
 1. BTC result
 
