@@ -196,6 +196,8 @@ Q2 - test:BTC+ETH / bench: as add assets / data: after covid19
       caption = "wald test - hetero",
       align = c("l","l","l"))
 ```
+
+
   coefficient of GLD is 0.412282 p-value is 0.00348 is siginicant 1% level
   
 2) period 2014 ~ 2019 : Before covid19
@@ -205,7 +207,21 @@ GLD          0.329442   0.191074   1.724    0.085 .
    p values is insigincant 5% level
 3) period 2020 ~ 2022.2 : After covid19
 
+4) Q2 - test:BTC+ETH / bench: as add assets / data: after covid19
+    -  after add IEF : Pr >  0.05 - benchmark set can span test set
+    -  it means if we make portfolis with SPY TLT IEF GLD, then it can span BTC ETH set
+```{r,echo=FALSE,message=FALSE}
 
+  load("df_bench.Rdata")
+  ####
+  kable(head(df_bench,12),
+      caption = "Bench data set",
+      align = c("l","l","l"))
+
+```    
+
+5) mean-variance efficient frontier graph
+    - BTC ETH / SPY TLT GLD IEF
 
   
 <center>**References**</center><br>
