@@ -106,6 +106,12 @@ save.image(file="data_quant.RData")
 
 
 
+##########################################################
+#  fportfolio - efficient frontier line
+#  https://www.youtube.com/watch?v=5gmhZEl0kI8
+#  fportfolio in r -- googling
+
+
 
 
 # Not run below
@@ -262,10 +268,13 @@ df <- data.frame(
 #       st2_Pr,
 #       lm_model,
 #       lm_data )
-###################### Bench mark set ############################
+
+
+###################### Bench mark set 1 ############################
 # Test : BTC + ETH
-# Bench : added 
+# Bench : set compare
 # data : after covid19
+# result - aftger add IEF : bench can span test(BTC+ETH)
 ############################ bench mark 
 model  <- lm(BTC+ETH~(SPY+TLT+GLD), data=rets2["2020/"])
 hypothesis.matrix <- rbind(c(1,0,0,0),c(0,1,1,1))
@@ -328,8 +337,18 @@ save(df_bench, file="df_bench.Rdata")
     return(df)
   }
 
-
-
+###################### Bench mark set 2 ############################
+# wald test : Omitted variable Bias
+# Frome above IEF adding to bench test
+library(lmtest)
+load("rets2.Rdata")
+model  <- lm(BTC+ETH~(SPY+TLT+GLD), data=rets2["2020/"])
+model_2  <- lm(BTC+ETH~(SPY+TLT+GLD+IEF), data=rets2["2020/"])
+waldtest(model, model_2, test = "F")
+# result : Pr(>F) = 0.858 is insignificant
+# how to interpret ?
+mean(rets2$SPY)
+var(rets2$SPY, rets2$TLT)
 ###################### BASE ####################################
 ############################ BTC / Data:2014.1 
 model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets)
