@@ -259,6 +259,85 @@ df <- data.frame(
 #       st2_Pr,
 #       lm_model,
 #       lm_data )
+###################### Bench mark set ############################
+# Test : BTC + ETH
+# Bench : added 
+# data : after covid19
+############################ bench mark 
+model  <- lm(BTC+ETH~(SPY+TLT+GLD), data=rets2["2020/"])
+hypothesis.matrix <- rbind(c(1,0,0,0),c(0,1,1,1))
+df01 <- regress_bench(model, hypothesis.matrix)  # initialize
+
+model  <- lm(BTC+ETH~(SPY+TLT+GLD+QQQ), data=rets2["2020/"])
+hypothesis.matrix <- rbind(c(1,0,0,0,0),c(0,1,1,1,1))
+df02 <- regress_bench(model, hypothesis.matrix); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC+ETH~(SPY+TLT+GLD+QQQ+IYR), data=rets2["2020/"])
+hypothesis.matrix <- rbind(c(1,0,0,0,0,0),c(0,1,1,1,1,1))
+df02 <- regress_bench(model, hypothesis.matrix); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC+ETH~(SPY+TLT+GLD+QQQ+IYR+DBC), data=rets2["2020/"])
+hypothesis.matrix <- rbind(c(1,0,0,0,0,0,0),c(0,1,1,1,1,1,1))
+df02 <- regress_bench(model, hypothesis.matrix); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC+ETH~(SPY+TLT+GLD+QQQ+IYR+DBC+IEF), data=rets2["2020/"])
+hypothesis.matrix <- rbind(c(1,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1))
+df02 <- regress_bench(model, hypothesis.matrix); df01 <- rbind(df01,df02)  # add-rbind
+
+############################ Befroe covid19
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["/2019"])
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
+model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
+model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+############################ After covid19
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["2020/"])
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
+model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
+model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+#######################
+df_bench <- df01
+save(df_bench, file="df_bench.Rdata")
+######
+
+  regress_bench <- function(model, hypothesis.matrix) {
+    ##### HK test
+    # the rows :linear combinations of the model coefficients
+    # hypothesis.matrix <- rbind(c(1,0,0,0),c(0,1,1,1))
+    rhs=c(0,1)   # right-hand-side vector for hypothesis
+    HK_test <- lht(model,hypothesis.matrix,rhs)
+    # HK_test <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
+  
+    #
+    alpha  = model$coefficients[[1]]   # alpha
+    beta   = sum(model$coefficients) - model$coefficients[[1]]  # beta
+    HK_F   = HK_test$F[2]            # F test  - HK test
+    HK_Pr  = HK_test$`Pr(>F)`[2]     # Pr(>F)  - HK test HK_test$`Pr(>F)`
+  
+    lm_model = as.character(model$call)[2]
+    lm_data  = as.character(model$call)[3]
+    
+    df <- data.frame(alpha, beta,
+                     HK_F, HK_Pr,
+                     lm_model, lm_data )
+    
+    return(df)
+  }
+
 
 
 ###################### BASE ####################################
@@ -311,8 +390,49 @@ model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
 model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
 df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
 
-df_base <- df01
-save(df_base, file="df_base.Rdata")
+###################### BASE 2 period order ############################
+
+############################ all period
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2)
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2)
+df01 <- wald_test1(model, model2)  # initialize
+
+model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2)
+model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2)
+model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+############################ Befroe covid19
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["/2019"])
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
+model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
+model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+############################ After covid19
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["2020/"])
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
+model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
+model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+#######################
+df_base2 <- df01
+save(df_base2, file="df_base2.Rdata")
 ######
 wald_test1 <- function(model, model2) {
   ##### HK test
