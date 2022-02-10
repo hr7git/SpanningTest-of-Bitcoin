@@ -42,6 +42,9 @@ getSymbols(symbols, src = 'yahoo', from = '2014-01-01')
 # Bitcoin USD  & Etherium USD 
 BTC = getSymbols('BTC-USD', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) 
 ETH = getSymbols('ETH-USD', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) 
+SNP = getSymbols('^GSPC', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) #S&P500 index
+TYX = getSymbols('^TYX', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) #30Y bonds
+TNX = getSymbols('^TNX', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) #10Y bonds
 # QQQ = getSymbols('QQQ', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) 
 
 save.image(file="data_getsymbols.RData") 
