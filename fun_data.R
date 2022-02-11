@@ -75,10 +75,26 @@ save.image(file="data_getsymbols.RData")
     # save rets : xts.zoo
     save(rets2, file="rets2.Rdata")
     # load("rets.Rdata")
-
-
-
-
+    
+##### convert zoo into timeSeries
+    library(timeSeries)
+    library(fPortfolio)
+    # library(quantmod)
+    # library(dplyr)
+    # library(PerformanceAnalytics)
+    library(ggplot2)
+    
+    portfolio_rets <- as.timeSeries(rets)
+    ##### fPortfolio
+    eff_Frontier <- portfolioFrontier(portfolio_rets, 
+                                     constraints = "LongOnly",
+                                     title = "Bitcoin spanning Test"
+                                     )
+    plot(eff_Frontier,c(1,2,3,4))
+    plot(eff_Frontier,c(1,2,3,4,5,7,8))
+    
+    
+    
 ### correlation graph
 library(corrplot)
 
