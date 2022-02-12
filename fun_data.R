@@ -49,7 +49,7 @@ TNX = getSymbols('^TNX', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) #
 
 save.image(file="data_getsymbols.RData") 
 ##############   data price ret=returns    #####################################
-
+load("data_getsymbols.RData")
 # symbols_BTC = c( symbols , 'BTC')
 # symbols_ETH = c( symbols,  'ETH')
 
@@ -64,17 +64,22 @@ save.image(file="data_getsymbols.RData")
     rets = Return.calculate(prices) %>% na.omit()
     # save rets : xts.zoo
     save(rets, file="rets.Rdata")
-    # load("rets.Rdata")
 
 ### Data procedure - main : BTC ETH
-    assets <- c( symbols, 'BTC', 'ETH')
+    assets <- c( symbols, 'BTC', 'ETH', 'SNP')
     prices2 = do.call(cbind,
                   lapply(assets, function(x) Ad(get(x)))) %>%
               setNames(assets)
     rets2 = Return.calculate(prices2) %>% na.omit()
     # save rets : xts.zoo
     save(rets2, file="rets2.Rdata")
-    # load("rets.Rdata")
+    
+### Data procedure - TEST only : BTC ETH
+    testset <- c('BTC', 'ETH', 'SPY', 'TLT')
+    rets_test <- rets2[ ,testset]
+    
+    benchset <- c( 'SNP', 'TLT')
+    rets_bench <- rets2[ , benchset]
     
 ##### convert zoo into timeSeries
     library(timeSeries)
@@ -84,16 +89,32 @@ save.image(file="data_getsymbols.RData")
     # library(PerformanceAnalytics)
     library(ggplot2)
     
-    portfolio_rets <- as.timeSeries(rets)
-    ##### fPortfolio
+    #### all eff frontier
+    # 1: Plot Efficient Frontier
+    # 2: Add Minimum Risk Portfolio
+    # 3: Add Tangency Portfolio
+    # 4: Add Risk/Return of Single Assets
+    # 5: Add Equal Weights Portfolio
+    # 6: Add Two Asset Frontiers [0-1 PF Only]
+    # 7: Add Wheel Pie of Weights
+    # 8: Add Monte Carlo Portfolios
+    # 9: Add Sharpe Ratio [MV PF Only]
+    
+    portfolio_rets <- as.timeSeries(rets_test)
     eff_Frontier <- portfolioFrontier(portfolio_rets, 
                                      constraints = "LongOnly",
                                      title = "Bitcoin spanning Test"
                                      )
-    plot(eff_Frontier,c(1,2,3,4))
-    plot(eff_Frontier,c(1,2,3,4,5,7,8))
+    plot(eff_Frontier,c(1,2,3,6))
+
     
-    
+    #### test eff frontier
+    portfolio_rets <- as.timeSeries(rets_bench)
+    eff_Frontier <- portfolioFrontier(portfolio_rets, 
+                                      constraints = "LongOnly",
+                                      title = "Bitcoin spanning Test"
+    )
+    plot(eff_Frontier,c(1,3,4))    
     
 ### correlation graph
 library(corrplot)
