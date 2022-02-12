@@ -118,8 +118,8 @@ load("data_getsymbols.RData")
     
 ### correlation graph
 library(corrplot)
-
-cor(rets) %>%
+corr_data <- rets2
+cor(corr_data) %>%
   corrplot(method = 'color', type = 'lower',
            addCoef.col = 'black', number.cex = 0.7,
            tl.cex = 1, tl.srt = 0, tl.col = 'black',
