@@ -129,6 +129,8 @@ cor(corr_data) %>%
              colorRampPalette(c('blue', 'white', 'red'))(200),
            mar = c(0,0,0.5,0))
 
+data <- rets
+ggcorr(data, method = c("everything", "pearson")) 
 #################################################################
 
 covmat = cov(rets)
@@ -147,7 +149,7 @@ chart.TimeSeries.ggplot2(`BTC`)
 ###
 SPY %>%
   ggplot(aes(x = Index, y = SPY.Adjusted)) +
-  geom_line( color="#69b3a2")
+  geom_line( color="#69b3a2")  
 
 ###
 library(highcharter)
