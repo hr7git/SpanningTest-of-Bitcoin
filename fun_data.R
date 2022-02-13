@@ -133,12 +133,36 @@ cor(corr_data) %>%
 
 covmat = cov(rets)
 #################### Chart  ###########################
+library(ggplot2)
+library(dplyr)
+library(hrbrthemes)
 
 chart_Series(Ad(GLD),Ad(SPY))
 chart_Series(Ad(BTC))
 chart_Series(rets_test$BTC)
 chartSeries(`BTC`)
-chartSeries(`SPY`)
+chart.TimeSeries.ggplot2(`BTC`)
+
+
+###
+SPY %>%
+  ggplot(aes(x = Index, y = SPY.Adjusted)) +
+  geom_line( color="#69b3a2")
+
+###
+library(highcharter)
+
+highchart(type = 'stock') %>%
+  hc_add_series(Ad(BTC)) %>%
+  hc_scrollbar(enabled = FALSE)
+
+###
+library(plotly)
+SPY %>%
+  fortify.zoo %>%
+  plot_ly(x= ~Index, y = ~SPY.Close ) %>%
+  add_lines()
+
 ##################### Image ###################################
 save.image(file="data_quant.RData")
 # load("data_quant.RData")
