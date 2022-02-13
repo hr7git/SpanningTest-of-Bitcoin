@@ -123,8 +123,8 @@ library(corrplot)
 corr_data <- rets2
 cor(corr_data) %>%
   corrplot(method = 'color', type = 'lower',
-           addCoef.col = 'black', number.cex = 0.7,
-           tl.cex = 1, tl.srt = 0, tl.col = 'black',
+           addCoef.col = 'black', number.cex = 0.5,
+           tl.cex = 0.7, tl.srt = 0, tl.col = 'black',
            col =
              colorRampPalette(c('blue', 'white', 'red'))(200),
            mar = c(0,0,0.5,0))
