@@ -10,7 +10,8 @@
 #   install.packages(new.pkg, dependencies = TRUE)}
 
 # https://hyunyulhenry.github.io/quant_cookbook/
-
+# 1. 달러헷지 - dollar index , gold, vix
+# 2. 새로운 포트폴리오 편입
 ##########################################################
 #  Data make
 ##########################################################
@@ -56,7 +57,7 @@ load("data_getsymbols.RData")
 ### variables setting : symbol + BTC
 # assets <- c( symbols , 'BTC','ETH')
 
-### Data procedure - main : BTC
+### Data procedure rets - main : BTC
     assets <- c( symbols, 'BTC')
     prices = do.call(cbind,
                  lapply(assets, function(x) Ad(get(x)))) %>%
@@ -65,7 +66,7 @@ load("data_getsymbols.RData")
     # save rets : xts.zoo
     save(rets, file="rets.Rdata")
 
-### Data procedure - main : BTC ETH
+### Data procedure rets2 - main : BTC ETH
     assets <- c( symbols, 'BTC', 'ETH', 'SNP')
     prices2 = do.call(cbind,
                   lapply(assets, function(x) Ad(get(x)))) %>%
@@ -75,7 +76,7 @@ load("data_getsymbols.RData")
     save(rets2, file="rets2.Rdata")
     
 ### Data procedure - TEST only : BTC ETH
-    testset <- c('BTC', 'ETH', 'SPY', 'TLT')
+    testset <- c('BTC', 'ETH', 'SNP', 'TLT')
     rets_test <- rets2[ ,testset]
     
     benchset <- c( 'SNP', 'TLT')
@@ -89,32 +90,45 @@ load("data_getsymbols.RData")
     # library(PerformanceAnalytics)
     library(ggplot2)
     
-    #### all eff frontier
-    # 1: Plot Efficient Frontier
-    # 2: Add Minimum Risk Portfolio
-    # 3: Add Tangency Portfolio
-    # 4: Add Risk/Return of Single Assets
-    # 5: Add Equal Weights Portfolio
-    # 6: Add Two Asset Frontiers [0-1 PF Only]
-    # 7: Add Wheel Pie of Weights
-    # 8: Add Monte Carlo Portfolios
-    # 9: Add Sharpe Ratio [MV PF Only]
+    # Make a plot selection (or 0 to exit): 
+    #   
+    # 1:   Plot Efficient Frontier
+    # 2:   Add Minimum Risk Portfolio
+    # 3:   Add Tangency Portfolio
+    # 4:   Add Risk/Return of Single Assets
+    # 5:   Add Equal Weights Portfolio
+    # 6:   Add Two Asset Frontiers [LongOnly Only]
+    # 7:   Add Monte Carlo Portfolios
+    # 8:   Add Sharpe Ratio [Markowitz PF Only]
     
-    portfolio_rets <- as.timeSeries(rets_test)
+    # testset <- c('BTC', 'ETH', 'SNP', 'TLT')
+    portfolio_rets <- 100 * as.timeSeries(rets_test)
     eff_Frontier <- portfolioFrontier(portfolio_rets, 
                                      constraints = "LongOnly",
                                      title = "Bitcoin spanning Test"
                                      )
-    plot(eff_Frontier,c(1,2,3,6))
-
+    plot(eff_Frontier,c(1,2,3,4))
+    plot(eff_Frontier,c(2))
+    plot(c(0.01,0.0005), c(0.02,0.0005))
     
     #### test eff frontier
-    portfolio_rets <- as.timeSeries(rets_bench)
+    # benchset <- c( 'SNP', 'TLT')
+    portfolio_rets <- 100 * as.timeSeries(rets_bench)
     eff_Frontier <- portfolioFrontier(portfolio_rets, 
                                       constraints = "LongOnly",
                                       title = "Bitcoin spanning Test"
     )
-    plot(eff_Frontier,c(1,3,4))    
+    plot(eff_Frontier,c(1,3,4))
+    
+    #
+    longFrontier <- eff_Frontier
+    # frontierPlot(object = longFrontier, mText = "MV Portfolio - LongOnly Constraints",
+    #                      risk = "Cov", sharpeRatio = FALSE,xlim = c(0,6)  )
+    
+    tailoredFrontierPlot(object = longFrontier, mText = "Bitcoin",
+                           risk = "Cov", sharpeRatio = FALSE,xlim = c(0,6))
+
+    twoAssetsLines(object = longFrontier,col = c("grey"))
     
 ### correlation graph
 library(corrplot)
