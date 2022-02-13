@@ -75,13 +75,7 @@ load("data_getsymbols.RData")
     # save rets : xts.zoo
     save(rets2, file="rets2.Rdata")
     
-### Data procedure - TEST only : BTC ETH
-    testset <- c('BTC', 'ETH', 'SNP', 'TLT')
-    rets_test <- rets2[ ,testset]
-    
-    benchset <- c( 'SNP', 'TLT')
-    rets_bench <- rets2[ , benchset]
-    
+  
 ##### convert zoo into timeSeries
     library(timeSeries)
     library(fPortfolio)
@@ -90,16 +84,26 @@ load("data_getsymbols.RData")
     # library(PerformanceAnalytics)
     library(ggplot2)
     
+    ### Data procedure - TEST only : BTC ETH
+    load("rets2.Rdata")
+    
+    # rets2 <- rets2["/2019"]
+    rets2 <- rets2["2020/"]
+    
+    testset <- c('BTC', 'ETH', 'SNP', 'TLT')
+    rets_test <- rets2[ ,testset]
+    
+    benchset <- c( 'SNP', 'TLT')
+    rets_bench <- rets2[ , benchset]
+    
     # test data
     portfolio_rets <- rets_test %>% 
                       as.timeSeries() * 100
-    eff_Frontier <- portfolioFrontier(portfolio_rets,
-                                     constraints = "LongOnly")
+    eff_Frontier <- portfolioFrontier(portfolio_rets, constraints = "LongOnly")
     # bench data
     portfolio_rets <- rets_bench %>% 
                       as.timeSeries() * 100
-    eff_Frontier2 <- portfolioFrontier(portfolio_rets,
-                                       constraints = "LongOnly")
+    eff_Frontier2 <- portfolioFrontier(portfolio_rets, constraints = "LongOnly")
     
     #Frontier line
     longFrontier <- eff_Frontier
@@ -107,11 +111,11 @@ load("data_getsymbols.RData")
                            risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6))
     # SNP-TLT Frontier
     longFrontier <- eff_Frontier2
-    # twoAssetsLines(object = longFrontier,col = c("Red"))
+    twoAssetsLines(object = longFrontier,col = c("Red"))
  
-    tailoredFrontierPlot(object = longFrontier, add = TRUE,
-                         risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6), )
- 
+    # tailoredFrontierPlot(object = longFrontier, add = TRUE,
+    #                      risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6), )
+    
     
           
 ### correlation graph
@@ -131,8 +135,8 @@ covmat = cov(rets)
 #################### Chart  ###########################
 
 chart_Series(Ad(GLD),Ad(SPY))
-chart_Series(Ad(SPY))
 chart_Series(Ad(BTC))
+chart_Series(rets_test$BTC)
 chartSeries(`BTC`)
 chartSeries(`SPY`)
 ##################### Image ###################################
