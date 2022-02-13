@@ -90,46 +90,30 @@ load("data_getsymbols.RData")
     # library(PerformanceAnalytics)
     library(ggplot2)
     
-    # Make a plot selection (or 0 to exit): 
-    #   
-    # 1:   Plot Efficient Frontier
-    # 2:   Add Minimum Risk Portfolio
-    # 3:   Add Tangency Portfolio
-    # 4:   Add Risk/Return of Single Assets
-    # 5:   Add Equal Weights Portfolio
-    # 6:   Add Two Asset Frontiers [LongOnly Only]
-    # 7:   Add Monte Carlo Portfolios
-    # 8:   Add Sharpe Ratio [Markowitz PF Only]
+    # test data
+    portfolio_rets <- rets_test %>% 
+                      as.timeSeries() * 100
+    eff_Frontier <- portfolioFrontier(portfolio_rets,
+                                     constraints = "LongOnly")
+    # bench data
+    portfolio_rets <- rets_bench %>% 
+                      as.timeSeries() * 100
+    eff_Frontier2 <- portfolioFrontier(portfolio_rets,
+                                       constraints = "LongOnly")
     
-    # testset <- c('BTC', 'ETH', 'SNP', 'TLT')
-    portfolio_rets <- 100 * as.timeSeries(rets_test)
-    eff_Frontier <- portfolioFrontier(portfolio_rets, 
-                                     constraints = "LongOnly",
-                                     title = "Bitcoin spanning Test"
-                                     )
-    plot(eff_Frontier,c(1,2,3,4))
-    plot(eff_Frontier,c(2))
-    plot(c(0.01,0.0005), c(0.02,0.0005))
-    
-    #### test eff frontier
-    # benchset <- c( 'SNP', 'TLT')
-    portfolio_rets <- 100 * as.timeSeries(rets_bench)
-    eff_Frontier <- portfolioFrontier(portfolio_rets, 
-                                      constraints = "LongOnly",
-                                      title = "Bitcoin spanning Test"
-    )
-    plot(eff_Frontier,c(1,3,4))
-    
-    #
+    #Frontier line
     longFrontier <- eff_Frontier
-    # frontierPlot(object = longFrontier, mText = "MV Portfolio - LongOnly Constraints",
-    #                      risk = "Cov", sharpeRatio = FALSE,xlim = c(0,6)  )
+    tailoredFrontierPlot(object = longFrontier,  twoAssets = TRUE,
+                           risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6))
+    # SNP-TLT Frontier
+    longFrontier <- eff_Frontier2
+    # twoAssetsLines(object = longFrontier,col = c("Red"))
+ 
+    tailoredFrontierPlot(object = longFrontier, add = TRUE,
+                         risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6), )
+ 
     
-    tailoredFrontierPlot(object = longFrontier, mText = "Bitcoin",
-                           risk = "Cov", sharpeRatio = FALSE,xlim = c(0,6))
-
-    twoAssetsLines(object = longFrontier,col = c("grey"))
-    
+          
 ### correlation graph
 library(corrplot)
 corr_data <- rets2
