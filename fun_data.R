@@ -107,7 +107,7 @@ load("data_getsymbols.RData")
     
     #Frontier line
     longFrontier <- eff_Frontier
-    tailoredFrontierPlot(object = longFrontier,  twoAssets = TRUE,
+    tailoredFrontierPlot(object = longFrontier,  twoAssets = TRUE, 
                            risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6))
     # SNP-TLT Frontier
     longFrontier <- eff_Frontier2
@@ -164,6 +164,14 @@ SPY %>%
   fortify.zoo %>%
   plot_ly(x= ~Index, y = ~SPY.Close ) %>%
   add_lines()
+###
+# library(PerformanceAnalytics)
+# library(quantmod)
+library(dygraphs)
+data <- apply.monthly(rets_test,mean)  # montly return
+dygraph(data, main = "Montly Return") %>%
+  dyAxis("y", label = "%") %>%
+  dyOptions(colors = RColorBrewer::brewer.pal(4, "Set2"))
 
 ##################### Image ###################################
 save.image(file="data_quant.RData")
