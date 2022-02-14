@@ -86,9 +86,9 @@ load("data_getsymbols.RData")
     
     ### Data procedure - TEST only : BTC ETH
     load("rets2.Rdata")
-    
-    # rets2 <- rets2["/2019"]
-    rets2 <- rets2["2020/"]
+ 
+    rets2 <- rets2["/2019"]
+    # rets2 <- rets2["2020/"]
     
     testset <- c('BTC', 'ETH', 'SNP', 'TLT')
     rets_test <- rets2[ ,testset]
@@ -111,10 +111,10 @@ load("data_getsymbols.RData")
                            risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6))
     # SNP-TLT Frontier
     longFrontier <- eff_Frontier2
-    twoAssetsLines(object = longFrontier,col = c("Red"))
+    # twoAssetsLines(object = longFrontier,col = c("Red"))
  
-    # tailoredFrontierPlot(object = longFrontier, add = TRUE,
-    #                      risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6), )
+    tailoredFrontierPlot(object = longFrontier, add = TRUE,
+                         risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6), )
     
     
           
@@ -172,6 +172,8 @@ data <- apply.monthly(rets_test,mean)  # montly return
 dygraph(data, main = "Montly Return") %>%
   dyAxis("y", label = "%") %>%
   dyOptions(colors = RColorBrewer::brewer.pal(4, "Set2"))
+###
+
 
 ##################### Image ###################################
 save.image(file="data_quant.RData")
