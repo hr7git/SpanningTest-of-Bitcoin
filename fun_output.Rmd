@@ -184,17 +184,18 @@ Q2 - test:BTC+ETH / bench: as add assets / data: after covid19
 
 1) Period 2014 ~ 2022.2
 ```{r,echo=FALSE,message=FALSE}
-  load("rets.Rdata")
+  library(huxtable)
+  load("rets2.Rdata")
   load("df_base2.Rdata")
   load("df_hetero.Rdata")
   ####
   kable(head(df_base2,12),
       caption = "wald test - base",
       align = c("l","l","l"))
-  
   kable(head(df_hetero,12),
       caption = "wald test - hetero",
       align = c("l","l","l"))
+  hux(df_hetero)
 ```
 
 
@@ -271,9 +272,27 @@ kable(head(df_table,12),
 
 ```{r}
  library(quantmod)
- chart_Series(rets$BTC)
- chart_Series(rets$SPY)
- chart_Series(rets$GLD)
+ load("data_getsymbols.RData")
+ chart_Series(rets2$BTC)
+ chart_Series(rets2$SPY)
+ chart_Series(rets2$GLD)
+ ###
+ library(plotly)
+ SPY %>%
+   fortify.zoo %>%
+   plot_ly(x= ~Index, y = ~SPY.Close ) %>%
+   add_lines()
+ 
+ ###
+ ###
+ # library(PerformanceAnalytics)
+ # library(quantmod)
+ library(dygraphs)
+ data <- apply.monthly(rets_test,mean)  # montly return
+ dygraph(data, main = "Montly Return") %>%
+   dyAxis("y", label = "return") %>%
+   dyOptions(colors = RColorBrewer::brewer.pal(4, "Set2"))
+ ###
  # chartSeries(`BTC`)
  # chartSeries(`ETH`)
 ```

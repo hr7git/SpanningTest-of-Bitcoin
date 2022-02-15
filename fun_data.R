@@ -38,14 +38,14 @@ symbols = c('SPY', # US stock S&P 500
 )
 
 
-getSymbols(symbols, src = 'yahoo', from = '2014-01-01') 
+getSymbols(symbols, src = 'yahoo', from ='2018-01-01', to ='2022-02-10') 
 
 # Bitcoin USD  & Etherium USD 
-BTC = getSymbols('BTC-USD', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) 
-ETH = getSymbols('ETH-USD', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) 
-SNP = getSymbols('^GSPC', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) #S&P500 index
-TYX = getSymbols('^TYX', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) #30Y bonds
-TNX = getSymbols('^TNX', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) #10Y bonds
+BTC = getSymbols('BTC-USD', src = 'yahoo', from ='2018-01-01', to ='2022-02-10',auto.assign=FALSE) 
+ETH = getSymbols('ETH-USD', src = 'yahoo', from ='2018-01-01', to ='2022-02-10',auto.assign=FALSE) 
+SNP = getSymbols('^GSPC', src = 'yahoo', from ='2018-01-01', to ='2022-02-10',auto.assign=FALSE) #S&P500 index
+# TYX = getSymbols('^TYX', src = 'yahoo', from ='2018-01-01', to ='2022-02-10',auto.assign=FALSE) #30Y bonds
+# TNX = getSymbols('^TNX', src = 'yahoo', from ='2018-01-01', to ='2022-02-10',auto.assign=FALSE) #10Y bonds
 # QQQ = getSymbols('QQQ', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) 
 
 save.image(file="data_getsymbols.RData") 
@@ -85,15 +85,18 @@ load("data_getsymbols.RData")
     library(ggplot2)
     
     ### Data procedure - TEST only : BTC ETH
+    #  all - without restriction
+    #  before covid19 - 
+    #  after covid19
     load("rets2.Rdata")
  
-    rets2 <- rets2["/2019"]
-    # rets2 <- rets2["2020/"]
-    
-    testset <- c('BTC', 'ETH', 'SNP', 'TLT')
+    rets2 <- rets2["/2019"]  # before covid19
+    # rets2 <- rets2["2020/"]  # after covid19
+    ####
+    testset <- c('BTC', 'ETH', 'SNP', 'TLT' ,'GLD')
     rets_test <- rets2[ ,testset]
     
-    benchset <- c( 'SNP', 'TLT')
+    benchset <- c( 'SNP', 'TLT','GLD')
     rets_bench <- rets2[ , benchset]
     
     # test data
@@ -104,18 +107,17 @@ load("data_getsymbols.RData")
     portfolio_rets <- rets_bench %>% 
                       as.timeSeries() * 100
     eff_Frontier2 <- portfolioFrontier(portfolio_rets, constraints = "LongOnly")
-    
     #Frontier line
     longFrontier <- eff_Frontier
-    tailoredFrontierPlot(object = longFrontier,  twoAssets = TRUE, 
-                           risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6))
+    tailoredFrontierPlot2(object = longFrontier,  twoAssets = TRUE, title = FALSE,
+                        risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6))
     # SNP-TLT Frontier
     longFrontier <- eff_Frontier2
     # twoAssetsLines(object = longFrontier,col = c("Red"))
- 
-    tailoredFrontierPlot(object = longFrontier, add = TRUE,
-                         risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6), )
-    
+    frontierPlot(object = longFrontier, add = TRUE, title = FALSE, 
+                         risk = "Cov", xlim = c(0,6), )
+    tangencyLines(object = longFrontier, col = "blue",
+                 risk = "Cov", xlim = c(0,6), )
     
           
 ### correlation graph
@@ -128,8 +130,8 @@ cor(corr_data) %>%
            col =
              colorRampPalette(c('blue', 'white', 'red'))(200),
            mar = c(0,0,0.5,0))
-
-data <- rets
+###
+data <- rets2
 ggcorr(data, method = c("everything", "pearson")) 
 #################################################################
 
@@ -140,17 +142,23 @@ library(dplyr)
 library(hrbrthemes)
 
 chart_Series(Ad(GLD),Ad(SPY))
-chart_Series(Ad(BTC))
+chart_Series(apply.monthly( Ad(BTC),mean) )
 chart_Series(rets_test$BTC)
+chart_Series(apply.monthly( rets_test$BTC,mean))
 chartSeries(`BTC`)
 chart.TimeSeries.ggplot2(`BTC`)
 
-
+load("rets2.Rdata")
 ###
 SPY %>%
   ggplot(aes(x = Index, y = SPY.Adjusted)) +
   geom_line( color="#69b3a2")  
-
+BTC %>%
+  ggplot(aes(x = Index, y = Ad(BTC))) +
+  geom_line( color="#69b3a2") 
+rets2 %>%
+  ggplot(aes(x = Index, y = rets2$BTC)) +
+  geom_line( color="blue") 
 ###
 library(highcharter)
 
@@ -164,13 +172,15 @@ SPY %>%
   fortify.zoo %>%
   plot_ly(x= ~Index, y = ~SPY.Close ) %>%
   add_lines()
+
+###
 ###
 # library(PerformanceAnalytics)
 # library(quantmod)
 library(dygraphs)
 data <- apply.monthly(rets_test,mean)  # montly return
 dygraph(data, main = "Montly Return") %>%
-  dyAxis("y", label = "%") %>%
+  dyAxis("y", label = "return") %>%
   dyOptions(colors = RColorBrewer::brewer.pal(4, "Set2"))
 ###
 
@@ -351,6 +361,7 @@ df <- data.frame(
 # data : after covid19
 # result - aftger add IEF : bench can span test(BTC+ETH)
 ############################ bench mark 
+load("rets2.Rdata")
 model  <- lm(BTC+ETH~(SPY+TLT+GLD), data=rets2["2020/"])
 hypothesis.matrix <- rbind(c(1,0,0,0),c(0,1,1,1))
 df01 <- regress_bench(model, hypothesis.matrix)  # initialize
@@ -426,56 +437,56 @@ mean(rets2$SPY)
 var(rets2$SPY, rets2$TLT)
 ###################### BASE ####################################
 ############################ BTC / Data:2014.1 
-model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets)
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets)
-df01 <- wald_test1(model, model2)  # initialize
-
-model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets["/2019"])
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets["/2019"])
-df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
-model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets["2020/"])
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets["2020/"])
-df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-############################ BTC / Data:2017.11
-model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2)
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2)
-df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
-model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["/2019"])
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
-df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
-model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["2020/"])
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
-df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-############################ ETH / Data:2017.11
-model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2)
-model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
-df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
-model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
-model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
-df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
-model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
-model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
-df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-############################ BTC + ETH / Data:2017.11
-model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2)
-model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
-df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
-model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
-model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
-df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
-model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
-model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
-df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets)
+# model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets)
+# df01 <- wald_test1(model, model2)  # initialize
+# 
+# model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets["/2019"])
+# model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets["/2019"])
+# df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets["2020/"])
+# model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets["2020/"])
+# df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# ############################ BTC / Data:2017.11
+# model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2)
+# model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2)
+# df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["/2019"])
+# model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+# df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["2020/"])
+# model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+# df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# ############################ ETH / Data:2017.11
+# model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2)
+# model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
+# df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
+# model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+# df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
+# model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+# df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# ############################ BTC + ETH / Data:2017.11
+# model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2)
+# model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
+# df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
+# model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+# df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
+# model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+# df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
 
 ###################### BASE 2 period order ############################
-
+load("rets2.Rdata")
 ############################ all period
 model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2)
 model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2)
@@ -559,57 +570,86 @@ wald_test1 <- function(model, model2) {
 }
 
 ##################### heteroskedasticity ##############################
-############################ BTC / Data:2014.1 
-model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets)
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets)
-df01 <- wald_test2(model, model2)  # initialize
-
-model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets["/2019"])
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets["/2019"])
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
-model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets["2020/"])
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets["2020/"])
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-############################ BTC / Data:2017.11
+load("rets2.Rdata")
+############################ all period
 model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2)
 model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2)
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+df01 <- wald_test2(model, model2)  # initialize
 
-model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["/2019"])
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
-model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["2020/"])
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-############################ ETH / Data:2017.11
 model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2)
 model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
+df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2)
+model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
+df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+############################ Befroe covid19
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["/2019"])
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
 df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
 
 model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
 model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
 df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
 
-model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
-model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-############################ BTC + ETH / Data:2017.11
-model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2)
-model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
 model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
 model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+############################ After covid19
+model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["2020/"])
+model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
+model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
 df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
 
 model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
 model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
 df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
+#######################
 df_hetero <- df01
 save(df_hetero, file="df_hetero.Rdata")
+############################ BTC / Data:2014.1 
+# model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2)
+# model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets)
+# df01 <- wald_test2(model, model2)  # initialize
+# 
+# model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["/2019"])
+# model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["2020/"])
+# model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# ############################ ETH / Data:2017.11
+# model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2)
+# model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
+# model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
+# model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# ############################ BTC + ETH / Data:2017.11
+# model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2)
+# model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
+# model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
+# model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+
+
 ######
 wald_test2 <- function(model, model2) {
   ##### HK test
@@ -652,110 +692,195 @@ wald_test2 <- function(model, model2) {
 }
 
 
-##################### benchmark set ##############################
-### correlation graph
-library(corrplot)
-
-cor(rets) %>%
-  corrplot(method = 'color', type = 'lower',
-           addCoef.col = 'black', number.cex = 0.7,
-           tl.cex = 1, tl.srt = 0, tl.col = 'black',
-           col =
-             colorRampPalette(c('blue', 'white', 'red'))(200),
-           mar = c(0,0,0.5,0))
-
-############################ BTC / Data:2014.1 
-model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets)
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets)
-df01 <- wald_test2(model, model2)  # initialize
-
-model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets["/2019"])
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets["/2019"])
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
-model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets["2020/"])
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets["2020/"])
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-############################ BTC / Data:2017.11
-model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2)
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2)
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
-model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["/2019"])
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
-model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["2020/"])
-model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-############################ ETH / Data:2017.11
-model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2)
-model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
-model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
-model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
-model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
-model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-############################ BTC + ETH / Data:2017.11
-model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2)
-model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
-model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
-model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
-model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
-model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
-df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
-
-df_hetero <- df01
-save(df_hetero, file="df_hetero.Rdata")
-######
-wald_test2 <- function(model, model2) {
-  ##### HK test
-  # the rows :linear combinations of the model coefficients
-  hypothesis.matrix <- rbind(c(1,0,0,0),c(0,1,1,1))
-  rhs=c(0,1)   # right-hand-side vector for hypothesis
-  HK_test <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
-  # HK_test <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
-  
-  ##### step-1 test  : alpha = 0
-  lhs <- c(1,0,0,0)
-  step1_test <- lht(model,lhs,c(0),white.adjust='hc3')
-  # step1_test <- lht(model,lhs,c(0),white.adjust='hc3')
-  
-  ##### step- test 2 : beta=1 condition on alpha = 0
-  ##### unresrticted model condition on alpha =0  : model2
-  # model2 <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC) -1, data=rets)
-  lhs <- rbind(c(1,1,1))
-  step2_test <- lht(model2,lhs,c(1),white.adjust='hc3')
-  # step2_test <- lht(model2,lhs,c(1),white.adjust='hc3')
-  #
-  alpha  = model$coefficients[[1]]   # alpha
-  beta   = sum(model$coefficients) - model$coefficients[[1]]  # beta
-  HK_F   = HK_test$F[2]            # F test  - HK test
-  HK_Pr  = HK_test$`Pr(>F)`[2]     # Pr(>F)  - HK test HK_test$`Pr(>F)`
-  st1_F  = step1_test$F[2]         # F test  - step-1 test
-  st1_Pr = step1_test$`Pr(>F)`[2]  # Pr(>F)  : step-1 test
-  st2_F  = step2_test$F[2]         # F test  : step- test 2
-  st2_Pr = step2_test$`Pr(>F)`[2]  # Pr(>F)  : step- test 2
-  lm_model = as.character(model$call)[2]
-  lm_data  = as.character(model$call)[3]
-  
-  df <- data.frame(alpha, beta,
-                   HK_F, HK_Pr,
-                   st1_F, st1_Pr,
-                   st2_F, st2_Pr,
-                   lm_model, lm_data )
-  
-  return(df)
-}
-
-
+# ##################### benchmark set ##############################
+# ### correlation graph
+# library(corrplot)
+# 
+# cor(rets) %>%
+#   corrplot(method = 'color', type = 'lower',
+#            addCoef.col = 'black', number.cex = 0.7,
+#            tl.cex = 1, tl.srt = 0, tl.col = 'black',
+#            col =
+#              colorRampPalette(c('blue', 'white', 'red'))(200),
+#            mar = c(0,0,0.5,0))
+# 
+# ############################ BTC / Data:2014.1 
+# model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets)
+# model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets)
+# df01 <- wald_test2(model, model2)  # initialize
+# 
+# model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets["/2019"])
+# model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets["/2019"])
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets["2020/"])
+# model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets["2020/"])
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# ############################ BTC / Data:2017.11
+# model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2)
+# model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2)
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["/2019"])
+# model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(BTC ~ (SPY + TLT + GLD), data=rets2["2020/"])
+# model2 <- lm(BTC ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# ############################ ETH / Data:2017.11
+# model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2)
+# model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
+# model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
+# model2 <- lm(ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# ############################ BTC + ETH / Data:2017.11
+# model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2)
+# model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2)
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["/2019"])
+# model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["/2019"])
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# model  <- lm(BTC + ETH ~ (SPY + TLT + GLD), data=rets2["2020/"])
+# model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
+# df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
+# 
+# df_hetero <- df01
+# save(df_hetero, file="df_hetero.Rdata")
+# ######
+# wald_test2 <- function(model, model2) {
+#   ##### HK test
+#   # the rows :linear combinations of the model coefficients
+#   hypothesis.matrix <- rbind(c(1,0,0,0),c(0,1,1,1))
+#   rhs=c(0,1)   # right-hand-side vector for hypothesis
+#   HK_test <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
+#   # HK_test <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
+#   
+#   ##### step-1 test  : alpha = 0
+#   lhs <- c(1,0,0,0)
+#   step1_test <- lht(model,lhs,c(0),white.adjust='hc3')
+#   # step1_test <- lht(model,lhs,c(0),white.adjust='hc3')
+#   
+#   ##### step- test 2 : beta=1 condition on alpha = 0
+#   ##### unresrticted model condition on alpha =0  : model2
+#   # model2 <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC) -1, data=rets)
+#   lhs <- rbind(c(1,1,1))
+#   step2_test <- lht(model2,lhs,c(1),white.adjust='hc3')
+#   # step2_test <- lht(model2,lhs,c(1),white.adjust='hc3')
+#   #
+#   alpha  = model$coefficients[[1]]   # alpha
+#   beta   = sum(model$coefficients) - model$coefficients[[1]]  # beta
+#   HK_F   = HK_test$F[2]            # F test  - HK test
+#   HK_Pr  = HK_test$`Pr(>F)`[2]     # Pr(>F)  - HK test HK_test$`Pr(>F)`
+#   st1_F  = step1_test$F[2]         # F test  - step-1 test
+#   st1_Pr = step1_test$`Pr(>F)`[2]  # Pr(>F)  : step-1 test
+#   st2_F  = step2_test$F[2]         # F test  : step- test 2
+#   st2_Pr = step2_test$`Pr(>F)`[2]  # Pr(>F)  : step- test 2
+#   lm_model = as.character(model$call)[2]
+#   lm_data  = as.character(model$call)[3]
+#   
+#   df <- data.frame(alpha, beta,
+#                    HK_F, HK_Pr,
+#                    st1_F, st1_Pr,
+#                    st2_F, st2_Pr,
+#                    lm_model, lm_data )
+#   
+#   return(df)
+# }
+########################################################################
+### function : modify tailoredFrontierPlot --> ...2
+tailoredFrontierPlot2 <-
+  function (object, return = c("mean", "mu"), risk = c("Cov", 
+                                                       "Sigma", "CVaR", "VaR"), mText = NULL, 
+            col = NULL, xlim = NULL, ylim = NULL, twoAssets = FALSE, 
+            sharpeRatio = TRUE, title = TRUE, ...) 
+  {
+    offset <- 0.1
+    risk <- match.arg(risk)
+    return <- match.arg(return)
+    if (is.null(xlim)) {
+      if (risk == "Cov") {
+        xmax <- max(sqrt(diag(getCov(object))))
+      }
+      if (risk == "Sigma") {
+        xmax <- max(sqrt(diag(getSigma(object))))
+      }
+      if (risk == "CVaR") {
+        alpha <- getAlpha(object)
+        quantiles <- colQuantiles(getSeries(object), prob = alpha)
+        n.max <- which.max(-quantiles)
+        r <- getSeries(object)[, n.max]
+        r <- r[r < quantiles[n.max]]
+        xmax <- -mean(r)
+      }
+      if (risk == "VaR") {
+        xmax <- max(-colQuantiles(getSeries(object), prob = alpha))
+      }
+      xlim <- c(0, xmax)
+      Xlim <- c(xlim[1] - diff(xlim) * offset, xlim[2] + diff(xlim) * 
+                  offset)
+    }
+    else {
+      Xlim <- xlim
+    }
+    if (is.null(ylim)) {
+      if (return == "mean") {
+        ylim <- range(getMean(object))
+      }
+      else {
+        ylim <- range(getMu(object))
+      }
+      Ylim <- c(ylim[1] - diff(ylim) * offset, ylim[2] + diff(ylim) * 
+                  offset)
+    }
+    else {
+      Ylim = ylim
+    }
+    frontierPlot(object, labels = FALSE, return = return, risk = risk, 
+                 auto = FALSE, xlim = Xlim, ylim = Ylim, title = title, 
+                 pch = 19, ...)
+    grid()
+    abline(h = 0, col = "grey")
+    abline(v = 0, col = "grey")
+    data <- getData(object)
+    spec <- getSpec(object)
+    constraints <- getConstraints(object)
+    mvPortfolio <- minvariancePortfolio(data, spec, constraints)
+    # minvariancePoints(object, return = return, risk = risk, auto = FALSE, 
+    #                   pch = 19, col = "red")
+    # tangencyPoints(object, return = return, risk = risk, auto = FALSE, 
+    #                pch = 19, col = "blue")
+    tangencyLines(object, return = return, risk = risk, auto = FALSE, 
+                  col = "red")
+    # xy <- equalWeightsPoints(object, return = return, risk = risk, 
+    #                          auto = FALSE, pch = 15, col = "grey")
+    # text(xy[, 1] + diff(xlim)/20, xy[, 2] + diff(ylim)/20, "Efficient-Frontier Line", 
+    #      font = 3, cex = 0.7)
+    if (is.null(col)) 
+      # col = rainbow(6)
+       col = "black"
+    xy <- singleAssetPoints(object, return = return, risk = risk, 
+                            auto = FALSE, cex = 1.5, col = col, lwd = 2)
+    text(xy[, 1] + diff(xlim)/20, xy[, 2] + diff(ylim)/20, rownames(xy), 
+         font = 2, cex = 1)  # cex : 0.7 -> 1.0
+    if (twoAssets) {
+      twoAssetsLines(object, return = return, risk = risk, 
+                     auto = FALSE, lty = 3, col = "grey")
+    }
+    # if (sharpeRatio) {
+    #   sharpeRatioLines(object, return = return, risk = risk, 
+    #                    auto = FALSE, col = "orange", lwd = 2)
+    # }
+    mtext("", adj = 0, side = 4, cex = 0.7, col = "darkgrey")
+    invisible(list(object = object, xlim = Xlim, ylim = Ylim))
+  }
 
 
