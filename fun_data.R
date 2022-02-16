@@ -10,6 +10,9 @@
 #   install.packages(new.pkg, dependencies = TRUE)}
 
 # https://hyunyulhenry.github.io/quant_cookbook/
+# 
+# https://bookdown.org/compfinezbook/introcompfinr/
+#
 # 1. 달러헷지 - dollar index , gold, vix
 # 2. 새로운 포트폴리오 편입
 ##########################################################
@@ -130,6 +133,11 @@ cor(corr_data) %>%
            col =
              colorRampPalette(c('blue', 'white', 'red'))(200),
            mar = c(0,0,0.5,0))
+###
+data <- rets_test
+
+covmat = cbind(colMeans(data)*100, cov(data) )
+write.csv(covmat, file="covmat.csv")
 ###
 data <- rets2
 ggcorr(data, method = c("everything", "pearson")) 
