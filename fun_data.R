@@ -92,35 +92,47 @@ load("data_getsymbols.RData")
     #  before covid19 - 
     #  after covid19
     load("rets2.Rdata")
- 
-    rets2 <- rets2["/2019"]  # before covid19
-    # rets2 <- rets2["2020/"]  # after covid19
+    
+    # data <- rets2              # all period
+    # data <- rets2["/2019"]  # before covid19
+    data <- rets2["2020/"]      # after covid19
     ####
     testset <- c('BTC', 'ETH', 'SNP', 'TLT' ,'GLD')
-    rets_test <- rets2[ ,testset]
+    rets_test <- data[ ,testset]
     
     benchset <- c( 'SNP', 'TLT','GLD')
-    rets_bench <- rets2[ , benchset]
+    rets_bench <- data[ , benchset]
     
     # test data
     portfolio_rets <- rets_test %>% 
                       as.timeSeries() * 100
-    eff_Frontier <- portfolioFrontier(portfolio_rets, constraints = "LongOnly")
+    # eff_Frontier <- portfolioFrontier(portfolio_rets, constraints = NULL)
+    eff_Frontier <- portfolioFrontier(portfolio_rets)  # test-set
     # bench data
     portfolio_rets <- rets_bench %>% 
                       as.timeSeries() * 100
-    eff_Frontier2 <- portfolioFrontier(portfolio_rets, constraints = "LongOnly")
-    #Frontier line
+    # eff_Frontier2 <- portfolioFrontier(portfolio_rets, constraints = "short")
+    eff_Frontier2 <- portfolioFrontier(portfolio_rets)  # bench-set
+    #Frontier line of test + bench
     longFrontier <- eff_Frontier
-    tailoredFrontierPlot2(object = longFrontier,  twoAssets = TRUE, title = FALSE,
+    t_plot <- tailoredFrontierPlot2(object = longFrontier,  twoAssets = TRUE, title = FALSE,
                         risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6))
-    # SNP-TLT Frontier
+    t_plot
+    # Frontier of benchmark
     longFrontier <- eff_Frontier2
     # twoAssetsLines(object = longFrontier,col = c("Red"))
-    frontierPlot(object = longFrontier, add = TRUE, title = FALSE, 
-                         risk = "Cov", xlim = c(0,6), )
-    tangencyLines(object = longFrontier, col = "blue",
+    # frontierPlot(object = longFrontier, add = TRUE, title = FALSE, 
+    #                      risk = "Cov", xlim = c(0,6), )
+    # tangencyLines(object = longFrontier, col = "blue",
+    #              risk = "Cov", xlim = c(0,6), )
+    #
+    b_plot <-frontierPlot(object = longFrontier, add = TRUE, title = FALSE, 
                  risk = "Cov", xlim = c(0,6), )
+    b_line <- tangencyLines(object = longFrontier, col = "blue",
+                  risk = "Cov", xlim = c(0,6), )
+    b_plot
+    b_line
+    #
     
           
 ### correlation graph
@@ -862,10 +874,10 @@ tailoredFrontierPlot2 <-
     spec <- getSpec(object)
     constraints <- getConstraints(object)
     mvPortfolio <- minvariancePortfolio(data, spec, constraints)
-    # minvariancePoints(object, return = return, risk = risk, auto = FALSE, 
-    #                   pch = 19, col = "red")
-    # tangencyPoints(object, return = return, risk = risk, auto = FALSE, 
-    #                pch = 19, col = "blue")
+    minvariancePoints(object, return = return, risk = risk, auto = FALSE,
+                      pch = 19, col = "red")
+    tangencyPoints(object, return = return, risk = risk, auto = FALSE,
+                   pch = 19, col = "blue")
     tangencyLines(object, return = return, risk = risk, auto = FALSE, 
                   col = "red")
     # xy <- equalWeightsPoints(object, return = return, risk = risk, 
@@ -873,8 +885,8 @@ tailoredFrontierPlot2 <-
     # text(xy[, 1] + diff(xlim)/20, xy[, 2] + diff(ylim)/20, "Efficient-Frontier Line", 
     #      font = 3, cex = 0.7)
     if (is.null(col)) 
-      # col = rainbow(6)
-       col = "black"
+      col = rainbow(6)
+       # col = "black"
     xy <- singleAssetPoints(object, return = return, risk = risk, 
                             auto = FALSE, cex = 1.5, col = col, lwd = 2)
     text(xy[, 1] + diff(xlim)/20, xy[, 2] + diff(ylim)/20, rownames(xy), 
@@ -887,7 +899,7 @@ tailoredFrontierPlot2 <-
     #   sharpeRatioLines(object, return = return, risk = risk, 
     #                    auto = FALSE, col = "orange", lwd = 2)
     # }
-    mtext("", adj = 0, side = 4, cex = 0.7, col = "darkgrey")
+    mtext(".", adj = 0, side = 4, cex = 0.7, col = "darkgrey")
     invisible(list(object = object, xlim = Xlim, ylim = Ylim))
   }
 
