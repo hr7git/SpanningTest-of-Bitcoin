@@ -136,7 +136,30 @@ load("data_getsymbols.RData")
       df3 <- rbind(df2,df1)
       df3   
     
-    
+################### constrints = short 
+      shortSpec <- portfolioSpec()
+      setNFrontierPoints(shortSpec) <- 50
+      setSolver(shortSpec) <- "solveRshortExact"
+      shortFrontier <- portfolioFrontier(
+        data = portfolio_rets,
+        spec = shortSpec,
+        constraints = "Short")
+      print(shortFrontier)
+      
+      ###
+      setNFrontierPoints(shortSpec) <- 100
+      shortFrontier <- portfolioFrontier(data = portfolio_rets, spec = shortSpec,
+                                       constraints = "Short")
+      tailoredFrontierPlot(object = shortFrontier, mText = "MV Portfolio - Short Constraints",
+                           twoAssets = TRUE, risk = "Cov")
+      # weightsPlot(shortFrontier)
+      # text <- "MV Portfolio - Short Constrained Portfolio"
+      # mtext(text, side = 3, line = 3, font = 2, cex = 0.9)
+      # weightedReturnsPlot(shortFrontier)
+      # covRiskBudgetsPlot(shortFrontier)
+      
+      
+      
 ### correlation graph
 library(corrplot)
 corr_data <- rets2
@@ -1043,26 +1066,26 @@ frontierPlot2 <-
   }
 ###################################################################
 #
-tangencyLines <-
-function (object, return = c("mean", "mu"), risk = c("Cov", 
-                                                     "Sigma", "CVaR", "VaR"), auto = TRUE, ...) 
-{
-  return = match.arg(return)
-  risk = match.arg(risk)
-  data <- getSeries(object)
-  spec <- getSpec(object)
-  constraints <- getConstraints(object)
-  # riskFreeRate <- getRiskFreeRate(object)
-  riskFreeRate = riskfree_Rate
-  tgPortfolio = tangencyPortfolio(data, spec, constraints)
-  assets <- frontierPoints(tgPortfolio, return = return, risk = risk, 
-                           auto = auto)
-  slope <- (assets[2] - riskFreeRate)/assets[1]
-  if (slope > 0) {
-    abline(riskFreeRate, slope, ...)
-  }
-  else {
-    warning("Tangency point does not exist")
-  }
-  invisible(list(slope = slope, assets = assets))
-}
+# tangencyLines <-
+# function (object, return = c("mean", "mu"), risk = c("Cov", 
+#                                                      "Sigma", "CVaR", "VaR"), auto = TRUE, ...) 
+# {
+#   return = match.arg(return)
+#   risk = match.arg(risk)
+#   data <- getSeries(object)
+#   spec <- getSpec(object)
+#   constraints <- getConstraints(object)
+#   # riskFreeRate <- getRiskFreeRate(object)
+#   riskFreeRate = riskfree_Rate
+#   tgPortfolio = tangencyPortfolio(data, spec, constraints)
+#   assets <- frontierPoints(tgPortfolio, return = return, risk = risk, 
+#                            auto = auto)
+#   slope <- (assets[2] - riskFreeRate)/assets[1]
+#   if (slope > 0) {
+#     abline(riskFreeRate, slope, ...)
+#   }
+#   else {
+#     warning("Tangency point does not exist")
+#   }
+#   invisible(list(slope = slope, assets = assets))
+# }
