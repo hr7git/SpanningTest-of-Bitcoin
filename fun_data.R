@@ -97,49 +97,46 @@ load("data_getsymbols.RData")
     data <- rets2["/2019"]  # before covid19
     data <- rets2["2020/"]      # after covid19
     ####
+    #
     testset <- c('BTC', 'ETH', 'SNP', 'TLT' ,'GLD')
-    rets_test <- data[ ,testset]
-    
+        rets_test <- data[ ,testset]
     benchset <- c( 'SNP', 'TLT','GLD')
-    rets_bench <- data[ , benchset]
+        rets_bench <- data[ , benchset]
     
+        # Risk-free rate = mean(rets$IEF)*100
+        riskfree_Rate = 0  # function : tangencyLine
     # test data
-    portfolio_rets <- rets_test %>% 
-                      as.timeSeries() * 100
-    # eff_Frontier <- portfolioFrontier(portfolio_rets, constraints = NULL)
-    eff_Frontier <- portfolioFrontier(portfolio_rets)  # test-set
+    portfolio_rets <- rets_test %>% as.timeSeries() * 100
+      # eff_Frontier <- portfolioFrontier(portfolio_rets, constraints = NULL)
+      eff_Frontier <- portfolioFrontier(portfolio_rets)  # test-set
     # bench data
-    portfolio_rets <- rets_bench %>% 
-                      as.timeSeries() * 100
-    # eff_Frontier2 <- portfolioFrontier(portfolio_rets, constraints = "short")
-    eff_Frontier2 <- portfolioFrontier(portfolio_rets)  # bench-set
+    portfolio_rets <- rets_bench %>% as.timeSeries() * 100
+      # eff_Frontier2 <- portfolioFrontier(portfolio_rets, constraints = "short")
+      eff_Frontier2 <- portfolioFrontier(portfolio_rets)  # bench-set
+
     #Frontier line of test + bench
     longFrontier <- eff_Frontier
-    t_plot <- tailoredFrontierPlot2(object = longFrontier,  twoAssets = TRUE,
-                                    title = FALSE, 
-                        risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6))
-    # t_plot
-    # t_line <- tangencyLines(object = longFrontier)
+      tailoredFrontierPlot2(object = longFrontier,  twoAssets = TRUE, title = FALSE, 
+                          risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6))
+      t_line <- tangencyLines(object = longFrontier, col = "red",
+                            risk = "Cov", xlim = c(0,6), )
+      t_mvpoint <- minvariancePoints(object = longFrontier, return = "mean",
+                                   risk = "Cov", auto = TRUE, )
     # Frontier of benchmark
     longFrontier <- eff_Frontier2
-    # twoAssetsLines(object = longFrontier,col = c("Red"))
-    # frontierPlot(object = longFrontier, add = TRUE, title = FALSE, 
-    #                      risk = "Cov", xlim = c(0,6), )
-    # tangencyLines(object = longFrontier, col = "blue",
-    #              risk = "Cov", xlim = c(0,6), )
-    #
-    # b_plot <-frontierPlot(object = longFrontier, add = TRUE, title = FALSE, 
-    b_plot <-frontierPlot2(object = longFrontier, add = TRUE, title = FALSE, 
+      frontierPlot2(object = longFrontier, add = TRUE, title = FALSE, 
                           col = c("blue","blue"), risk = "Cov", xlim = c(0,6), )
-    b_line <- tangencyLines(object = longFrontier, col = "blue",
+      b_line <- tangencyLines(object = longFrontier, col = "blue",
                   risk = "Cov", xlim = c(0,6), )
-    # b_plot
-    # b_line
-    #
-    df1 <- data.frame(t_line)
-    df2 <- data.frame(b_line)
-    df3 <- rbind(df1,df2)
-          
+      b_mvpoint <- minvariancePoints(object = longFrontier, return = "mean", 
+                                   risk = "Cov", auto = TRUE, )
+    # slop slop_x slop_y GMV_x GMV_Y
+      df1 <- data.frame(t_line,t_mvpoint)
+      df2 <- data.frame(b_line,b_mvpoint)
+      df3 <- rbind(df2,df1)
+      df3   
+    
+    
 ### correlation graph
 library(corrplot)
 corr_data <- rets2
@@ -886,7 +883,7 @@ tailoredFrontierPlot2 <-
                    pch = 19, col = "black")
     # tangencyLines(object, return = return, risk = risk, auto = FALSE, 
     #               col = "red")
-    t_line <- tangencyLines(object, return = return, risk = risk, auto = FALSE, 
+    tangencyLines(object, return = return, risk = risk, auto = FALSE, 
                   col = "red")    # t_line add
     # xy <- equalWeightsPoints(object, return = return, risk = risk, 
     #                          auto = FALSE, pch = 15, col = "grey")
@@ -1044,3 +1041,28 @@ frontierPlot2 <-
     # mtext("Rmetrics", adj = 0, side = 4, cex = 0.7, col = "darkgrey")
     # invisible(fullFrontier)
   }
+###################################################################
+#
+tangencyLines <-
+function (object, return = c("mean", "mu"), risk = c("Cov", 
+                                                     "Sigma", "CVaR", "VaR"), auto = TRUE, ...) 
+{
+  return = match.arg(return)
+  risk = match.arg(risk)
+  data <- getSeries(object)
+  spec <- getSpec(object)
+  constraints <- getConstraints(object)
+  # riskFreeRate <- getRiskFreeRate(object)
+  riskFreeRate = riskfree_Rate
+  tgPortfolio = tangencyPortfolio(data, spec, constraints)
+  assets <- frontierPoints(tgPortfolio, return = return, risk = risk, 
+                           auto = auto)
+  slope <- (assets[2] - riskFreeRate)/assets[1]
+  if (slope > 0) {
+    abline(riskFreeRate, slope, ...)
+  }
+  else {
+    warning("Tangency point does not exist")
+  }
+  invisible(list(slope = slope, assets = assets))
+}
