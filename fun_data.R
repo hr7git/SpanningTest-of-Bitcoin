@@ -10,14 +10,12 @@
 #   install.packages(new.pkg, dependencies = TRUE)}
 
 # https://hyunyulhenry.github.io/quant_cookbook/
-# 
+# https://www.rmetrics.org/
 # https://bookdown.org/compfinezbook/introcompfinr/
 #
 # 1. 달러헷지 - dollar index , gold, vix
 # 2. 새로운 포트폴리오 편입
-##########################################################
-#  Data make
-##########################################################
+#########################################################
 # 
 library(quantmod)    # getsymbols, xts->dataframe in lm
 library(PerformanceAnalytics)   # Return.calculate() 
@@ -37,9 +35,7 @@ symbols = c('SPY', # US stock S&P 500
             'IYR', # Us Rits
             'RWX', # Global Rits
             'GLD', # Gold
-            'DBC'  # Commodity
-)
-
+            'DBC')  # Commodity
 
 getSymbols(symbols, src = 'yahoo', from ='2018-01-01', to ='2022-02-10') 
 
@@ -47,19 +43,9 @@ getSymbols(symbols, src = 'yahoo', from ='2018-01-01', to ='2022-02-10')
 BTC = getSymbols('BTC-USD', src = 'yahoo', from ='2018-01-01', to ='2022-02-10',auto.assign=FALSE) 
 ETH = getSymbols('ETH-USD', src = 'yahoo', from ='2018-01-01', to ='2022-02-10',auto.assign=FALSE) 
 SNP = getSymbols('^GSPC', src = 'yahoo', from ='2018-01-01', to ='2022-02-10',auto.assign=FALSE) #S&P500 index
-# TYX = getSymbols('^TYX', src = 'yahoo', from ='2018-01-01', to ='2022-02-10',auto.assign=FALSE) #30Y bonds
-# TNX = getSymbols('^TNX', src = 'yahoo', from ='2018-01-01', to ='2022-02-10',auto.assign=FALSE) #10Y bonds
-# QQQ = getSymbols('QQQ', src = 'yahoo', from = '2014-01-01',auto.assign=FALSE) 
-
 save.image(file="data_getsymbols.RData") 
 ##############   data price ret=returns    #####################################
 load("data_getsymbols.RData")
-# symbols_BTC = c( symbols , 'BTC')
-# symbols_ETH = c( symbols,  'ETH')
-
-### variables setting : symbol + BTC
-# assets <- c( symbols , 'BTC','ETH')
-
 ### Data procedure rets - main : BTC
     assets <- c( symbols, 'BTC')
     prices = do.call(cbind,
@@ -82,9 +68,6 @@ load("data_getsymbols.RData")
 ##### convert zoo into timeSeries
     library(timeSeries)
     library(fPortfolio)
-    # library(quantmod)
-    # library(dplyr)
-    # library(PerformanceAnalytics)
     library(ggplot2)
     
     ### Data procedure - TEST only : BTC ETH
@@ -98,13 +81,13 @@ load("data_getsymbols.RData")
     data <- rets2["2020/"]      # after covid19
     ####
     #
-    testset <- c('BTC', 'ETH', 'SNP', 'TLT' ,'GLD')
+    testset <- c('BTC', 'ETH', 'SNP', 'TLT')
         rets_test <- data[ ,testset]
-    benchset <- c( 'SNP', 'TLT','GLD')
+    benchset <- c( 'SNP', 'TLT')
         rets_bench <- data[ , benchset]
     
         # Risk-free rate = mean(rets$IEF)*100
-        riskfree_Rate = 0  # function : tangencyLine
+
     # test data
     portfolio_rets <- rets_test %>% as.timeSeries() * 100
       # eff_Frontier <- portfolioFrontier(portfolio_rets, constraints = NULL)
@@ -145,9 +128,9 @@ load("data_getsymbols.RData")
         spec = shortSpec,
         constraints = "Short")
       print(shortFrontier)
-      
+      short_data <- shortFrontier@portfolio@portfolio
       ###
-      setNFrontierPoints(shortSpec) <- 100
+      setNFrontierPoints(shortSpec) <- 50
       shortFrontier <- portfolioFrontier(data = portfolio_rets, spec = shortSpec,
                                        constraints = "Short")
       tailoredFrontierPlot(object = shortFrontier, mText = "MV Portfolio - Short Constraints",
