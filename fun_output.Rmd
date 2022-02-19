@@ -29,6 +29,10 @@ library(magrittr)
 library(car)  # lht
 library(tidyr)
 library(dplyr)
+
+library(timeSeries)
+library(fPortfolio)
+library(ggplot2)
 ```
 
 
@@ -121,7 +125,7 @@ Table 4.1 Summary of Cyptocurrency (Dec 22,2021)
 
 correlation between asset : --> change another graph
 
-```{r}
+```{r, eval=FALSE}
 library(dplyr)
 library(corrplot)
   load("rets2.Rdata")
@@ -171,19 +175,39 @@ ETF is the price from yahoo.finance. For more details on price see <http://finan
 <br><center>**5.  Results**</center><br>
 
 
-Q - bench asset --> SPY TLT GLD only ( stock bond + GLD:becuase of psudeo money character)
-Q - period --> all / before & after covid19
-Q - Heteroskedecity option before/after apply - change the probability
-Q - test portfolio (1.BTC / 2.ETH / 3.BTC+ETH)
-Q - SSR / SST --> wald test option ( equation verify)
+<br>Q - bench asset --> SPY TLT GLD only ( stock bond + GLD:becuase of psudeo money character)  
+<br>Q - period --> all / before & after covid19  
+<br>Q - Heteroskedecity option before/after apply - change the probability  
+<br>Q - test portfolio (1.BTC / 2.ETH / 3.BTC+ETH)  
+<br>Q - SSR / SST --> wald test option ( equation verify)  
 
-Q2 - test:BTC+ETH / bench: as add assets / data: after covid19
+<br>Q2 - test:BTC+ETH / bench: as add assets / data: after covid19
     -  after add IEF : significantly different
+
+<br>1. Efficient Frontier Line 
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+load("rets2.Rdata")
+
+# eff_data <- rets2              # all period
+# eff_data <- rets2["/2019"]  # before covid19
+# eff_data <- rets2["2020/"]      # after covid19
+####
+#
+source("C:/Users/hanap/Dropbox/ak2424/KD/7. R/r_test_0216/function/tailoredFrontierPlot2.R")
+source("C:/Users/hanap/Dropbox/ak2424/KD/7. R/r_test_0216/function/frontierPlot2.R")
+source('C:/Users/hanap/Dropbox/ak2424/KD/7. R/r_test_0216/function/eff_line_plot.R')
+eff_line_plot(rets2)
+eff_line_plot(rets2["/2019"])
+eff_line_plot(rets2["2020/"])
+```
+
+
 
 1. BTC result
 
 1) Period 2014 ~ 2022.2
-```{r,echo=FALSE,message=FALSE}
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
   library(huxtable)
   load("rets2.Rdata")
   load("df_base2.Rdata")
@@ -211,7 +235,7 @@ GLD          0.329442   0.191074   1.724    0.085 .
 4) Q2 - test:BTC+ETH / bench: as add assets / data: after covid19
     -  after add IEF : Pr >  0.05 - benchmark set can span test set
     -  it means if we make portfolis with SPY TLT IEF GLD, then it can span BTC ETH set
-```{r,echo=FALSE,message=FALSE}
+```{r,echo=FALSE,message=FALSE, eval=FALSE, include=FALSE}
 
   load("df_bench.Rdata")
   ####
@@ -299,7 +323,7 @@ kable(head(df_table,12),
 
 correlation between asset : 
 
-```{r}
+```{r,echo=FALSE}
 library(dplyr)
 library(corrplot)
 
@@ -331,81 +355,4 @@ method : k
   3. HK test  
   4. Step1 test  
   5. Step2 test  
-
-```{r}
-  # load("rets.Rdata")
-  # load("data_quant.RData")
-  # load("C:/Users/hanap/Dropbox/ak2424/KD/1. SRP/r_test/nn_list.RData")
-```
-
-
-```{r eval=FALSE, echo=FALSE, include=FALSE}
-
-library(huxtable)
-library(knitr)
-# library(flextable)
-#  library(tidyr)
-#  nn_list
-
-  load("C:/Users/hanap/Dropbox/ak2424/KD/1. SRP/r_test/nn_list.RData")
-  nn_model   <- list()
-nn_model2  <- list()
-nn_alpha <- list()
-nn_beta  <- list()
-nn_HK    <- list()
-nn_st1   <- list()
-nn_st2   <- list()
-
-######################################################################
-#    i : 1-BTC / 2-ETH / 3-BTC+ETH
-#    j : 1-all / 2-before / 3-after covid19
-######################################################################
-
-a <- 0
-for ( j in 1:3)  {  # year period
-  for ( i in 1:3)  {
-  
-  a <- a + 1
-  nn_model[[a]] <- nn_list[[i]][[j]][[1]] # regression
-  nn_model2[[a]] <- nn_list[[i]][[j]][[2]]
-  
-  ##### regression model_q
-  nn_alpha[[a]] <- nn_list[[i]][[j]][[1]]$coefficients[1]   # alpha 
-  nn_beta[[a]]  <- sum(nn_list[[i]][[j]][[1]]$coefficients)
-  - nn_list[[i]][[j]][[1]]$coefficients[1]  # beta
-  
-  nn_HK[[a]]   <- nn_list[[i]][[j]][[3]] 
-  nn_st1[[a]]  <- nn_list[[i]][[j]][[4]] 
-  nn_st2[[a]]  <- nn_list[[i]][[j]][[5]] 
-  }
-}
-  
-
-# nn_model
-nn_model
-huxreg(nn_model)  # unrestricted model 
-huxreg(nn_model2) # alpha = 0
-
-# huxreg(nn_model,nn_list[[1]][[1]])
-# nn_list[[1]][[1]][[1]]
-# class(nn_model2)
-# nn_model2
-# flextable(nn_model[[1]])
-
-
-nn_alpha
-kable(nn_alpha)
-nn_beta
-kable(nn_beta)
-
-nn_HK
-nn_st1
-nn_st2
-kable(nn_HK)
-kable(nn_st1)
-kable(nn_st2)
-
-# flextable(nn_HK)
-
-```
 

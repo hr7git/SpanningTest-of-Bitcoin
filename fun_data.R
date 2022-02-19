@@ -77,59 +77,79 @@ load("data_getsymbols.RData")
     #  after covid19
     load("rets2.Rdata")
     
-    data <- rets2              # all period
-    data <- rets2["/2019"]  # before covid19
-    data <- rets2["2020/"]      # after covid19
+    eff_data <- rets2              # all period
+    eff_data <- rets2["/2019"]  # before covid19
+    eff_data <- rets2["2020/"]      # after covid19
     ####
     #
-    testset <- c('SNP', 'TLT', 'BTC')
-        rets_test <- data[ ,testset]
-    benchset <- c( 'SNP', 'TLT')
-        rets_bench <- data[ , benchset]
-        
-        shortSpec <- portfolioSpec()
-        setNFrontierPoints(shortSpec) <- 50
-        setSolver(shortSpec) <- "solveRshortExact"    
-       
-    
-    # test data
-    portfolio_rets <- rets_test %>% as.timeSeries() * 100
-        eff_Frontier <- portfolioFrontier(portfolio_rets, spec = shortSpec,
-                                          constraints = "Short")  # test-set
-    # bench data
-    portfolio_rets <- rets_bench %>% as.timeSeries() * 100
-        eff_Frontier2 <- portfolioFrontier(portfolio_rets, spec = shortSpec,
-                                           constraints = "Short")  # bench-set
-    #Frontier line of test + bench
-    longFrontier <- eff_Frontier
-        tailoredFrontierPlot2(object = longFrontier,  twoAssets = TRUE, title = FALSE, 
-                            risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6))
-        t_line <- tangencyLines(object = longFrontier, col = "red",
+    eff_line_plot(eff_data)
+    #
+    ##################### function : eff_line_plot
+    eff_line_plot <- function(data) {
+      testset <- c('SNP', 'TLT', 'BTC','ETH')
+          rets_test <- data[ ,testset]
+      benchset <- c( 'SNP', 'TLT')
+          rets_bench <- data[ , benchset]
+          
+          shortSpec <- portfolioSpec()
+          setNFrontierPoints(shortSpec) <- 50
+          setSolver(shortSpec) <- "solveRshortExact"    
+         
+      
+      # test data
+      portfolio_rets <- rets_test %>% as.timeSeries() * 100
+          eff_Frontier <- portfolioFrontier(portfolio_rets, spec = shortSpec,
+                                            constraints = "Short")  # test-set
+      # bench data
+      portfolio_rets <- rets_bench %>% as.timeSeries() * 100
+          eff_Frontier2 <- portfolioFrontier(portfolio_rets, spec = shortSpec,
+                                             constraints = "Short")  # bench-set
+      #Frontier line of test + bench
+      longFrontier <- eff_Frontier
+          tailoredFrontierPlot2(object = longFrontier,  twoAssets = TRUE, title = FALSE, 
+                              risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6))
+          t_line <- tangencyLines(object = longFrontier, col = "red",
+                              risk = "Cov", xlim = c(0,6), )
+          t_mvpoint <- minvariancePoints(object = longFrontier, return = "mean",
+                              risk = "Cov", auto = TRUE, )
+      # Frontier of benchmark
+      longFrontier <- eff_Frontier2
+          frontierPlot2(object = longFrontier, add = TRUE, title = TRUE, 
+                            col = c("blue","blue"), risk = "Cov", xlim = c(0,6), )
+          b_line <- tangencyLines(object = longFrontier, col = "blue",
                             risk = "Cov", xlim = c(0,6), )
-        t_mvpoint <- minvariancePoints(object = longFrontier, return = "mean",
-                            risk = "Cov", auto = TRUE, )
-    # Frontier of benchmark
-    longFrontier <- eff_Frontier2
-        frontierPlot2(object = longFrontier, add = TRUE, title = FALSE, 
-                          col = c("blue","blue"), risk = "Cov", xlim = c(0,6), )
-        b_line <- tangencyLines(object = longFrontier, col = "blue",
-                  risk = "Cov", xlim = c(0,6), )
-        b_mvpoint <- minvariancePoints(object = longFrontier, return = "mean", 
-                                   risk = "Cov", auto = TRUE, )
-    # slop slop_x slop_y GMV_x GMV_Y
-  
-      eff1_data <- c(slop = t_line$slope, # tangency slop
-                    GMV_X = t_mvpoint[1], # GMV x
-                    GMV_Y = t_mvpoint[2], # GMV y
-                    f_data = paste(eff_Frontier@data@data$names, collapse = ","))
-      
-      eff2_data <-c(slop =  b_line$slope,
-                    GMV_X =  b_mvpoint[1],
-                    GMV_Y =  b_mvpoint[2],
-                    f_data = paste(eff_Frontier2@data@data$names, collapse = ","))
-      eff_data <- rbind(eff1_data, eff2_data)
-      print(eff_data)
-      
+          b_mvpoint <- minvariancePoints(object = longFrontier, return = "mean", 
+                                     risk = "Cov", auto = TRUE, )
+      # slop slop_x slop_y GMV_x GMV_Y
+    
+        eff1_result <- c(slop = t_line$slope, t_line$assets, # tangency slop
+                      GMV_X = t_mvpoint[1], # GMV x
+                      GMV_Y = t_mvpoint[2], # GMV y
+                      f_data = paste(eff_Frontier@data@data$names, collapse = ","))
+        
+        eff2_result <-c(slop =  b_line$slope, b_line$assets,
+                      GMV_X =  b_mvpoint[1],
+                      GMV_Y =  b_mvpoint[2],
+                      f_data = paste(eff_Frontier2@data@data$names, collapse = ","))
+        eff_result <- rbind(eff1_result, eff2_result)
+        print(eff_result)
+        
+        shortFrontier <- eff_Frontier
+            weightsPlot(shortFrontier)
+            text <- "MV Portfolio - Short Constrained Portfolio"
+            mtext(text, side = 3, line = 3, font = 2, cex = 0.9)
+            weightedReturnsPlot(shortFrontier)
+            covRiskBudgetsPlot(shortFrontier)
+        
+        shortFrontier <- eff_Frontier2
+            weightsPlot(shortFrontier)
+            text <- "MV Portfolio - Short Constrained Portfolio"
+            mtext(text, side = 3, line = 3, font = 2, cex = 0.9)
+            weightedReturnsPlot(shortFrontier)
+            covRiskBudgetsPlot(shortFrontier)
+    }
+    ################# end function : eff_line_plot
+    
 ################### constrints = short 
       shortSpec <- portfolioSpec()
       setNFrontierPoints(shortSpec) <- 50
@@ -146,11 +166,11 @@ load("data_getsymbols.RData")
                                        constraints = "Short")
       tailoredFrontierPlot(object = shortFrontier, mText = "MV Portfolio - Short Constraints",
                            twoAssets = TRUE, risk = "Cov")
-      # weightsPlot(shortFrontier)
-      # text <- "MV Portfolio - Short Constrained Portfolio"
-      # mtext(text, side = 3, line = 3, font = 2, cex = 0.9)
-      # weightedReturnsPlot(shortFrontier)
-      # covRiskBudgetsPlot(shortFrontier)
+      weightsPlot(shortFrontier)
+      text <- "MV Portfolio - Short Constrained Portfolio"
+      mtext(text, side = 3, line = 3, font = 2, cex = 0.9)
+      weightedReturnsPlot(shortFrontier)
+      covRiskBudgetsPlot(shortFrontier)
       
       
       
@@ -242,71 +262,71 @@ save.image(file="data_quant.RData")
 ##########################################################
 #  Regression model
 ##########################################################
-model  <- lm(`BTC` ~ . -`ETH`, data=rets)    # regression 
-model  <- lm(BTC ~ (SPY + IEV + EWJ + EEM + TLT + IEF + IYR + RWX + GLD + DBC), data=rets)
-model <- lm(BTC ~ (SPY + EEM + TLT + IEF + IYR + RWX + GLD + DBC), data=rets)
-model <- lm(BTC ~ (SPY + EEM + TLT + IYR + RWX + GLD + DBC), data=rets)
-model <- lm(BTC ~ (SPY + EEM + TLT + IYR + GLD + DBC), data=rets)
-model <- lm(BTC ~ (SPY + EEM + TLT + IYR + GLD + DBC), data=rets["/2019"])
-model <- lm(BTC ~ (SPY + EEM + TLT + IYR + GLD + DBC), data=rets["2020/"])
-model <- lm(`BTC` ~ . -`ETH`, data=rets)    # regression 
-model <- lm(`BTC` ~ . -`ETH`, data=rets["/2019"])    # regression 
-model <- lm(`BTC` ~ . -`ETH`, data=rets["2020/"])    # regression 
-model2 <- lm(`BTC` ~ . -1 -`ETH`, data=rets)    # regression 
-# bench Aseets : SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC
-model <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets)
-model <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets["/2019"])
-model <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets["2020/"])
-##############################################################################
-#### Regression Model
-model <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets)
-model2 <- lm(BTC ~ 0 + (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets)
-
-summary(model)
-model$coefficients[1]   # alpha
-sum(model$coefficients) - model$coefficients[[1]] # beta
-
-##### HK test
-# the rows of which specify linear combinations of the model coefficients
-hypothesis.matrix <- rbind(c(1,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1))
-rhs=c(0,1)   # right-hand-side vector for hypothesis
-
-HK_test <- lht(model,hypothesis.matrix,rhs)
-HK_test
-
-HK_testw <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
-HK_testw
-
-HK_test[2,5]  # F test  - HK test
-HK_test[2,6]  # Pr(>F)  - HK test
-
-##### step-1 test  : alpha = 0
-lhs <- c(1,0,0,0,0,0,0,0,0)
-step1_test <- lht(model,lhs,c(0))
-step1_test
-step1_test[2,5]  # F test  - step-1 test
-step1_test[2,6]  # Pr(>F)  : step-1 test
-
-##### step- test 2 : beta=1 condition on alpha = 0
-##### unresrticted model condition on alpha =0  : model2
-# model2 <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC) -1, data=rets)
-summary(model2)
-sum(model2$coefficients) # beta
-lhs <- rbind(c(1,1,1,1,1,1,1,1))
-step2_test <- lht(model2,lhs,c(1))
-step2_test
-step2_test[2,5]  # F test  : step- test 2
-step2_test[2,6]  # Pr(>F)  : step- test 2
-
-#
-model$coefficients[1]   # alpha
-sum(model$coefficients) - model$coefficients[[1]] # beta
-HK_test[2,5]  # F test  - HK test
-HK_test[2,6]  # Pr(>F)  - HK test
-step1_test[2,5]  # F test  - step-1 test
-step1_test[2,6]  # Pr(>F)  : step-1 test
-step2_test[2,5]  # F test  : step- test 2
-step2_test[2,6]  # Pr(>F)  : step- test 2
+# model  <- lm(`BTC` ~ . -`ETH`, data=rets)    # regression 
+# model  <- lm(BTC ~ (SPY + IEV + EWJ + EEM + TLT + IEF + IYR + RWX + GLD + DBC), data=rets)
+# model <- lm(BTC ~ (SPY + EEM + TLT + IEF + IYR + RWX + GLD + DBC), data=rets)
+# model <- lm(BTC ~ (SPY + EEM + TLT + IYR + RWX + GLD + DBC), data=rets)
+# model <- lm(BTC ~ (SPY + EEM + TLT + IYR + GLD + DBC), data=rets)
+# model <- lm(BTC ~ (SPY + EEM + TLT + IYR + GLD + DBC), data=rets["/2019"])
+# model <- lm(BTC ~ (SPY + EEM + TLT + IYR + GLD + DBC), data=rets["2020/"])
+# model <- lm(`BTC` ~ . -`ETH`, data=rets)    # regression 
+# model <- lm(`BTC` ~ . -`ETH`, data=rets["/2019"])    # regression 
+# model <- lm(`BTC` ~ . -`ETH`, data=rets["2020/"])    # regression 
+# model2 <- lm(`BTC` ~ . -1 -`ETH`, data=rets)    # regression 
+# # bench Aseets : SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC
+# model <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets)
+# model <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets["/2019"])
+# model <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets["2020/"])
+# ##############################################################################
+# #### Regression Model
+# model <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets)
+# model2 <- lm(BTC ~ 0 + (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC), data=rets)
+# 
+# summary(model)
+# model$coefficients[1]   # alpha
+# sum(model$coefficients) - model$coefficients[[1]] # beta
+# 
+# ##### HK test
+# # the rows of which specify linear combinations of the model coefficients
+# hypothesis.matrix <- rbind(c(1,0,0,0,0,0,0,0,0),c(0,1,1,1,1,1,1,1,1))
+# rhs=c(0,1)   # right-hand-side vector for hypothesis
+# 
+# HK_test <- lht(model,hypothesis.matrix,rhs)
+# HK_test
+# 
+# HK_testw <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
+# HK_testw
+# 
+# HK_test[2,5]  # F test  - HK test
+# HK_test[2,6]  # Pr(>F)  - HK test
+# 
+# ##### step-1 test  : alpha = 0
+# lhs <- c(1,0,0,0,0,0,0,0,0)
+# step1_test <- lht(model,lhs,c(0))
+# step1_test
+# step1_test[2,5]  # F test  - step-1 test
+# step1_test[2,6]  # Pr(>F)  : step-1 test
+# 
+# ##### step- test 2 : beta=1 condition on alpha = 0
+# ##### unresrticted model condition on alpha =0  : model2
+# # model2 <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC) -1, data=rets)
+# summary(model2)
+# sum(model2$coefficients) # beta
+# lhs <- rbind(c(1,1,1,1,1,1,1,1))
+# step2_test <- lht(model2,lhs,c(1))
+# step2_test
+# step2_test[2,5]  # F test  : step- test 2
+# step2_test[2,6]  # Pr(>F)  : step- test 2
+# 
+# #
+# model$coefficients[1]   # alpha
+# sum(model$coefficients) - model$coefficients[[1]] # beta
+# HK_test[2,5]  # F test  - HK test
+# HK_test[2,6]  # Pr(>F)  - HK test
+# step1_test[2,5]  # F test  - step-1 test
+# step1_test[2,6]  # Pr(>F)  : step-1 test
+# step2_test[2,5]  # F test  : step- test 2
+# step2_test[2,6]  # Pr(>F)  : step- test 2
 
 ##############################################################################
 
@@ -1144,35 +1164,15 @@ frontierPlot2 <-
     }
     if (title) {
       labs = attr(fullFrontier, "control")
-      title(main = "Efficient Frontier", xlab = paste("Target Risk[", 
-                                                      labs[1], "]", sep = ""), ylab = paste("Target Return[", 
-                                                                                            labs[2], "]", sep = ""))
-    }
+      # title(main = "Efficient Frontier", xlab = paste("Target Risk[", 
+      #                                                 labs[1], "]", sep = ""), ylab = paste("Target Return[", 
+      #                                                                                       labs[2], "]", sep = ""))
+      title(main = "Efficient Frontier", 
+            xlab = "Risk",
+            ylab = "Return")
+      
+      }
     # mtext("Rmetrics", adj = 0, side = 4, cex = 0.7, col = "darkgrey")
     # invisible(fullFrontier)
   }
 ###################################################################
-#
-# tangencyLines <-
-# function (object, return = c("mean", "mu"), risk = c("Cov", 
-#                                                      "Sigma", "CVaR", "VaR"), auto = TRUE, ...) 
-# {
-#   return = match.arg(return)
-#   risk = match.arg(risk)
-#   data <- getSeries(object)
-#   spec <- getSpec(object)
-#   constraints <- getConstraints(object)
-#   # riskFreeRate <- getRiskFreeRate(object)
-#   riskFreeRate = riskfree_Rate
-#   tgPortfolio = tangencyPortfolio(data, spec, constraints)
-#   assets <- frontierPoints(tgPortfolio, return = return, risk = risk, 
-#                            auto = auto)
-#   slope <- (assets[2] - riskFreeRate)/assets[1]
-#   if (slope > 0) {
-#     abline(riskFreeRate, slope, ...)
-#   }
-#   else {
-#     warning("Tangency point does not exist")
-#   }
-#   invisible(list(slope = slope, assets = assets))
-# }
