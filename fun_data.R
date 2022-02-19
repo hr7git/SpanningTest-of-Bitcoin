@@ -69,85 +69,97 @@ load("data_getsymbols.RData")
     
   
 ##### convert zoo into timeSeries
-
+    load("rets2.Rdata")
+    
+    # eff_data <- rets2              # all period
+    # eff_data <- rets2["/2019"]  # before covid19
+    # eff_data <- rets2["2020/"]      # after covid19
+    ####
+    #
+    source("./function/tailoredFrontierPlot2.R")
+    source("./function/frontierPlot2.R")
+    source('./function/eff_line_plot.R')
+    eff_result_all    <- eff_line_plot(rets2)
+    eff_result_before <- eff_line_plot(rets2["/2019"])
+    eff_result_after  <- eff_line_plot(rets2["2020/"])
     
     ### Data procedure - TEST only : BTC ETH
     #  all - without restriction
     #  before covid19 - 
     #  after covid19
-    load("rets2.Rdata")
-    
-    eff_data <- rets2              # all period
-    eff_data <- rets2["/2019"]  # before covid19
-    eff_data <- rets2["2020/"]      # after covid19
-    ####
-    #
-    eff_line_plot(eff_data)
-    #
-    ##################### function : eff_line_plot
-    eff_line_plot <- function(data) {
-      testset <- c('SNP', 'TLT', 'BTC','ETH')
-          rets_test <- data[ ,testset]
-      benchset <- c( 'SNP', 'TLT')
-          rets_bench <- data[ , benchset]
-          
-          shortSpec <- portfolioSpec()
-          setNFrontierPoints(shortSpec) <- 50
-          setSolver(shortSpec) <- "solveRshortExact"    
-         
-      
-      # test data
-      portfolio_rets <- rets_test %>% as.timeSeries() * 100
-          eff_Frontier <- portfolioFrontier(portfolio_rets, spec = shortSpec,
-                                            constraints = "Short")  # test-set
-      # bench data
-      portfolio_rets <- rets_bench %>% as.timeSeries() * 100
-          eff_Frontier2 <- portfolioFrontier(portfolio_rets, spec = shortSpec,
-                                             constraints = "Short")  # bench-set
-      #Frontier line of test + bench
-      longFrontier <- eff_Frontier
-          tailoredFrontierPlot2(object = longFrontier,  twoAssets = TRUE, title = FALSE, 
-                              risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6))
-          t_line <- tangencyLines(object = longFrontier, col = "red",
-                              risk = "Cov", xlim = c(0,6), )
-          t_mvpoint <- minvariancePoints(object = longFrontier, return = "mean",
-                              risk = "Cov", auto = TRUE, )
-      # Frontier of benchmark
-      longFrontier <- eff_Frontier2
-          frontierPlot2(object = longFrontier, add = TRUE, title = TRUE, 
-                            col = c("blue","blue"), risk = "Cov", xlim = c(0,6), )
-          b_line <- tangencyLines(object = longFrontier, col = "blue",
-                            risk = "Cov", xlim = c(0,6), )
-          b_mvpoint <- minvariancePoints(object = longFrontier, return = "mean", 
-                                     risk = "Cov", auto = TRUE, )
-      # slop slop_x slop_y GMV_x GMV_Y
-    
-        eff1_result <- c(slop = t_line$slope, t_line$assets, # tangency slop
-                      GMV_X = t_mvpoint[1], # GMV x
-                      GMV_Y = t_mvpoint[2], # GMV y
-                      f_data = paste(eff_Frontier@data@data$names, collapse = ","))
-        
-        eff2_result <-c(slop =  b_line$slope, b_line$assets,
-                      GMV_X =  b_mvpoint[1],
-                      GMV_Y =  b_mvpoint[2],
-                      f_data = paste(eff_Frontier2@data@data$names, collapse = ","))
-        eff_result <- rbind(eff1_result, eff2_result)
-        print(eff_result)
-        
-        shortFrontier <- eff_Frontier
-            weightsPlot(shortFrontier)
-            text <- "MV Portfolio - Short Constrained Portfolio"
-            mtext(text, side = 3, line = 3, font = 2, cex = 0.9)
-            weightedReturnsPlot(shortFrontier)
-            covRiskBudgetsPlot(shortFrontier)
-        
-        shortFrontier <- eff_Frontier2
-            weightsPlot(shortFrontier)
-            text <- "MV Portfolio - Short Constrained Portfolio"
-            mtext(text, side = 3, line = 3, font = 2, cex = 0.9)
-            weightedReturnsPlot(shortFrontier)
-            covRiskBudgetsPlot(shortFrontier)
-    }
+    # load("rets2.Rdata")
+    # 
+    # eff_data <- rets2              # all period
+    # eff_data <- rets2["/2019"]  # before covid19
+    # eff_data <- rets2["2020/"]      # after covid19
+    # ####
+    # #
+    # eff_line_plot(eff_data)
+    # #
+    # ##################### function : eff_line_plot
+    # eff_line_plot <- function(data) {
+    #   testset <- c('SNP', 'TLT', 'BTC','ETH')
+    #       rets_test <- data[ ,testset]
+    #   benchset <- c( 'SNP', 'TLT')
+    #       rets_bench <- data[ , benchset]
+    #       
+    #       shortSpec <- portfolioSpec()
+    #       setNFrontierPoints(shortSpec) <- 50
+    #       setSolver(shortSpec) <- "solveRshortExact"    
+    #      
+    #   
+    #   # test data
+    #   portfolio_rets <- rets_test %>% as.timeSeries() * 100
+    #       eff_Frontier <- portfolioFrontier(portfolio_rets, spec = shortSpec,
+    #                                         constraints = "Short")  # test-set
+    #   # bench data
+    #   portfolio_rets <- rets_bench %>% as.timeSeries() * 100
+    #       eff_Frontier2 <- portfolioFrontier(portfolio_rets, spec = shortSpec,
+    #                                          constraints = "Short")  # bench-set
+    #   #Frontier line of test + bench
+    #   longFrontier <- eff_Frontier
+    #       tailoredFrontierPlot2(object = longFrontier,  twoAssets = TRUE, title = FALSE, 
+    #                           risk = "Cov", sharpeRatio = FALSE, xlim = c(0,6))
+    #       t_line <- tangencyLines(object = longFrontier, col = "red",
+    #                           risk = "Cov", xlim = c(0,6), )
+    #       t_mvpoint <- minvariancePoints(object = longFrontier, return = "mean",
+    #                           risk = "Cov", auto = TRUE, )
+    #   # Frontier of benchmark
+    #   longFrontier <- eff_Frontier2
+    #       frontierPlot2(object = longFrontier, add = TRUE, title = TRUE, 
+    #                         col = c("blue","blue"), risk = "Cov", xlim = c(0,6), )
+    #       b_line <- tangencyLines(object = longFrontier, col = "blue",
+    #                         risk = "Cov", xlim = c(0,6), )
+    #       b_mvpoint <- minvariancePoints(object = longFrontier, return = "mean", 
+    #                                  risk = "Cov", auto = TRUE, )
+    #   # slop slop_x slop_y GMV_x GMV_Y
+    # 
+    #     eff1_result <- c(slop = t_line$slope, t_line$assets, # tangency slop
+    #                   GMV_X = t_mvpoint[1], # GMV x
+    #                   GMV_Y = t_mvpoint[2], # GMV y
+    #                   f_data = paste(eff_Frontier@data@data$names, collapse = ","))
+    #     
+    #     eff2_result <-c(slop =  b_line$slope, b_line$assets,
+    #                   GMV_X =  b_mvpoint[1],
+    #                   GMV_Y =  b_mvpoint[2],
+    #                   f_data = paste(eff_Frontier2@data@data$names, collapse = ","))
+    #     eff_result <- rbind(eff1_result, eff2_result)
+    #     print(eff_result)
+    #     
+    #     shortFrontier <- eff_Frontier
+    #         weightsPlot(shortFrontier)
+    #         text <- "MV Portfolio - Short Constrained Portfolio"
+    #         mtext(text, side = 3, line = 3, font = 2, cex = 0.9)
+    #         weightedReturnsPlot(shortFrontier)
+    #         covRiskBudgetsPlot(shortFrontier)
+    #     
+    #     shortFrontier <- eff_Frontier2
+    #         weightsPlot(shortFrontier)
+    #         text <- "MV Portfolio - Short Constrained Portfolio"
+    #         mtext(text, side = 3, line = 3, font = 2, cex = 0.9)
+    #         weightedReturnsPlot(shortFrontier)
+    #         covRiskBudgetsPlot(shortFrontier)
+    # }
     ################# end function : eff_line_plot
     
 ################### constrints = short 

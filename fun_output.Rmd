@@ -125,7 +125,7 @@ Table 4.1 Summary of Cyptocurrency (Dec 22,2021)
 
 correlation between asset : --> change another graph
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, include=FALSE}
 library(dplyr)
 library(corrplot)
   load("rets2.Rdata")
@@ -194,12 +194,22 @@ load("rets2.Rdata")
 # eff_data <- rets2["2020/"]      # after covid19
 ####
 #
-source("C:/Users/hanap/Dropbox/ak2424/KD/7. R/r_test_0216/function/tailoredFrontierPlot2.R")
-source("C:/Users/hanap/Dropbox/ak2424/KD/7. R/r_test_0216/function/frontierPlot2.R")
-source('C:/Users/hanap/Dropbox/ak2424/KD/7. R/r_test_0216/function/eff_line_plot.R')
-eff_line_plot(rets2)
-eff_line_plot(rets2["/2019"])
-eff_line_plot(rets2["2020/"])
+# source("C:/Users/hanap/Dropbox/ak2424/KD/7. R/r_test_0216/function/tailoredFrontierPlot2.R")
+# source("C:/Users/hanap/Dropbox/ak2424/KD/7. R/r_test_0216/function/frontierPlot2.R")
+# source('C:/Users/hanap/Dropbox/ak2424/KD/7. R/r_test_0216/function/eff_line_plot.R')
+# eff_line_plot(rets2)
+# eff_line_plot(rets2["/2019"])
+# eff_line_plot(rets2["2020/"])
+
+    source("./function/tailoredFrontierPlot2.R")
+    source("./function/frontierPlot2.R")
+    source('./function/eff_line_plot.R')
+    eff_result_all    <- eff_line_plot(rets2)
+    kable(eff_result_all[[3]])
+    eff_result_before <- eff_line_plot(rets2["/2019"])
+    kable(eff_result_before[[3]])
+    eff_result_after  <- eff_line_plot(rets2["2020/"])
+    kable(eff_result_after[[3]])
 ```
 
 
@@ -219,7 +229,7 @@ eff_line_plot(rets2["2020/"])
   kable(head(df_hetero,12),
       caption = "wald test - hetero",
       align = c("l","l","l"))
-  hux(df_hetero)
+  # hux(df_hetero)
 ```
 
 
@@ -275,7 +285,7 @@ Fig2: Boris, F., Marie, L., Nicolas, P (2020) “Risk Optimizations on Basis Por
 <br><center>**Appendix**</center><br>
 
 </br>Table 4.5 The Result of regression test  
-```{r,echo=FALSE,message=FALSE }
+```{r eval=FALSE, include=FALSE}
 
 df_table <- read_excel("Ivy Asset Allocation.xlsx",
                                     sheet = "test")
@@ -284,7 +294,6 @@ kable(head(df_table,12),
       caption = "Ivy Asset Allocation.xlsx",
       align = c("l","l","l"))
 
-
 ```  
 
 ### 
@@ -292,33 +301,26 @@ kable(head(df_table,12),
   2. correlations between asset
   3. The Geometry of mean-variancce spanning test
   
+```{r,echo=FALSE}
 
-
-```{r}
- library(quantmod)
- load("data_getsymbols.RData")
- chart_Series(rets2$BTC)
- chart_Series(rets2$SPY)
- chart_Series(rets2$GLD)
- ###
  library(plotly)
- SPY %>%
+ BTC %>%
    fortify.zoo %>%
-   plot_ly(x= ~Index, y = ~SPY.Close ) %>%
+   plot_ly(x= ~Index, y = ~BTC.Close ) %>%
    add_lines()
  
  ###
- ###
- # library(PerformanceAnalytics)
- # library(quantmod)
  library(dygraphs)
  data <- apply.monthly(rets_test,mean)  # montly return
  dygraph(data, main = "Montly Return") %>%
    dyAxis("y", label = "return") %>%
    dyOptions(colors = RColorBrewer::brewer.pal(4, "Set2"))
  ###
- # chartSeries(`BTC`)
- # chartSeries(`ETH`)
+ library(quantmod)
+ load("data_getsymbols.RData")
+ chart_Series(rets2$BTC)
+ chart_Series(rets2$ETH)
+
 ```
 
 correlation between asset : 
@@ -335,10 +337,6 @@ cor(rets) %>%
            mar = c(0,0,0.5,0))
 
 ```
-
-
-
-
 
 ### regression i j k
 test : i  
