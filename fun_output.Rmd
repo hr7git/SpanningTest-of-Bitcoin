@@ -302,11 +302,12 @@ kable(head(df_table,12),
   3. The Geometry of mean-variancce spanning test
   
 ```{r,echo=FALSE}
+ load("data_getsymbols.RData")
 
  library(plotly)
- BTC %>%
+ SPY %>%
    fortify.zoo %>%
-   plot_ly(x= ~Index, y = ~BTC.Close ) %>%
+   plot_ly(x= ~Index, y = ~SPY.Close ) %>%
    add_lines()
  
  ###
@@ -317,7 +318,6 @@ kable(head(df_table,12),
    dyOptions(colors = RColorBrewer::brewer.pal(4, "Set2"))
  ###
  library(quantmod)
- load("data_getsymbols.RData")
  chart_Series(rets2$BTC)
  chart_Series(rets2$ETH)
 
