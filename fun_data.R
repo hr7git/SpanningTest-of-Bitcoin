@@ -23,6 +23,9 @@ library(magrittr)
 library(car)        # lht 
 library(tidyr)
 library(dplyr)
+library(timeSeries)
+library(fPortfolio)
+library(ggplot2)
 ##############  get data from yahoo   ##########################################
 
 symbols = c('SPY', # US stock S&P 500
@@ -66,9 +69,7 @@ load("data_getsymbols.RData")
     
   
 ##### convert zoo into timeSeries
-    library(timeSeries)
-    library(fPortfolio)
-    library(ggplot2)
+
     
     ### Data procedure - TEST only : BTC ETH
     #  all - without restriction
@@ -81,16 +82,24 @@ load("data_getsymbols.RData")
     data <- rets2["2020/"]      # after covid19
     ####
     #
-    testset <- c('SNP', 'TLT', 'GLD', 'BTC')
+    testset <- c('SNP', 'TLT', 'BTC')
         rets_test <- data[ ,testset]
-    benchset <- c( 'SNP', 'TLT', 'GLD')
+    benchset <- c( 'SNP', 'TLT')
         rets_bench <- data[ , benchset]
+        
+        shortSpec <- portfolioSpec()
+        setNFrontierPoints(shortSpec) <- 50
+        setSolver(shortSpec) <- "solveRshortExact"    
+       
+    
     # test data
     portfolio_rets <- rets_test %>% as.timeSeries() * 100
-        eff_Frontier <- portfolioFrontier(portfolio_rets)  # test-set
+        eff_Frontier <- portfolioFrontier(portfolio_rets, spec = shortSpec,
+                                          constraints = "Short")  # test-set
     # bench data
     portfolio_rets <- rets_bench %>% as.timeSeries() * 100
-        eff_Frontier2 <- portfolioFrontier(portfolio_rets)  # bench-set
+        eff_Frontier2 <- portfolioFrontier(portfolio_rets, spec = shortSpec,
+                                           constraints = "Short")  # bench-set
     #Frontier line of test + bench
     longFrontier <- eff_Frontier
         tailoredFrontierPlot2(object = longFrontier,  twoAssets = TRUE, title = FALSE, 
@@ -108,11 +117,19 @@ load("data_getsymbols.RData")
         b_mvpoint <- minvariancePoints(object = longFrontier, return = "mean", 
                                    risk = "Cov", auto = TRUE, )
     # slop slop_x slop_y GMV_x GMV_Y
-      df1 <- data.frame(t_line,t_mvpoint)
-      df2 <- data.frame(b_line,b_mvpoint)
-      df3 <- rbind(df2,df1)
-      df3   
-    
+  
+      eff1_data <- c(slop = t_line$slope, # tangency slop
+                    GMV_X = t_mvpoint[1], # GMV x
+                    GMV_Y = t_mvpoint[2], # GMV y
+                    f_data = paste(eff_Frontier@data@data$names, collapse = ","))
+      
+      eff2_data <-c(slop =  b_line$slope,
+                    GMV_X =  b_mvpoint[1],
+                    GMV_Y =  b_mvpoint[2],
+                    f_data = paste(eff_Frontier2@data@data$names, collapse = ","))
+      eff_data <- rbind(eff1_data, eff2_data)
+      print(eff_data)
+      
 ################### constrints = short 
       shortSpec <- portfolioSpec()
       setNFrontierPoints(shortSpec) <- 50
@@ -959,6 +976,7 @@ tailoredFrontierPlot2 <-
     else {
       Ylim = ylim
     }
+    # frontierplot  --> frontierplot2  : : modified function
     frontierPlot2(object, labels = FALSE, return = return, risk = risk, 
                  auto = FALSE, xlim = Xlim, ylim = Ylim, title = title, 
                  col = c("red", "red"),  # change color of frontier
@@ -997,8 +1015,7 @@ tailoredFrontierPlot2 <-
     #   sharpeRatioLines(object, return = return, risk = risk, 
     #                    auto = FALSE, col = "orange", lwd = 2)
     # }
-    # mtext("KDI School", adj = 0, side = 4, cex = 0.7, col = "darkgrey")
-    # invisible(list(object = object, xlim = Xlim, ylim = Ylim))
+
   }
 
 #############################################################################
