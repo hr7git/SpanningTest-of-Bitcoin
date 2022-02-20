@@ -79,10 +79,24 @@ load("data_getsymbols.RData")
     source("./function/tailoredFrontierPlot2.R")
     source("./function/frontierPlot2.R")
     source('./function/eff_line_plot.R')
-    eff_result_all    <- eff_line_plot(rets2)
-    eff_result_before <- eff_line_plot(rets2["/2019"])
-    eff_result_after  <- eff_line_plot(rets2["2020/"])
     
+    testset <- c('SNP', 'TLT', 'BTC')
+    benchset <- c( 'SNP', 'TLT')
+    eff_result_all    <- eff_line_plot(rets2, testset, benchset)
+    eff_result_before <- eff_line_plot(rets2["/2019"], testset, benchset)
+    eff_result_after  <- eff_line_plot(rets2["2020/"], testset, benchset)
+
+    testset <- c('SNP', 'TLT', 'ETH')
+    benchset <- c( 'SNP', 'TLT')
+    eff_result_all    <- eff_line_plot(rets2, testset, benchset)
+    eff_result_before <- eff_line_plot(rets2["/2019"], testset, benchset)
+    eff_result_after  <- eff_line_plot(rets2["2020/"], testset, benchset)
+    
+    testset <- c('SNP', 'TLT', 'BTC','ETH')
+    benchset <- c( 'SNP', 'TLT')
+    eff_result_all    <- eff_line_plot(rets2, testset, benchset)
+    eff_result_before <- eff_line_plot(rets2["/2019"], testset, benchset)
+    eff_result_after  <- eff_line_plot(rets2["2020/"], testset, benchset)    
     ### Data procedure - TEST only : BTC ETH
     #  all - without restriction
     #  before covid19 - 

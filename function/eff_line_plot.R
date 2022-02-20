@@ -1,8 +1,8 @@
 ##################### function : eff_line_plot
-eff_line_plot <- function(data) {
-  testset <- c('SNP', 'TLT', 'BTC','ETH')
+eff_line_plot <- function(data, testset, benchset) {
+  # testset <- c('SNP', 'TLT', 'BTC','ETH')
   rets_test <- data[ ,testset]
-  benchset <- c( 'SNP', 'TLT')
+  # benchset <- c( 'SNP', 'TLT')
   rets_bench <- data[ , benchset]
   
   shortSpec <- portfolioSpec()
