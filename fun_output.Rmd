@@ -2,8 +2,8 @@
 title: "Impact OF Covid-19 to Bitcoin"
 output:
   html_document: default
-  word_document: default
   pdf_document: default
+  word_document: default
 editor_options: 
   chunk_output_type: console
 ---
@@ -218,8 +218,8 @@ load("rets2.Rdata")
 
 1) Period 2014 ~ 2022.2
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
-  library(huxtable)
-  load("rets2.Rdata")
+  # library(huxtable)
+  # load("rets2.Rdata")
   load("df_base2.Rdata")
   load("df_hetero.Rdata")
   ####
