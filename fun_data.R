@@ -96,7 +96,13 @@ load("data_getsymbols.RData")
     benchset <- c( 'SNP', 'TLT')
     eff_result_all    <- eff_line_plot(rets2, testset, benchset)
     eff_result_before <- eff_line_plot(rets2["/2019"], testset, benchset)
-    eff_result_after  <- eff_line_plot(rets2["2020/"], testset, benchset)    
+    eff_result_after  <- eff_line_plot(rets2["2020/"], testset, benchset)   
+    
+    testset <- c('SNP', 'TLT', 'QQQ', 'BTC')
+    benchset <- c( 'SNP', 'TLT')
+    eff_result_all    <- eff_line_plot(rets2, testset, benchset)
+    eff_result_before <- eff_line_plot(rets2["/2019"], testset, benchset)
+    eff_result_after  <- eff_line_plot(rets2["2020/"], testset, benchset) 
     ### Data procedure - TEST only : BTC ETH
     #  all - without restriction
     #  before covid19 - 
