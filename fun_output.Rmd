@@ -4,8 +4,6 @@ output:
   html_document: default
   pdf_document: default
   word_document: default
-editor_options: 
-  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -175,6 +173,22 @@ ETF is the price from yahoo.finance. For more details on price see <http://finan
 <br><center>**5.  Results**</center><br>
 
 
+### regression i j k
+test : i  
+  1. BTC-USD  
+  2. ETH-USD  
+  3. BTC & ETH  
+period : j  
+  1. all  
+  2. before covid19  
+  3. after covid19  
+method : k  
+  1. regression   
+  2. regression subject to intercept = 0  
+  3. HK test  
+  4. Step1 test  
+  5. Step2 test 
+
 <br>Q - bench asset --> SPY TLT GLD only ( stock bond + GLD:becuase of psudeo money character)  
 <br>Q - period --> all / before & after covid19  
 <br>Q - Heteroskedecity option before/after apply - change the probability  
@@ -185,54 +199,6 @@ ETF is the price from yahoo.finance. For more details on price see <http://finan
     -  after add IEF : significantly different
 
 <br>1. Efficient Frontier Line 
-
-```{r,echo=FALSE,message=FALSE,warning=FALSE}
-load("rets2.Rdata")
-
-# eff_data <- rets2              # all period
-# eff_data <- rets2["/2019"]  # before covid19
-# eff_data <- rets2["2020/"]      # after covid19
-####
-#
-# source("C:/Users/hanap/Dropbox/ak2424/KD/7. R/r_test_0216/function/tailoredFrontierPlot2.R")
-# source("C:/Users/hanap/Dropbox/ak2424/KD/7. R/r_test_0216/function/frontierPlot2.R")
-# source('C:/Users/hanap/Dropbox/ak2424/KD/7. R/r_test_0216/function/eff_line_plot.R')
-# eff_line_plot(rets2)
-# eff_line_plot(rets2["/2019"])
-# eff_line_plot(rets2["2020/"])
-
-    source("./function/tailoredFrontierPlot2.R")
-    source("./function/frontierPlot2.R")
-    source('./function/eff_line_plot.R')
-print("Test of BTC")
-    testset <- c('SNP', 'TLT', 'BTC')
-    benchset <- c( 'SNP', 'TLT')
-    eff_result_all    <- eff_line_plot(rets2, testset, benchset)
-    kable(eff_result_all[[3]])
-    eff_result_before <- eff_line_plot(rets2["/2019"], testset, benchset)
-    kable(eff_result_before[[3]])    
-    eff_result_after  <- eff_line_plot(rets2["2020/"], testset, benchset)
-    kable(eff_result_after[[3]])
-print("Test of ETH")
-    testset <- c('SNP', 'TLT', 'ETH')
-    benchset <- c( 'SNP', 'TLT')
-    eff_result_all    <- eff_line_plot(rets2, testset, benchset)
-    kable(eff_result_all[[3]])
-    eff_result_before <- eff_line_plot(rets2["/2019"], testset, benchset)
-    kable(eff_result_before[[3]])    
-    eff_result_after  <- eff_line_plot(rets2["2020/"], testset, benchset)
-    kable(eff_result_after[[3]])
-print("Test of BTC + ETH")   
-    testset <- c('SNP', 'TLT', 'BTC','ETH')
-    benchset <- c( 'SNP', 'TLT')
-    eff_result_all    <- eff_line_plot(rets2, testset, benchset)
-    kable(eff_result_all[[3]])
-    eff_result_before <- eff_line_plot(rets2["/2019"], testset, benchset)
-    kable(eff_result_before[[3]])    
-    eff_result_after  <- eff_line_plot(rets2["2020/"], testset, benchset)
-    kable(eff_result_after[[3]])  
-```
-
 
 
 1. BTC result
@@ -305,6 +271,57 @@ Fig2: Boris, F., Marie, L., Nicolas, P (2020) “Risk Optimizations on Basis Por
   
 <br><center>**Appendix**</center><br>
 
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+# {r,echo=FALSE,message=FALSE,warning=FALSE}
+load("rets2.Rdata")
+
+# eff_data <- rets2              # all period
+# eff_data <- rets2["/2019"]  # before covid19
+# eff_data <- rets2["2020/"]      # after covid19
+####
+#
+# source("C:/Users/hanap/Dropbox/ak2424/KD/7. R/r_test_0216/function/tailoredFrontierPlot2.R")
+# source("C:/Users/hanap/Dropbox/ak2424/KD/7. R/r_test_0216/function/frontierPlot2.R")
+# source('C:/Users/hanap/Dropbox/ak2424/KD/7. R/r_test_0216/function/eff_line_plot.R')
+# eff_line_plot(rets2)
+# eff_line_plot(rets2["/2019"])
+# eff_line_plot(rets2["2020/"])
+
+    source("./function/tailoredFrontierPlot2.R")
+    source("./function/frontierPlot2.R")
+    source('./function/eff_line_plot.R')
+print("Test of BTC")
+    testset <- c('SNP', 'TLT', 'BTC')
+    benchset <- c( 'SNP', 'TLT')
+    eff_result_all    <- eff_line_plot(rets2, testset, benchset)
+    kable(eff_result_all[[3]])
+    eff_result_before <- eff_line_plot(rets2["/2019"], testset, benchset)
+    kable(eff_result_before[[3]])    
+    eff_result_after  <- eff_line_plot(rets2["2020/"], testset, benchset)
+    kable(eff_result_after[[3]])
+print("Test of ETH")
+    testset <- c('SNP', 'TLT', 'ETH')
+    benchset <- c( 'SNP', 'TLT')
+    eff_result_all    <- eff_line_plot(rets2, testset, benchset)
+    kable(eff_result_all[[3]])
+    eff_result_before <- eff_line_plot(rets2["/2019"], testset, benchset)
+    kable(eff_result_before[[3]])    
+    eff_result_after  <- eff_line_plot(rets2["2020/"], testset, benchset)
+    kable(eff_result_after[[3]])
+print("Test of BTC + ETH")   
+    testset <- c('SNP', 'TLT', 'BTC','ETH')
+    benchset <- c( 'SNP', 'TLT')
+    eff_result_all    <- eff_line_plot(rets2, testset, benchset)
+    kable(eff_result_all[[3]])
+    eff_result_before <- eff_line_plot(rets2["/2019"], testset, benchset)
+    kable(eff_result_before[[3]])    
+    eff_result_after  <- eff_line_plot(rets2["2020/"], testset, benchset)
+    kable(eff_result_after[[3]])  
+```
+
+
+
 </br>Table 4.5 The Result of regression test  
 ```{r eval=FALSE, include=FALSE}
 
@@ -322,7 +339,7 @@ kable(head(df_table,12),
   2. correlations between asset
   3. The Geometry of mean-variancce spanning test
   
-```{r,echo=FALSE}
+```{r, echo=FALSE}
  load("data_getsymbols.RData")
 
  library(plotly)
@@ -350,7 +367,7 @@ correlation between asset :
 library(dplyr)
 library(corrplot)
 
-cor(rets) %>%
+cor(rets2) %>%
   corrplot(method = 'color', type = 'lower',
            addCoef.col = 'black', number.cex = 0.7,
            tl.cex = 1, tl.srt = 0, tl.col = 'black',
@@ -358,20 +375,5 @@ cor(rets) %>%
            mar = c(0,0,0.5,0))
 
 ```
-
-### regression i j k
-test : i  
-  1. BTC-USD  
-  2. ETH-USD  
-  3. BTC & ETH  
-period : j  
-  1. all  
-  2. before covid19  
-  3. after covid19  
-method : k  
-  1. regression   
-  2. regression subject to intercept = 0  
-  3. HK test  
-  4. Step1 test  
-  5. Step2 test  
+ 
 
