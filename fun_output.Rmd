@@ -327,6 +327,7 @@ load("rets2.Rdata")
     ###
     print(eff_result0)
     kable(eff_result0)
+    # write.csv(eff_result0,file = 'eff_result0.csv')
     ##
   
 #

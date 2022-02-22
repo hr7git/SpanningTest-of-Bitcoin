@@ -46,6 +46,7 @@ getSymbols(symbols, src = 'yahoo', from ='2018-01-01', to ='2022-02-10')
 BTC = getSymbols('BTC-USD', src = 'yahoo', from ='2018-01-01', to ='2022-02-10',auto.assign=FALSE) 
 ETH = getSymbols('ETH-USD', src = 'yahoo', from ='2018-01-01', to ='2022-02-10',auto.assign=FALSE) 
 SNP = getSymbols('^GSPC', src = 'yahoo', from ='2018-01-01', to ='2022-02-10',auto.assign=FALSE) #S&P500 index
+SHY = getSymbols('SHY', src = 'yahoo', from ='2018-01-01', to ='2022-02-10',auto.assign=FALSE) 
 save.image(file="data_getsymbols.RData") 
 ##############   data price ret=returns    #####################################
 load("data_getsymbols.RData")
@@ -59,7 +60,7 @@ load("data_getsymbols.RData")
     save(rets, file="rets.Rdata")
 
 ### Data procedure rets2 - main : BTC ETH
-    assets <- c( symbols, 'BTC', 'ETH', 'SNP')
+    assets <- c( symbols, 'BTC', 'ETH', 'SNP', 'SHY')
     prices2 = do.call(cbind,
                   lapply(assets, function(x) Ad(get(x)))) %>%
               setNames(assets)
@@ -118,6 +119,7 @@ load("data_getsymbols.RData")
     ###
     print(eff_result0)
     kable(eff_result0)
+    write.csv(eff_result0, file = 'eff_result0.csv')
     ##
     ########### item ##########################
     # testset <- c('SNP', 'TLT', 'BTC')

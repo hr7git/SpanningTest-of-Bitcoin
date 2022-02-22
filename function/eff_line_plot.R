@@ -7,7 +7,7 @@ eff_line_plot <- function(data, testset, benchset) {
   
   shortSpec <- portfolioSpec()
   setNFrontierPoints(shortSpec) <- 50
-  setRiskFreeRate <- mean(data$IEF)*100
+  setRiskFreeRate <- mean(data$SHY)*100
   setSolver(shortSpec) <- "solveRshortExact"    
   
   
@@ -52,8 +52,8 @@ eff_line_plot <- function(data, testset, benchset) {
   print(setRiskFreeRate)  # risk free rate : mean(IEF)*100 (given period)
   print(eff_GMV) # sharp rataio & GMV point
   
-  # shortFrontier <- eff_Frontier
-  # weightsPlot(shortFrontier)
+  shortFrontier <- eff_Frontier
+  weightsPlot(shortFrontier)
   # text <- "Short Constrained Portfolio"
   # mtext(text, side = 3, line = 3, font = 2, cex = 0.9)
   # weightedReturnsPlot(shortFrontier)
