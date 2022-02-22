@@ -7,6 +7,7 @@ eff_line_plot <- function(data, testset, benchset) {
   
   shortSpec <- portfolioSpec()
   setNFrontierPoints(shortSpec) <- 50
+  setRiskFreeRate <- mean(data$IEF)*100
   setSolver(shortSpec) <- "solveRshortExact"    
   
   
@@ -36,29 +37,34 @@ eff_line_plot <- function(data, testset, benchset) {
                                  risk = "Cov", auto = TRUE, )
   # slop slop_x slop_y GMV_x GMV_Y
   
-  eff1_result <- c(slop = t_line$slope, t_line$assets, # tangency slop
+  # eff1_GMV <- c(slop = t_line$slope, t_line$assets, # tangency slop
+  eff1_GMV <- c(slop = t_line$slope,  # tangency slop              
                    GMV_X = t_mvpoint[1], # GMV x
                    GMV_Y = t_mvpoint[2], # GMV y
                    f_data = paste(eff_Frontier@data@data$names, collapse = ","))
   
-  eff2_result <-c(slop =  b_line$slope, b_line$assets,
+  eff2_GMV <-c(slop =  b_line$slope, 
                   GMV_X =  b_mvpoint[1],
                   GMV_Y =  b_mvpoint[2],
                   f_data = paste(eff_Frontier2@data@data$names, collapse = ","))
-  eff_result <- rbind(eff1_result, eff2_result)
-  print(eff_result)
+  eff_GMV <- rbind(eff2_GMV, eff1_GMV)
   
-  shortFrontier <- eff_Frontier
-  weightsPlot(shortFrontier)
-  text <- "Short Constrained Portfolio"
-  mtext(text, side = 3, line = 3, font = 2, cex = 0.9)
-  weightedReturnsPlot(shortFrontier)
-  covRiskBudgetsPlot(shortFrontier)
+  print(setRiskFreeRate)  # risk free rate : mean(IEF)*100 (given period)
+  print(eff_GMV) # sharp rataio & GMV point
   
-  my_list <- list(eff_Frontier, 
-                  eff_Frontier2, 
-                  eff_result)
-  return(my_list) 
+  # shortFrontier <- eff_Frontier
+  # weightsPlot(shortFrontier)
+  # text <- "Short Constrained Portfolio"
+  # mtext(text, side = 3, line = 3, font = 2, cex = 0.9)
+  # weightedReturnsPlot(shortFrontier)
+  # covRiskBudgetsPlot(shortFrontier)
+  
+  # my_list <- list(eff_Frontier, 
+  #                 eff_Frontier2, 
+  #                 eff_GMV)
+  # return(my_list) 
+  
+  return(eff_GMV) 
   # shortFrontier <- eff_Frontier2
   # weightsPlot(shortFrontier)
   # text <- "MV Portfolio - Short Constrained Portfolio"
