@@ -588,45 +588,45 @@ print(df_base2)
 write.csv(df_base2, file = "df_base2.csv")
 save(df_base2, file="df_base2.Rdata")
 ######
-wald_test1 <- function(model, model2) {
-  ##### HK test
-  # the rows :linear combinations of the model coefficients
-  hypothesis.matrix <- rbind(c(1,0,0),c(0,1,1))
-  rhs=c(0,1)   # right-hand-side vector for hypothesis
-  HK_test <- lht(model,hypothesis.matrix,rhs)
-  # HK_test <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
-  
-  ##### step-1 test  : alpha = 0
-  lhs <- c(1,0,0)
-  step1_test <- lht(model,lhs,c(0))
-  # step1_test <- lht(model,lhs,c(0),white.adjust='hc3')
-  
-  ##### step- test 2 : beta=1 condition on alpha = 0
-  ##### unresrticted model condition on alpha =0  : model2
-  # model2 <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC) -1, data=rets)
-  lhs <- rbind(c(1,1))
-  step2_test <- lht(model2,lhs,c(1))
-  # step2_test <- lht(model2,lhs,c(1),white.adjust='hc3')
-  #
-  alpha  = model$coefficients[[1]]   # alpha
-  beta   = sum(model$coefficients) - model$coefficients[[1]]  # beta
-  HK_F   = HK_test$F[2]            # F test  - HK test
-  HK_Pr  = HK_test$`Pr(>F)`[2]     # Pr(>F)  - HK test HK_test$`Pr(>F)`
-  st1_F  = step1_test$F[2]         # F test  - step-1 test
-  st1_Pr = step1_test$`Pr(>F)`[2]  # Pr(>F)  : step-1 test
-  st2_F  = step2_test$F[2]         # F test  : step- test 2
-  st2_Pr = step2_test$`Pr(>F)`[2]  # Pr(>F)  : step- test 2
-  lm_model = as.character(model$call)[2]
-  lm_data  = as.character(model$call)[3]
-  
-  df <- data.frame(alpha, beta,
-                   HK_F, HK_Pr,
-                   st1_F, st1_Pr,
-                   st2_F, st2_Pr,
-                   lm_model, lm_data )
-  
-  return(df)
-}
+# wald_test1 <- function(model, model2) {
+#   ##### HK test
+#   # the rows :linear combinations of the model coefficients
+#   # model  <- lm(BTC ~ (SNP + TLT), data=rets2)
+#   # model2 <- lm(BTC ~ 0 + (SNP + TLT), data=rets2)
+#   df01 <- wald_test1(model, model2) 
+#   # HK_test <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
+#   
+#   ##### step-1 test  : alpha = 0
+#   lhs <- c(1,0,0)
+#   step1_test <- lht(model,lhs,c(0))
+#   # step1_test <- lht(model,lhs,c(0),white.adjust='hc3')
+#   
+#   ##### step- test 2 : beta=1 condition on alpha = 0
+#   ##### unresrticted model condition on alpha =0  : model2
+#   # model2 <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC) -1, data=rets)
+#   lhs <- rbind(c(1,1))
+#   step2_test <- lht(model2,lhs,c(1))
+#   # step2_test <- lht(model2,lhs,c(1),white.adjust='hc3')
+#   #
+#   alpha  = model$coefficients[[1]]   # alpha
+#   beta   = sum(model$coefficients) - model$coefficients[[1]]  # beta
+#   HK_F   = HK_test$F[2]            # F test  - HK test
+#   HK_Pr  = HK_test$`Pr(>F)`[2]     # Pr(>F)  - HK test HK_test$`Pr(>F)`
+#   st1_F  = step1_test$F[2]         # F test  - step-1 test
+#   st1_Pr = step1_test$`Pr(>F)`[2]  # Pr(>F)  : step-1 test
+#   st2_F  = step2_test$F[2]         # F test  : step- test 2
+#   st2_Pr = step2_test$`Pr(>F)`[2]  # Pr(>F)  : step- test 2
+#   lm_model = as.character(model$call)[2]
+#   lm_data  = as.character(model$call)[3]
+#   
+#   df <- data.frame(alpha, beta,
+#                    HK_F, HK_Pr,
+#                    st1_F, st1_Pr,
+#                    st2_F, st2_Pr,
+#                    lm_model, lm_data )
+#   
+#   return(df)
+# }
 
 ##################### heteroskedasticity ##############################
 load("rets2.Rdata")
@@ -668,6 +668,7 @@ model2 <- lm(BTC + ETH ~ 0 + (SNP + TLT), data=rets2["2020/"])
 df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
 #######################
 df_hetero <- df01
+df_hetero
 write.csv(df_hetero, file = "df_hetero.csv")
 save(df_hetero, file="df_hetero.Rdata")
 ############################ BTC / Data:2014.1 
@@ -707,7 +708,47 @@ save(df_hetero, file="df_hetero.Rdata")
 # model2 <- lm(BTC + ETH ~ 0 + (SPY + TLT + GLD), data=rets2["2020/"])
 # df02 <- wald_test2(model, model2); df01 <- rbind(df01,df02)  # add-rbind
 
-
+######
+######
+wald_test1 <- function(model, model2) {
+  ##### HK test
+  # the rows :linear combinations of the model coefficients
+  hypothesis.matrix <- rbind(c(1,0,0),c(0,1,1))
+  rhs=c(0,1)   # right-hand-side vector for hypothesis
+  HK_test <- lht(model,hypothesis.matrix,rhs)
+  # HK_test <- lht(model,hypothesis.matrix,rhs,white.adjust='hc3')
+  
+  ##### step-1 test  : alpha = 0
+  lhs <- c(1,0,0)
+  step1_test <- lht(model,lhs,c(0))
+  # step1_test <- lht(model,lhs,c(0),white.adjust='hc3')
+  
+  ##### step- test 2 : beta=1 condition on alpha = 0
+  ##### unresrticted model condition on alpha =0  : model2
+  # model2 <- lm(BTC ~ (SPY + QQQ + EEM + TLT + IEF + IYR + GLD + DBC) -1, data=rets)
+  lhs <- rbind(c(1,1))
+  step2_test <- lht(model2,lhs,c(1))
+  # step2_test <- lht(model2,lhs,c(1),white.adjust='hc3')
+  #
+  alpha  = model$coefficients[[1]]   # alpha
+  beta   = sum(model$coefficients) - model$coefficients[[1]]  # beta
+  HK_F   = HK_test$F[2]            # F test  - HK test
+  HK_Pr  = HK_test$`Pr(>F)`[2]     # Pr(>F)  - HK test HK_test$`Pr(>F)`
+  st1_F  = step1_test$F[2]         # F test  - step-1 test
+  st1_Pr = step1_test$`Pr(>F)`[2]  # Pr(>F)  : step-1 test
+  st2_F  = step2_test$F[2]         # F test  : step- test 2
+  st2_Pr = step2_test$`Pr(>F)`[2]  # Pr(>F)  : step- test 2
+  lm_model = as.character(model$call)[2]
+  lm_data  = as.character(model$call)[3]
+  
+  df <- data.frame(alpha, beta,
+                   HK_F, HK_Pr,
+                   st1_F, st1_Pr,
+                   st2_F, st2_Pr,
+                   lm_model, lm_data )
+  
+  return(df)
+}
 ######
 wald_test2 <- function(model, model2) {
   ##### HK test
