@@ -582,8 +582,8 @@ df02 <- wald_test1(model, model2); df01 <- rbind(df01,df02)  # add-rbind
 #######################
 df_base2 <- df01
 print(df_base2)
-purrr::modify_if(df_base2, ~is.numeric(.), ~round(., 6))
-print(df_base2)
+# purrr::modify_if(df_base2, ~is.numeric(.), ~round(., 6))
+# print(df_base2)
 
 write.csv(df_base2, file = "df_base2.csv")
 save(df_base2, file="df_base2.Rdata")
