@@ -54,10 +54,10 @@ eff_line_plot <- function(data, testset, benchset) {
   
   shortFrontier <- eff_Frontier
   weightsPlot(shortFrontier)
-  # text <- "Short Constrained Portfolio"
-  # mtext(text, side = 3, line = 3, font = 2, cex = 0.9)
-  # weightedReturnsPlot(shortFrontier)
-  # covRiskBudgetsPlot(shortFrontier)
+  text <- "Short Constrained Portfolio"
+  mtext(text, side = 3, line = 3, font = 2, cex = 0.9)
+  weightedReturnsPlot(shortFrontier)
+  covRiskBudgetsPlot(shortFrontier)
   
   # my_list <- list(eff_Frontier, 
   #                 eff_Frontier2, 
