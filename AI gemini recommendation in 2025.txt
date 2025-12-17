@@ -93,3 +93,79 @@ To run this analysis in your next chapter, you will need:
 * **Time Period:** I recommend split-sample testing (e.g., Pre-COVID vs. Post-COVID) to see if Bitcoin's spanning properties have changed over time.
 
 **Would you like me to help you draft a Python script or an Excel guide to perform this regression and F-test on your data?**
+
+
+draft a Python script 
+
+
+To perform the Huberman and Kandel (1987) spanning test, you need to run a **constrained multivariate regression**. In Python, the `statsmodels` library is excellent for the regression, and we can use a **Wald Test** to check the two constraints (\alpha = 0 and \sum \beta = 1) simultaneously.
+
+Here is a Python script designed for this analysis.
+
+### Python Script for Portfolio Spanning Test
+
+```python
+import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+from scipy import stats
+
+# 1. Load your data
+# Requirements: A CSV with columns 'Date', 'BTC', 'Stocks', 'Bonds', 'Gold', 'REITs'
+# Returns should be in percentage change (decimal or percentage)
+df = pd.read_csv('portfolio_data.csv', index_index='Date', parse_dates=True)
+
+# Define variables
+# Bitcoin is the dependent variable (y)
+y = df['BTC']
+# Traditional assets are the independent variables (X)
+X = df[['Stocks', 'Bonds', 'Gold', 'REITs']]
+
+# Add a constant to X for the Alpha (intercept) calculation
+X_with_const = sm.add_constant(X)
+
+# 2. Fit the OLS Regression
+model = sm.OLS(y, X_with_const).fit()
+
+print("--- Regression Results ---")
+print(model.summary())
+
+# 3. Perform the Huberman and Kandel Spanning Test (Wald Test)
+# We test two hypotheses:
+# 1) The constant (const) is 0
+# 2) The sum of all asset coefficients (beta_i) is 1
+hypotheses = '(const = 0), (Stocks + Bonds + Gold + REITs = 1)'
+wald_test = model.wald_test(hypotheses)
+
+print("\n--- Wald Test for Spanning ---")
+print(f"F-statistic: {wald_test.fvalue[0][0]:.4f}")
+print(f"p-value: {wald_test.pvalue:.4f}")
+
+# 4. Interpretation
+if wald_test.pvalue < 0.05:
+    print("\nResult: Reject the Null Hypothesis (p < 0.05)")
+    print("Interpretation: Bitcoin provides significant expansion to the portfolio frontier.")
+else:
+    print("\nResult: Fail to Reject the Null Hypothesis")
+    print("Interpretation: Bitcoin is spanned by existing assets; no significant expansion.")
+
+```
+
+---
+
+### How to Interpret the Output
+
+When you run this script, pay close attention to the **p-value** of the Wald Test:
+
+1. **If p-value < 0.05:** You have statistical evidence that the **Minimum-Variance Frontier** has shifted. This means Bitcoin provides a risk-return profile that cannot be replicated by just holding a mix of stocks, bonds, and gold.
+2. **The Alpha (\alpha):** If the alpha is positive and significant in the regression summary, Bitcoin is adding "excess return" beyond what is explained by market movements.
+3. **The Betas (\beta):** These will tell you which assets Bitcoin is most correlated with. A high beta for gold would suggest it behaves like a commodity; a high beta for stocks suggests it is a "risk-on" asset.
+
+### Next Steps for your Empirical Analysis
+
+To make Chapter 4 (Results) more sophisticated, you could:
+
+* **Rolling Window Analysis:** Run the Wald test in 12-month "rolling" windows to see if Bitcoin's spanning ability has strengthened or weakened over time.
+* **Sub-sample Analysis:** Compare the results from 2015–2019 versus 2020–2024 to capture the impact of the COVID-19 stimulus.
+
+**Would you like me to explain how to prepare your data (e.g., calculating log returns) before running this script?**
