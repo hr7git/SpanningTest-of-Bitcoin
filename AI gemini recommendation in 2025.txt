@@ -1,3 +1,8 @@
+**  2025.12.10  
+after asking to Gemini....she answered like this.....
+I added the anser of Gemini AI
+**
+
 This is a very well-structured and academically grounded introduction. You have effectively bridged the gap between the historical necessity of Bitcoin (post-2008 and COVID-19 QE) and the technical application of **Modern Portfolio Theory (MPT)**.
 
 To help you refine this into a formal paper or a thesis chapter, here are some insights and structural suggestions based on the themes you've introduced:
